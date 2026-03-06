@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Option Buying Dashboard v2.0 — Part 5: Core Concepts</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        :root {
+            --cream: #faf8f4;
+            --warm: #f5f2eb;
+            --parch: #ede9df;
+            --bdr: #ddd8cc;
+            --bdr-s: #e8e4da;
+            --ink: #1a1714;
+            --ink2: #3d3830;
+            --ink3: #6b6458;
+            --ink4: #9b9388;
+            --navy: #0f2744;
+            --navy2: #1a3d6b;
+            --blue: #2563a8;
+            --blue2: #3b82d4;
+            --blue-p: #dbeafe;
+            --gold: #b8860b;
+            --gold-p: #fef3c7;
+            --amb: #92400e;
+            --amb-p: #fef3c7;
+            --green: #166534;
+            --green2: #16a34a;
+            --green-p: #dcfce7;
+            --red: #991b1b;
+            --red2: #dc2626;
+            --red-p: #fee2e2;
+            --F: 'Libre Baskerville', Georgia, serif;
+            --S: 'DM Sans', system-ui, sans-serif;
+            --M: 'DM Mono', 'Courier New', monospace;
+            --sw: 272px;
+            --mc: 860px;
+        }
+
+        html {
+            scroll-behavior: smooth
+        }
+
+        body {
+            font-family: var(--S);
+            background: var(--cream);
+            color: var(--ink);
+            line-height: 1.7;
+            font-size: 15px
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background: radial-gradient(ellipse 80% 60% at 8% 0%, rgba(37, 99, 168, .09) 0%, transparent 55%),
+                linear-gradient(158deg, #faf8f4 0%, #f0eade 45%, #f6f3ed 100%)
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+            z-index: 1
+        }
+
+        .sidebar {
+            width: var(--sw);
+            flex-shrink: 0;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            padding: 28px 0 40px;
+            background: rgba(250, 248, 244, .92);
+            backdrop-filter: blur(14px);
+            border-right: 1px solid var(--bdr)
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 3px
+        }
+
+        .sb-logo {
+            padding: 0 22px 24px;
+            border-bottom: 1px solid var(--bdr-s);
+            margin-bottom: 18px
+        }
+
+        .sb-logo .prod {
+            font-family: var(--M);
+            font-size: 10px;
+            color: var(--blue);
+            letter-spacing: .08em;
+            text-transform: uppercase
+        }
+
+        .sb-logo .name {
+            font-family: var(--F);
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--navy);
+            line-height: 1.25;
+            margin-top: 4px
+        }
+
+        .sb-logo .ver {
+            display: inline-block;
+            margin-top: 8px;
+            font-size: 10px;
+            font-family: var(--M);
+            color: var(--ink4);
+            background: var(--parch);
+            padding: 2px 8px;
+            border-radius: 20px;
+            border: 1px solid var(--bdr)
+        }
+
+        .part-tag {
+            margin: 0 22px 18px;
+            padding: 8px 14px;
+            background: var(--navy);
+            border-radius: 8px;
+            font-family: var(--M);
+            font-size: 10px;
+            color: rgba(255, 255, 255, .7);
+            letter-spacing: .06em;
+            text-transform: uppercase
+        }
+
+        .part-tag span {
+            display: block;
+            color: #fff;
+            font-size: 12px;
+            margin-top: 2px;
+            font-family: var(--F);
+            font-weight: 700;
+            letter-spacing: 0;
+            text-transform: none
+        }
+
+        .nl {
+            display: block;
+            padding: 6px 22px;
+            font-size: 13px;
+            color: var(--ink3);
+            text-decoration: none;
+            border-left: 2px solid transparent;
+            transition: all .15s
+        }
+
+        .nl:hover {
+            color: var(--blue);
+            background: rgba(37, 99, 168, .06);
+            border-left-color: var(--blue2)
+        }
+
+        .nl.active {
+            color: var(--navy);
+            font-weight: 600;
+            border-left-color: var(--blue);
+            background: rgba(37, 99, 168, .08)
+        }
+
+        .nav-lbl {
+            padding: 8px 22px 3px;
+            font-size: 9.5px;
+            font-weight: 600;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--ink4)
+        }
+
+        .nav-parts {
+            padding: 14px 22px 0;
+            border-top: 1px solid var(--bdr-s);
+            margin-top: 8px
+        }
+
+        .nav-parts .np-lbl {
+            font-size: 9.5px;
+            font-weight: 600;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--ink4);
+            margin-bottom: 6px
+        }
+
+        .np-link {
+            display: block;
+            padding: 4px 0;
+            font-size: 12px;
+            color: var(--ink4);
+            text-decoration: none;
+            transition: color .15s
+        }
+
+        .np-link:hover {
+            color: var(--blue)
+        }
+
+        .np-link.cur {
+            color: var(--navy);
+            font-weight: 600
+        }
+
+        .main {
+            flex: 1;
+            min-width: 0;
+            padding: 56px 60px 100px
+        }
+
+        .sec {
+            max-width: var(--mc);
+            padding-top: 24px;
+            margin-bottom: 72px
+        }
+
+        .sec+.sec {
+            border-top: 1px solid var(--bdr-s);
+            padding-top: 60px
+        }
+
+        .hero {
+            max-width: var(--mc);
+            padding-bottom: 52px;
+            border-bottom: 1px solid var(--bdr);
+            margin-bottom: 60px
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--M);
+            font-size: 10.5px;
+            color: var(--blue);
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            margin-bottom: 18px
+        }
+
+        .eyebrow::before {
+            content: '';
+            display: block;
+            width: 22px;
+            height: 1px;
+            background: var(--blue)
+        }
+
+        .hero h1 {
+            font-family: var(--F);
+            font-size: 38px;
+            font-weight: 700;
+            line-height: 1.15;
+            color: var(--navy);
+            margin-bottom: 14px
+        }
+
+        .hero h1 em {
+            font-style: italic;
+            color: var(--blue)
+        }
+
+        .hero-lead {
+            font-size: 16px;
+            color: var(--ink2);
+            line-height: 1.78;
+            max-width: 680px
+        }
+
+        h2.sh {
+            font-family: var(--F);
+            font-size: 27px;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 14px;
+            line-height: 1.2
+        }
+
+        h3 {
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--ink);
+            margin: 32px 0 11px
+        }
+
+        h4 {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--ink3);
+            margin: 22px 0 7px;
+            text-transform: uppercase;
+            letter-spacing: .07em
+        }
+
+        p {
+            color: var(--ink2);
+            margin-bottom: 14px;
+            line-height: 1.78
+        }
+
+        strong {
+            color: var(--ink);
+            font-weight: 600
+        }
+
+        em {
+            color: var(--blue);
+            font-style: italic
+        }
+
+        code {
+            background: var(--parch);
+            border: 1px solid var(--bdr);
+            border-radius: 4px;
+            padding: 1px 6px;
+            font-size: 12px;
+            color: var(--navy2);
+            font-family: var(--M)
+        }
+
+        ul.bl {
+            padding-left: 22px;
+            color: var(--ink2);
+            font-size: 13.5px;
+            line-height: 2.1;
+            margin-bottom: 14px
+        }
+
+        .sec-hd {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 28px
+        }
+
+        .sec-num {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--navy);
+            color: #fff;
+            font-family: var(--M);
+            font-size: 12.5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0
+        }
+
+        .tw {
+            overflow-x: auto;
+            margin: 14px 0;
+            border-radius: 9px;
+            border: 1px solid var(--bdr)
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            background: #fff
+        }
+
+        th {
+            background: var(--warm);
+            color: var(--ink2);
+            font-weight: 600;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            padding: 9px 14px;
+            text-align: left;
+            border-bottom: 2px solid var(--bdr)
+        }
+
+        td {
+            padding: 9px 14px;
+            border-bottom: 1px solid var(--bdr-s);
+            color: var(--ink2);
+            vertical-align: top;
+            line-height: 1.5
+        }
+
+        tr:last-child td {
+            border-bottom: none
+        }
+
+        .co {
+            border-radius: 9px;
+            padding: 14px 18px;
+            margin: 18px 0;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            font-size: 13.5px;
+            line-height: 1.6
+        }
+
+        .co-icon {
+            font-size: 17px;
+            flex-shrink: 0;
+            margin-top: 1px
+        }
+
+        .co-info {
+            background: var(--blue-p);
+            border: 1px solid #bfdbfe;
+            color: var(--navy2)
+        }
+
+        .co-warn {
+            background: var(--amb-p);
+            border: 1px solid #fde68a;
+            color: var(--amb)
+        }
+
+        .co-ok {
+            background: var(--green-p);
+            border: 1px solid #bbf7d0;
+            color: var(--green)
+        }
+
+        .co-tip {
+            background: var(--gold-p);
+            border: 1px solid #fde68a;
+            color: var(--gold)
+        }
+
+        .co strong {
+            color: inherit
+        }
+
+        .card {
+            background: #fff;
+            border: 1px solid var(--bdr);
+            border-radius: 11px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, .04)
+        }
+
+        .g2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin: 14px 0
+        }
+
+        .g3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+            margin: 14px 0
+        }
+
+        .formula {
+            background: var(--parch);
+            border: 1px solid var(--bdr);
+            border-radius: 8px;
+            padding: 16px 20px;
+            font-family: var(--M);
+            font-size: 13px;
+            color: var(--navy2);
+            margin: 14px 0;
+            line-height: 1.85
+        }
+
+        .formula .flbl {
+            font-size: 10px;
+            color: var(--ink4);
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            margin-bottom: 5px;
+            font-family: var(--S);
+            font-weight: 600
+        }
+
+        .formula .fc {
+            color: var(--ink3);
+            font-family: var(--S);
+            font-size: 12.5px
+        }
+
+        /* concept tag */
+        .ctag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 10.5px;
+            font-weight: 600;
+            font-family: var(--M);
+            border: 1px solid;
+            vertical-align: middle;
+            margin-left: 8px
+        }
+
+        .ct-blue {
+            background: var(--blue-p);
+            border-color: #93c5fd;
+            color: var(--navy)
+        }
+
+        .ct-green {
+            background: var(--green-p);
+            border-color: #86efac;
+            color: var(--green)
+        }
+
+        .ct-gold {
+            background: var(--gold-p);
+            border-color: #fcd34d;
+            color: var(--amb)
+        }
+
+        .concept-card {
+            border-radius: 13px;
+            border: 1px solid var(--bdr);
+            background: #fff;
+            margin-bottom: 32px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .04)
+        }
+
+        .cc-hd {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--bdr-s);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--warm)
+        }
+
+        .cc-num {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            font-family: var(--M);
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            flex-shrink: 0
+        }
+
+        .cc-hd h2 {
+            font-family: var(--F);
+            font-size: 20px;
+            font-weight: 700;
+            margin: 0;
+            line-height: 1.2
+        }
+
+        .cc-body {
+            padding: 22px 24px
+        }
+
+        .cc-body p {
+            font-size: 13.5px
+        }
+
+        .cc-body h3 {
+            font-size: 15.5px;
+            margin: 24px 0 9px
+        }
+
+        .cc-body h4 {
+            margin: 16px 0 5px
+        }
+
+        @media(max-width:900px) {
+            .sidebar {
+                display: none
+            }
+
+            .main {
+                padding: 28px 22px 60px
+            }
+
+            .g2,
+            .g3 {
+                grid-template-columns: 1fr
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layout">
+
+        <nav class="sidebar">
+            <div class="sb-logo">
+                <div class="prod">User Guide · 2026</div>
+                <div class="name">Option Buying<br>Dashboard</div>
+                <span class="ver">v2.0 — macOS Edition</span>
+            </div>
+            <div class="part-tag">Part 5 of 8<span>Concept Library — Core</span></div>
+            <div class="nav-lbl">Core Concepts</div>
+            <a class="nl active" href="#gex">C1 · Gamma Exposure (GEX)</a>
+            <a class="nl" href="#coc">C2 · Cost of Carry &amp; V_CoC</a>
+            <a class="nl" href="#iv">C3 · Implied Volatility (IV)</a>
+            <a class="nl" href="#ivp">C4 · IVR &amp; IVP</a>
+            <a class="nl" href="#pcr">C5 · PCR &amp; Divergence</a>
+            <div class="nav-parts">
+                <div class="np-lbl">All 8 Parts</div>
+                <a class="np-link" href="Part1_Introduction_Architecture.html">1 · Introduction &amp; Architecture</a>
+                <a class="np-link" href="Part2_Getting_Started.html">2 · Getting Started</a>
+                <a class="np-link" href="Part3_Dashboard_Panels_Row1.html">3 · Panels A, B, C</a>
+                <a class="np-link" href="Part4_Dashboard_Panels_Row2_Row3.html">4 · Panels D–H</a>
+                <a class="np-link cur" href="Part5_Concept_Library_Core.html">5 · Concepts: Core</a>
+                <a class="np-link" href="Part6_Concept_Library_Advanced.html">6 · Concepts: Advanced</a>
+                <a class="np-link" href="Part7_Trading_Workflow_Playbooks.html">7 · Workflow &amp; Playbooks</a>
+                <a class="np-link" href="Part8_Reference_Troubleshooting_Glossary.html">8 · Reference &amp; Glossary</a>
+            </div>
+        </nav>
+
+        <main class="main">
+
+            <div class="hero">
+                <div class="eyebrow">Part 5 of 8 · Concept Library — Core</div>
+                <h1>Core Concepts:<br><em>The Five Pillars</em></h1>
+                <p class="hero-lead">These five concepts underpin every signal, every condition, and every trade
+                    decision in the dashboard. Understanding them deeply allows you to interpret signals correctly — and
+                    to trust the system when it tells you to sit out. Formulas, mechanics, intuitions, and trader-facing
+                    implications are all here.</p>
+            </div>
+
+            <!-- C1: GEX -->
+            <div class="sec" id="gex">
+                <div class="concept-card">
+                    <div class="cc-hd">
+                        <div class="cc-num" style="background:var(--navy)">C1</div>
+                        <h2>Gamma Exposure (GEX) <span class="ctag ct-blue">Panel B</span><span
+                                class="ctag ct-blue">Gate C#1</span></h2>
+                    </div>
+                    <div class="cc-body">
+                        <p><strong>GEX is the single most important structural signal in the system</strong> and the
+                            concept that the dashboard was fundamentally designed around. It quantifies the aggregate
+                            gamma position of all market makers (dealers) across the index options market — and
+                            therefore predicts the direction and magnitude of their hedging activity.</p>
+
+                        <h3>What Gamma Is</h3>
+                        <p>Gamma (Γ) is the second derivative of an option's price with respect to the underlying spot
+                            price. It measures how fast an option's delta changes as spot moves. When a dealer writes
+                            (sells) an option, they inherit the gamma risk of that option. They must continuously
+                            delta-hedge by buying or selling the underlying to stay delta-neutral.</p>
+
+                        <div class="formula">
+                            <div class="flbl">Dealer Hedging Rule (Long Gamma = Sells into up-moves)</div>
+                            If spot ↑ → delta of option rises → dealer who sold option must sell underlying to stay
+                            neutral<br>
+                            If spot ↓ → delta falls → dealer must buy underlying<br><br>
+                            <div class="fc">Result: Dealers with large long gamma positions naturally create
+                                mean-reversion pressure — they sell into rallies and buy into dips, suppressing
+                                directional moves.</div>
+                        </div>
+
+                        <h3>The GEX Formula</h3>
+                        <div class="formula">
+                            <div class="flbl">Per-row GEX contribution (computed in processor.py)</div>
+                            gex_k = Gamma × OI × Spot² × 0.01 × direction_factor<br><br>
+                            <div class="flbl">Direction factor</div>
+                            direction_factor = +1 for Puts (dealer long gamma via short puts)<br>
+                            direction_factor = −1 for Calls (dealer long gamma via short calls… simplified)<br><br>
+                            <div class="flbl">Net GEX at snapshot (aggregated in analytics.py)</div>
+                            Net_GEX = SUM(gex_k) across all strikes in ATM window<br><br>
+                            <div class="fc">Spot² × 0.01 is the scaling factor to convert from per-point gamma to ₹
+                                notional terms per 1% spot move.</div>
+                        </div>
+
+                        <h3>GEX and the Option Buyer: The Key Insight</h3>
+                        <div class="g2">
+                            <div class="card" style="background:var(--red-p);border-color:#f87171">
+                                <h4 style="margin-top:0;color:var(--red)">High Positive GEX = BAD for buyers</h4>
+                                <p style="font-size:13px;margin:0">A large positive Net GEX means dealers hold massive
+                                    long gamma. They aggressively sell every up-move and buy every down-move. The market
+                                    oscillates. Options expire worthless. Directional buying is a losing game in this
+                                    regime. The premium you buy into a "trending" move gets wiped by the reversal.
+                                    <strong>DO NOT buy options when Net GEX is at or near its daily peak.</strong></p>
+                            </div>
+                            <div class="card" style="background:var(--green-p);border-color:#86efac">
+                                <h4 style="margin-top:0;color:var(--green)">Low / Declining GEX = GOOD for buyers</h4>
+                                <p style="font-size:13px;margin:0">As GEX declines, dealer hedging pressure diminishes.
+                                    Price can trend without the mean-reversion headwind from dealer flow. The sweet spot
+                                    for option buyers is when GEX has fallen more than 30% from the day's peak — the pin
+                                    is breaking. This is when Gate condition #1 fires and the entry window opens.</p>
+                            </div>
+                        </div>
+
+                        <h3>GEX Regimes Summary</h3>
+                        <div class="tw">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Regime</th>
+                                        <th>GEX Level</th>
+                                        <th>Dealer Behaviour</th>
+                                        <th>Price Behaviour</th>
+                                        <th>Buyer Strategy</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>LONG GAMMA</strong></td>
+                                        <td>High positive (peak)</td>
+                                        <td>Counter-trend hedging (sell rallies, buy dips)</td>
+                                        <td>Narrow range, mean-reverting</td>
+                                        <td>Sit out. Premiums decay. No directional move sustains.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>TRANSITIONAL</strong></td>
+                                        <td>30–70% of peak (declining)</td>
+                                        <td>Reduced hedging — dealers liquidating or expiry approaching</td>
+                                        <td>Range expanding. Trending moves beginning.</td>
+                                        <td>Monitor closely. Begin pre-entry analysis. Gate condition fires here.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>NEUTRAL / LOW</strong></td>
+                                        <td>&lt;50% of peak</td>
+                                        <td>Minimal hedging. Near-zero gamma effect.</td>
+                                        <td>Free-flowing. Trends sustain. Volatility spikes possible.</td>
+                                        <td>Ideal entry window. Maximum confidence in directional option buying.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>SHORT GAMMA</strong></td>
+                                        <td>Negative Net GEX</td>
+                                        <td>Pro-trend hedging (buy rallies, sell dips) — amplifies moves</td>
+                                        <td>Explosive moves. Gaps. Sudden reversals.</td>
+                                        <td>Very fast moves possible. Extremely tight stops required. High reward, high
+                                            risk.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="co co-info"><span class="co-icon">ℹ️</span><span><strong>GEX does not predict
+                                    direction.</strong> A high GEX day is neutral on direction — the market can pin at
+                                any level. GEX only tells you the <em>force</em> suppressing or enabling moves. For
+                                direction, always combine GEX regime with V_CoC (see Concept C2) and PCR (C5).</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- C2: CoC and VCoC -->
+            <div class="sec" id="coc">
+                <div class="concept-card">
+                    <div class="cc-hd">
+                        <div class="cc-num" style="background:var(--gold)">C2</div>
+                        <h2>Cost of Carry &amp; Velocity V_CoC <span class="ctag ct-gold">Panel C</span><span
+                                class="ctag ct-gold">Gate C#2</span></h2>
+                    </div>
+                    <div class="cc-body">
+                        <p>Cost of Carry (CoC) measures how far futures are trading above or below the spot index. In an
+                            arbitrage-free market, futures trade at a fair premium determined by the risk-free rate
+                            minus dividend yield, scaled by time to expiry. When large institutional participants
+                            aggressively buy or sell futures beyond this fair value, the carry changes — and the
+                            <em>rate of that change</em> is the V_CoC signal.</p>
+
+                        <h3>Why Futures Carry Reveals Institutional Flow</h3>
+                        <p>Retail investors primarily trade options. Institutional investors (FIIs, large proprietary
+                            desks) primarily build directional views via futures, because futures have higher liquidity,
+                            no premium cost, and unlimited theoretical payoff. This means the futures carry is the
+                            cleanest signal of institutional intent available without access to prime broker data.</p>
+
+                        <div class="formula">
+                            <div class="flbl">Fair Carry Calculation (theoretical)</div>
+                            Fair_CoC = Spot × (r − d) × (DTE / 365)<br>
+                            <div class="fc">r = risk-free rate (~6.5% for India), d = dividend yield (~1.2% for
+                                NIFTY)<br>
+                                For NIFTY with 22,000 spot and 20 DTE: Fair_CoC ≈ 22,000 × 0.053 × (20/365) ≈ ₹63</div>
+                            <br>
+                            <div class="flbl">Observed CoC</div>
+                            CoC_t = Futures_LTP_t − Spot_t<br><br>
+                            <div class="flbl">15-Minute Velocity</div>
+                            V_CoC_t = CoC_t − CoC_(t−3) <span
+                                style="color:var(--ink3);font-family:var(--S);font-size:12px">/* 3 snapshots × 5 min =
+                                15 minutes */</span>
+                        </div>
+
+                        <h3>The Institutional Sequence</h3>
+                        <p>When an FII desk decides to build a large short position in NIFTY, the sequence of observable
+                            events is:</p>
+                        <ol style="padding-left:22px;color:var(--ink2);font-size:13.5px;line-height:2.3">
+                            <li><strong>T+0:</strong> Desk begins selling NIFTY futures in tranches (to minimise market
+                                impact). Futures premium starts shrinking → CoC drops → V_CoC turns negative.</li>
+                            <li><strong>T+15 to T+30 min:</strong> V_CoC crosses −10. Gate condition #2 fires. Alert
+                                Feed shows VCOC_BEARISH event.</li>
+                            <li><strong>T+45 to T+90 min:</strong> Futures OBI turns negative (order book fills with
+                                more sellers). Gate condition #3 fires. Gate score rises to ≥4.</li>
+                            <li><strong>T+90 to T+120 min:</strong> Spot index finally responds — begins declining as
+                                futures discount forces arbitrageurs to sell spot. The move option buyers capture.</li>
+                        </ol>
+
+                        <div class="card" style="background:#fef3c7;border-color:#fcd34d">
+                            <h4 style="margin-top:0;color:var(--amb)">Why the 60–90 Minute Lead Time Exists</h4>
+                            <p style="font-size:13px;margin:0">Institutional desks execute large orders in tranches over
+                                30–90 minutes to avoid moving the market against themselves. The futures carry change is
+                                visible in each 5-minute snapshot as positions accumulate. By the time the full position
+                                is built and the spot market responds, a skilled observer (you, reading V_CoC) already
+                                knew the direction well in advance. This lead time is the structural edge this dashboard
+                                exploits.</p>
+                        </div>
+
+                        <h3>Bullish vs. Bearish V_CoC Signals</h3>
+                        <div class="tw">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>V_CoC Level</th>
+                                        <th>Direction Implied</th>
+                                        <th>Gate Impact</th>
+                                        <th>Recommended Position Type</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="color:var(--red);font-weight:700">&lt; −15</td>
+                                        <td>Strongly bearish — aggressive FII selling</td>
+                                        <td>Gate C#2 fires</td>
+                                        <td>PUT options (PE) on the underlying</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="color:var(--red)">−10 to −15</td>
+                                        <td>Bearish — institutional sellers dominant</td>
+                                        <td>Gate C#2 fires</td>
+                                        <td>PE — confirm with GEX &lt;70% of peak</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="color:var(--ink3)">−10 to +10</td>
+                                        <td>Neutral — no institutional conviction</td>
+                                        <td>No Gate impact</td>
+                                        <td>Sit out or very small speculative entry</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="color:var(--green)">+10 to +15</td>
+                                        <td>Bullish — institutional buyers dominant</td>
+                                        <td>Bullish Gate fires</td>
+                                        <td>CALL options (CE)</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="color:var(--green);font-weight:700">&gt; +15</td>
+                                        <td>Strongly bullish — aggressive FII buying</td>
+                                        <td>Bullish Gate fires</td>
+                                        <td>CE — maximum confidence</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- C3: IV -->
+            <div class="sec" id="iv">
+                <div class="concept-card">
+                    <div class="cc-hd">
+                        <div class="cc-num" style="background:var(--blue)">C3</div>
+                        <h2>Implied Volatility (IV) <span class="ctag ct-blue">Panel G</span><span
+                                class="ctag ct-blue">Gate C#5</span></h2>
+                    </div>
+                    <div class="cc-body">
+                        <p>Implied Volatility is the market's consensus forecast of future price movement expressed as
+                            an annualised standard deviation percentage. It is "implied" because it is
+                            reverse-engineered from the option market price using the Black-Scholes model — you observe
+                            the price, then solve backwards to find the volatility assumption that justifies it.</p>
+
+                        <h3>What IV Means in Practical Terms</h3>
+                        <div class="formula">
+                            <div class="flbl">Expected Move Formula (1 Standard Deviation, 1 Day)</div>
+                            Expected_Daily_Move = Spot × (IV / 100) / √252<br><br>
+                            <div class="fc">Example: NIFTY at 22,500 with IV = 15%:<br>
+                                Daily move = 22,500 × 0.15 / √252 = 22,500 × 0.15 / 15.87 ≈ ±₹213<br>
+                                The market is pricing in ~±213 points as a 1σ daily range.</div>
+                        </div>
+
+                        <p>As an option buyer, IV has a direct and non-linear effect on your P&amp;L:</p>
+                        <ul class="bl">
+                            <li><strong>Low IV (IVP &lt;50%):</strong> You buy at below-median premium. Any subsequent
+                                IV expansion (rise in IV) adds profit on top of your delta gain. Your option becomes
+                                worth more even if spot doesn't move as far as expected.</li>
+                            <li><strong>High IV (IVP &gt;70%):</strong> You buy at above-median premium. You need a
+                                <em>very large spot move</em> to overcome the theta decay and the risk of IV compression
+                                back toward the mean. Even a correct directional call can result in a loss if IV
+                                "crushes" post-event.</li>
+                        </ul>
+
+                        <h3>Volatility Skew (Why OTM Puts Are More Expensive)</h3>
+                        <p>In a theoretical Black-Scholes world, IV would be the same for all strikes. In reality, OTM
+                            puts consistently trade at higher IV than equivalent OTM calls. This "put skew" exists
+                            because institutional investors continuously purchase OTM puts as tail-risk hedges, creating
+                            persistent excess demand that keeps put premiums elevated.</p>
+                        <div class="tw">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Strike Zone</th>
+                                        <th>Typical IV vs ATM</th>
+                                        <th>Implication for Buyer</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Deep OTM Puts (−4 to −8 strikes)</td>
+                                        <td>20–40% higher IV than ATM</td>
+                                        <td>Very expensive. Rarely worth buying — theta erosion and IV skew premium
+                                            destroy returns unless the move is very large very fast.</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Slight OTM Puts (−1 to −3 strikes)</td>
+                                        <td>5–15% higher IV than ATM</td>
+                                        <td>Acceptable. The skew premium is manageable if IVP overall is &lt;50%.</td>
+                                    </tr>
+                                    <tr>
+                                        <td>ATM (0 strikes)</td>
+                                        <td>Baseline</td>
+                                        <td>Preferred strike region for buying. Maximum delta efficiency, minimal skew
+                                            penalty.</td>
+                                    </tr>
+                                    <tr>
+                                        <td>OTM Calls (+1 to +3 strikes)</td>
+                                        <td>0–5% lower IV than ATM</td>
+                                        <td>Slightly cheaper than puts on the IV surface. Call buying is marginally more
+                                            IV-efficient than put buying in normal markets.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="co co-warn"><span class="co-icon">⚠️</span><span><strong>IV crush risk:</strong>
+                                After scheduled events (RBI policy, election results, quarterly results), IV often drops
+                                30–60% within minutes of the announcement. If you hold long options through the event,
+                                the delta gain from the spot move must exceed the vega loss from IV crush. Always check
+                                the IV Surface panel for inflated near-term IV before any known event date.</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- C4: IVR & IVP -->
+            <div class="sec" id="ivp">
+                <div class="concept-card">
+                    <div class="cc-hd">
+                        <div class="cc-num" style="background:var(--green)">C4</div>
+                        <h2>IVR &amp; IVP — IV Rank &amp; Percentile <span class="ctag ct-green">Gate C#5</span><span
+                                class="ctag ct-green">Screener</span></h2>
+                    </div>
+                    <div class="cc-body">
+                        <p>IVR and IVP both answer the question <em>"Is today's IV high or low relative to
+                                history?"</em> They are different ways of measuring the same thing and have importantly
+                            different interpretations.</p>
+
+                        <div class="formula">
+                            <div class="flbl">IV Rank (IVR) — Position in Recent Range</div>
+                            IVR = (Current_IV − 90day_Low_IV) / (90day_High_IV − 90day_Low_IV) × 100<br><br>
+                            <div class="flbl">IV Percentile (IVP) — Fraction of Days Below Current IV</div>
+                            IVP = Count(days in last 90 where IV &lt; Current_IV) / 90 × 100
+                        </div>
+
+                        <h3>IVR vs IVP: The Critical Difference</h3>
+                        <div class="g2">
+                            <div class="card">
+                                <h4 style="margin-top:0">IVR — Range Position</h4>
+                                <p style="font-size:13.5px;margin:0">Distorted by outliers. If IV spiked to 50% once
+                                    during a crisis and is now at 18% in a 14–50% range, IVR = (18−14)/(50−14) = 11% —
+                                    suggesting IV is "cheap". But that 50% spike was a rare tail event that inflates the
+                                    range. IVR is misleading in these cases.</p>
+                            </div>
+                            <div class="card">
+                                <h4 style="margin-top:0">IVP — True Percentile ✓</h4>
+                                <p style="font-size:13.5px;margin:0">Resistant to outliers. If IV was below 18% on only
+                                    15 of the last 90 days, IVP = 17% — correctly identifying that IV is cheap.
+                                    <strong>IVP is the preferred metric in this dashboard.</strong> Gate condition #5
+                                    uses IVP, not IVR.</p>
+                            </div>
+                        </div>
+
+                        <h3>IVP Interpretation Table</h3>
+                        <div class="tw">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>IVP Range</th>
+                                        <th>Interpretation</th>
+                                        <th>Option Buyer Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="color:var(--green);font-weight:700">0–25%</td>
+                                        <td>Historically very cheap IV. Options in bottom quartile of 90-day
+                                            distribution.</td>
+                                        <td>Best time to buy. Maximum IV expansion potential. Long premium strategies
+                                            highly favoured.</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="color:var(--green)">25–50%</td>
+                                        <td>Below-median IV. Options are cheaper than average.</td>
+                                        <td>Good time to buy. Gate condition #5 fires. IV is not working against you.
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="color:var(--amb)">50–70%</td>
+                                        <td>Above-median IV. Options are slightly expensive.</td>
+                                        <td>Proceed with caution. Increase size only for very high Gate scores (7+).
+                                            Prefer shorter expiries to reduce vega exposure.</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="color:var(--red)">70–85%</td>
+                                        <td>High IV historically. Options are expensive. IV mean-reversion likely.</td>
+                                        <td>Avoid buying. Any purchase is fighting IV headwinds. Event-driven plays only
+                                            with immediate catalyst identified.</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="color:var(--red);font-weight:700">85–100%</td>
+                                        <td>Extreme IV. Near the highest level in the last 90 trading days.</td>
+                                        <td>Do not buy options under any circumstance. IV crush will overwhelm any
+                                            directional gain.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="co co-info"><span class="co-icon">ℹ️</span><span><strong>Data requirement for
+                                    IVP:</strong> IVP calculation requires at least 10 trading days of IV history to be
+                                meaningful (minimum 10 data points in the percentile calculation). With only the 4-day
+                                backfill on day one, IVP values are unreliable. They become more accurate after 2–3
+                                weeks of live data accumulation. The dashboard colour-codes IVP in amber when fewer than
+                                10 days of history exist.</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- C5: PCR -->
+            <div class="sec" id="pcr">
+                <div class="concept-card">
+                    <div class="cc-hd">
+                        <div class="cc-num" style="background:var(--red)">C5</div>
+                        <h2>Put-Call Ratio &amp; PCR Divergence <span class="ctag ct-blue"
+                                style="background:var(--red-p);border-color:#f87171;color:var(--red)">Panel
+                                E</span><span class="ctag ct-blue"
+                                style="background:var(--red-p);border-color:#f87171;color:var(--red)">Gate C#4</span>
+                        </h2>
+                    </div>
+                    <div class="cc-body">
+                        <p>The Put-Call Ratio (PCR) is a sentiment indicator measuring the relative demand for puts vs
+                            calls. The dashboard tracks <em>two</em> PCRs simultaneously to separate retail short-term
+                            sentiment from structural institutional positioning — and exploits the gap between them.</p>
+
+                        <div class="formula">
+                            <div class="flbl">PCR by Volume (Day's Trading Activity)</div>
+                            PCR_vol = Total Put Volume / Total Call Volume (today, across ATM window strikes)<br><br>
+                            <div class="flbl">PCR by OI (Structural/Institutional Positioning)</div>
+                            PCR_oi = Total Put OI / Total Call OI (cumulative, across ATM window strikes)<br><br>
+                            <div class="flbl">PCR Divergence (Gate Condition #4)</div>
+                            PCR_div = |PCR_vol − PCR_oi| → fires when &gt; 0.25
+                        </div>
+
+                        <h3>The Retail Trap Mechanism</h3>
+                        <p>The most actionable PCR signal is <strong>high divergence with Vol-PCR &gt; OI-PCR</strong>:
+                            retail traders are buying puts aggressively today (high volume PCR), but the structural
+                            OI-PCR is not confirming excess put positioning. This pattern frequently precedes a sharp
+                            upward reversal — the retail crowd buys puts at the wrong time, and the unwinding of those
+                            losing puts creates buying pressure that accelerates the up-move (the "short squeeze" at the
+                            options level).</p>
+
+                        <div class="g2">
+                            <div class="card" style="border-color:#f87171">
+                                <h4 style="margin-top:0;color:var(--red)">Retail Trap Setup (Vol &gt; OI PCR)</h4>
+                                <ul class="bl" style="margin:0;font-size:12.5px">
+                                    <li>PCR_vol = 1.60 (retail buying 60% more puts than calls today)</li>
+                                    <li>PCR_oi = 1.25 (structural: moderate put bias, normal)</li>
+                                    <li>PCR_div = 0.35 → Gate condition #4 fires</li>
+                                    <li>Interpretation: retail is panic-buying puts. Market likely reverses upward. Fade
+                                        the crowd — buy CE if V_CoC is neutral or positive.</li>
+                                </ul>
+                            </div>
+                            <div class="card" style="border-color:#86efac">
+                                <h4 style="margin-top:0;color:var(--green)">Institutional Structural Short (OI &gt; Vol
+                                    PCR)</h4>
+                                <ul class="bl" style="margin:0;font-size:12.5px">
+                                    <li>PCR_oi = 1.70 (structural: heavy put OI, institutions positioned short)</li>
+                                    <li>PCR_vol = 1.10 (today's retail is balanced, not yet reacting)</li>
+                                    <li>PCR_div = 0.60 → Gate condition #4 fires</li>
+                                    <li>Interpretation: institutions built large put positions in prior sessions.
+                                        Today's move down is structurally supported. Buy PE to follow institutional
+                                        direction.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <h3>Normal PCR Reference Ranges</h3>
+                        <div class="tw">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>PCR Value</th>
+                                        <th>Market Interpretation</th>
+                                        <th>Notes</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>&lt; 0.70</strong></td>
+                                        <td>Extreme bullishness / call buying frenzy</td>
+                                        <td>Contrarian bearish signal — market may be topping. Very unusual for NIFTY.
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>0.70 – 1.00</strong></td>
+                                        <td>Mild call bias — slight bullish sentiment</td>
+                                        <td>Normal range for trending up days.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>1.00 – 1.30</strong></td>
+                                        <td>Balanced / neutral market</td>
+                                        <td>No strong directional bias. PCR divergence &lt;0.25 in this zone = no Gate
+                                            impact.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>1.30 – 1.60</strong></td>
+                                        <td>Moderate put bias — caution / defensive posture</td>
+                                        <td>Retail hedging or positioning for downside. Common before known events.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>&gt; 1.60</strong></td>
+                                        <td>Extreme put buying — fear/panic</td>
+                                        <td>Contrarian bullish signal unless accompanied by structural OI-PCR at same
+                                            level.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div style="display:flex;gap:12px;margin-top:32px;flex-wrap:wrap">
+                            <a href="Part4_Dashboard_Panels_Row2_Row3.html"
+                                style="display:inline-flex;align-items:center;gap:8px;background:var(--parch);color:var(--navy);border:1px solid var(--bdr);padding:10px 20px;border-radius:8px;text-decoration:none;font-size:13.5px;font-weight:600">←
+                                Part 4: Panels D–H</a>
+                            <a href="Part6_Concept_Library_Advanced.html"
+                                style="display:inline-flex;align-items:center;gap:8px;background:var(--navy);color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:13.5px;font-weight:600">Next:
+                                Part 6 — Advanced Concepts →</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</body>
+
+</html>

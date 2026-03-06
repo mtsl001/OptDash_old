@@ -1,0 +1,29 @@
+# Virtual environment
+.venv/
+
+# All local market data
+data/
+
+# Log files
+logs/
+
+# Environment secrets
+.env
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Node
+dashboard/node_modules/
+dashboard/dist/
+
+# IDE
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+.DS_Store

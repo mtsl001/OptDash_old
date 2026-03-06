@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Option Buying Dashboard v2.0 — User Guide · Part 2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cream:#faf8f4;--warm:#f5f2eb;--parch:#ede9df;--bdr:#ddd8cc;--bdr-s:#e8e4da;
+  --ink:#1a1714;--ink2:#3d3830;--ink3:#6b6458;--ink4:#9b9388;
+  --navy:#0f2744;--navy2:#1a3d6b;--blue:#2563a8;--blue2:#3b82d4;--blue-p:#dbeafe;
+  --gold:#b8860b;--gold-p:#fef3c7;--amb:#92400e;--amb-p:#fef3c7;
+  --green:#166534;--green2:#16a34a;--green-p:#dcfce7;
+  --red:#991b1b;--red2:#dc2626;--red-p:#fee2e2;
+  --F:'Libre Baskerville',Georgia,serif;
+  --S:'DM Sans',system-ui,sans-serif;
+  --M:'DM Mono','Courier New',monospace;
+  --sw:270px;--mc:860px;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--S);background:var(--cream);color:var(--ink);line-height:1.7;font-size:15px}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 80% 60% at 8% 0%,rgba(37,99,168,.09) 0%,transparent 55%),
+    radial-gradient(ellipse 60% 70% at 92% 5%,rgba(184,134,11,.07) 0%,transparent 50%),
+    radial-gradient(ellipse 70% 50% at 50% 100%,rgba(22,101,52,.05) 0%,transparent 55%),
+    linear-gradient(158deg,#faf8f4 0%,#f0eade 45%,#f6f3ed 100%);}
+.layout{display:flex;min-height:100vh;position:relative;z-index:1}
+.sidebar{width:var(--sw);flex-shrink:0;position:sticky;top:0;height:100vh;overflow-y:auto;padding:28px 0 40px;background:rgba(250,248,244,.92);backdrop-filter:blur(14px);border-right:1px solid var(--bdr)}
+.sidebar::-webkit-scrollbar{width:3px}
+.sidebar::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:2px}
+.sb-logo{padding:0 22px 24px;border-bottom:1px solid var(--bdr-s);margin-bottom:18px}
+.sb-logo .prod{font-family:var(--M);font-size:10px;color:var(--blue);letter-spacing:.08em;text-transform:uppercase}
+.sb-logo .name{font-family:var(--F);font-size:16px;font-weight:700;color:var(--navy);line-height:1.25;margin-top:4px}
+.sb-logo .ver{display:inline-block;margin-top:8px;font-size:10px;font-family:var(--M);color:var(--ink4);background:var(--parch);padding:2px 8px;border-radius:20px;border:1px solid var(--bdr)}
+.nav-grp{margin-bottom:4px}
+.nav-lbl{padding:8px 22px 3px;font-size:9.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink4)}
+.nl{display:block;padding:6px 22px;font-size:13px;color:var(--ink3);text-decoration:none;border-left:2px solid transparent;transition:all .15s ease;line-height:1.4}
+.nl:hover{color:var(--blue);background:rgba(37,99,168,.06);border-left-color:var(--blue2)}
+.nl.here{color:var(--navy);font-weight:600;border-left-color:var(--blue);background:rgba(37,99,168,.08)}
+.main{flex:1;min-width:0;padding:56px 60px 100px}
+.sec{max-width:var(--mc);padding-top:24px;margin-bottom:72px}
+.sec+.sec{border-top:1px solid var(--bdr-s);padding-top:60px}
+.part-banner{max-width:var(--mc);background:var(--navy);color:#fff;border-radius:13px;padding:24px 32px;margin-bottom:48px;display:flex;align-items:center;gap:20px}
+.part-banner .pn{font-family:var(--M);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:4px}
+.part-banner .pt{font-family:var(--F);font-size:22px;font-weight:700;line-height:1.2}
+.part-banner .pd{font-size:13px;color:rgba(255,255,255,.65);margin-top:6px;line-height:1.5}
+.part-num{width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.12);border:2px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-family:var(--F);font-size:22px;font-weight:700;flex-shrink:0}
+h2.sh{font-family:var(--F);font-size:29px;font-weight:700;color:var(--navy);margin-bottom:14px;line-height:1.2;letter-spacing:-.01em}
+h3{font-size:17px;font-weight:600;color:var(--ink);margin:32px 0 11px;line-height:1.35}
+h4{font-size:12px;font-weight:600;color:var(--ink3);margin:22px 0 7px;text-transform:uppercase;letter-spacing:.07em}
+p{color:var(--ink2);margin-bottom:14px;line-height:1.78}
+strong{color:var(--ink);font-weight:600}
+em{color:var(--blue);font-style:italic}
+ul.bl{padding-left:22px;color:var(--ink2);font-size:13.5px;line-height:2.1;margin-bottom:14px}
+.sec-hd{display:flex;align-items:center;gap:14px;margin-bottom:28px}
+.sec-num{width:40px;height:40px;border-radius:50%;background:var(--navy);color:#fff;font-family:var(--M);font-size:12.5px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.card{background:#fff;border:1px solid var(--bdr);border-radius:11px;padding:22px 26px;margin-bottom:18px;box-shadow:0 1px 4px rgba(0,0,0,.04),0 4px 14px rgba(0,0,0,.03)}
+.card-title{font-size:14.5px;font-weight:600;color:var(--ink);margin-bottom:9px;display:flex;align-items:center;gap:9px}
+.cicon{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.cc{background:#fff;border:1px solid var(--bdr);border-radius:13px;overflow:hidden;margin-bottom:26px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.cc-hd{padding:18px 26px 15px;border-bottom:1px solid var(--bdr-s);display:flex;align-items:flex-start;gap:14px}
+.cc-icon{width:46px;height:46px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;flex-shrink:0;margin-top:2px;font-family:var(--F)}
+.cc-hd-txt h3{margin:0 0 3px;font-size:18px;color:var(--navy);font-weight:700}
+.cc-tag{font-family:var(--M);font-size:10px;color:var(--ink4);letter-spacing:.05em}
+.cc-body{padding:22px 26px}
+.cc-body p{margin-bottom:12px}
+.formula{background:var(--parch);border:1px solid var(--bdr);border-radius:8px;padding:14px 18px;font-family:var(--M);font-size:12.5px;color:var(--navy2);margin:14px 0;line-height:1.75}
+.formula .flbl{font-size:10px;color:var(--ink4);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px;font-family:var(--S);font-weight:600}
+.formula .fcom{color:var(--ink3)}
+.sigs{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:14px 0}
+.sig{border-radius:8px;padding:11px 14px;border-left:3px solid}
+.sig-bull{background:var(--green-p);border-color:var(--green2)}
+.sig-bear{background:var(--red-p);border-color:var(--red2)}
+.sig-neu{background:var(--blue-p);border-color:var(--blue2)}
+.sig-warn{background:var(--amb-p);border-color:#f59e0b}
+.sig .slbl{font-size:9.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;margin-bottom:3px}
+.sig-bull .slbl{color:var(--green)}.sig-bear .slbl{color:var(--red)}.sig-neu .slbl{color:var(--blue)}.sig-warn .slbl{color:var(--amb)}
+.sig .stxt{font-size:12.5px;color:var(--ink2);line-height:1.45}
+code{background:var(--parch);border:1px solid var(--bdr);border-radius:4px;padding:1px 6px;font-size:12px;color:var(--navy2);font-family:var(--M)}
+.tw{overflow-x:auto;margin:14px 0;border-radius:9px;border:1px solid var(--bdr)}
+table{width:100%;border-collapse:collapse;font-size:13px;background:#fff}
+th{background:var(--warm);color:var(--ink2);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.06em;padding:9px 14px;text-align:left;border-bottom:2px solid var(--bdr)}
+td{padding:9px 14px;border-bottom:1px solid var(--bdr-s);color:var(--ink2);vertical-align:top;line-height:1.5}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(37,99,168,.025)}
+.co{border-radius:9px;padding:14px 18px;margin:18px 0;display:flex;gap:12px;align-items:flex-start;font-size:13.5px;line-height:1.6}
+.co-icon{font-size:17px;flex-shrink:0;margin-top:1px}
+.co-info{background:var(--blue-p);border:1px solid #bfdbfe;color:var(--navy2)}
+.co-warn{background:var(--amb-p);border:1px solid #fde68a;color:var(--amb)}
+.co-ok{background:var(--green-p);border:1px solid #bbf7d0;color:var(--green)}
+.co-tip{background:var(--gold-p);border:1px solid #fde68a;color:var(--gold)}
+.co strong{color:inherit}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:14px 0}
+.vb{border-radius:9px;padding:14px 18px;border:2px solid;margin:10px 0;display:flex;align-items:flex-start;gap:12px}
+.v-go{background:var(--green-p);border-color:var(--green2)}
+.v-wait{background:var(--amb-p);border-color:#f59e0b}
+.v-no{background:var(--red-p);border-color:var(--red2)}
+.v-lbl{font-weight:700;font-size:14px;font-family:var(--M);min-width:68px;flex-shrink:0;padding-top:1px}
+.v-go .v-lbl{color:var(--green)}.v-wait .v-lbl{color:var(--amb)}.v-no .v-lbl{color:var(--red)}
+.v-txt{font-size:13px;color:var(--ink2);line-height:1.6}
+.checklist{list-style:none;padding:0;margin:14px 0}
+.checklist li{display:flex;gap:12px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--bdr-s);font-size:13.5px;color:var(--ink2);line-height:1.55}
+.checklist li:last-child{border-bottom:none}
+.check-box{width:20px;height:20px;border-radius:5px;border:1.5px solid var(--bdr);flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center}
+.check-fill{background:var(--navy);border-color:var(--navy)}
+.check-fill::after{content:'✓';color:#fff;font-size:11px;font-weight:700}
+.phase{background:#fff;border:1px solid var(--bdr);border-radius:13px;overflow:hidden;margin-bottom:28px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.phase-hd{padding:16px 26px;border-bottom:1px solid var(--bdr-s);display:flex;align-items:center;gap:14px}
+.phase-badge{padding:4px 14px;border-radius:20px;font-family:var(--M);font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;flex-shrink:0}
+.phase-hd h3{margin:0;font-size:17px;color:var(--navy)}
+.phase-body{padding:22px 26px}
+.phase-body p{font-size:13.5px;margin-bottom:10px}
+.tl{position:relative;padding-left:28px;border-left:2px solid var(--bdr);margin:20px 0}
+.tl-item{position:relative;margin-bottom:26px;padding-left:20px}
+.tl-item:last-child{margin-bottom:0}
+.tl-dot{position:absolute;left:-37px;top:3px;width:16px;height:16px;border-radius:50%;border:2px solid var(--navy);background:#fff}
+.tl-dot.on{background:var(--navy)}
+.tl-time{font-family:var(--M);font-size:11px;font-weight:600;color:var(--blue);letter-spacing:.04em;margin-bottom:3px}
+.tl-title{font-weight:600;font-size:14px;color:var(--ink);margin-bottom:5px}
+.tl-body{font-size:13px;color:var(--ink2);line-height:1.7}
+@media(max-width:900px){.sidebar{display:none}.main{padding:28px 22px 60px}.g2,.g3{grid-template-columns:1fr}}
+@media print{.sidebar{display:none}body::before{display:none}.main{padding:20px}}
+</style>
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar">
+  <div class="sb-logo">
+    <div class="prod">User Guide · Part 2 of 3</div>
+    <div class="name">Option Buying<br>Dashboard</div>
+    <span class="ver">v2.0 — macOS Edition</span>
+  </div>
+  <div class="nav-grp"><div class="nav-lbl">Concept Library (cont.)</div>
+    <a class="nl here" href="#c-tier">Expiry Tiers</a>
+    <a class="nl" href="#c-atm">ATM Window</a>
+    <a class="nl" href="#c-moneyness">Moneyness</a>
+    <a class="nl" href="#c-snap">Snapshot Timing</a>
+    <a class="nl" href="#c-watermark">Watermark</a>
+    <a class="nl" href="#c-gexregime">GEX Regime States</a>
+    <a class="nl" href="#c-volvelocity">Volume Velocity</a>
+  </div>
+  <div class="nav-grp"><div class="nav-lbl">Trading Workflow</div>
+    <a class="nl" href="#w-pre">Phase 1: Pre-Market</a>
+    <a class="nl" href="#w-open">Phase 2: Open Window</a>
+    <a class="nl" href="#w-entry">Phase 3: Entry</a>
+    <a class="nl" href="#w-trade">Phase 4: In the Trade</a>
+    <a class="nl" href="#w-exit">Phase 5: Exit Rules</a>
+    <a class="nl" href="#w-review">Phase 6: End-of-Day</a>
+  </div>
+  <div class="nav-grp"><div class="nav-lbl">Position Sizing</div>
+    <a class="nl" href="#ps-intro">Capital Allocation</a>
+    <a class="nl" href="#ps-rules">Sizing by Gate Score</a>
+  </div>
+  <div class="nav-grp"><div class="nav-lbl">Strategy Playbooks</div>
+    <a class="nl" href="#play-bear">Bearish Setup</a>
+    <a class="nl" href="#play-bull">Bullish Setup</a>
+    <a class="nl" href="#play-chop">Chop Day Protocol</a>
+  </div>
+</nav>
+<main class="main">
+<div class="part-banner">
+  <div class="part-num">2</div>
+  <div>
+    <div class="pn">Part 2 of 3 · Continues from Part 1 (clguide.html)</div>
+    <div class="pt">Concept Library Completion &amp; Trading Workflow</div>
+    <div class="pd">Expiry Tiers → ATM Window → Moneyness → Snapshot Timing → Watermark → GEX Regimes → Volume Velocity → Full Six-Phase Trading Workflow → Position Sizing → Strategy Playbooks</div>
+  </div>
+</div>
+
+<!-- ══ CONCEPT LIBRARY CONTINUED ══ -->
+<div class="sec" id="c-tier">
+  <div class="sec-hd"><div class="sec-num">4</div><h2 class="sh">Concept Library — Continued</h2></div>
+  <p>Part 1 covered GEX, CoC, Implied Volatility, IVR/IVP, PCR, Option Greeks, S_score, Order Book Imbalance, and Theta-Adjusted SL. This part completes the remaining concepts then moves into the full trading workflow.</p>
+
+  <!-- Expiry Tiers -->
+  <div class="cc" id="c-tier">
+    <div class="cc-hd">
+      <div class="cc-icon" style="background:#fef3c7;color:var(--amb)">📅</div>
+      <div class="cc-hd-txt">
+        <h3>Expiry Tiers</h3>
+        <div class="cc-tag">LIQUIDITY CLASSIFICATION · ANALYTICS SCOPE · TRADING UNIVERSE</div>
+      </div>
+    </div>
+    <div class="cc-body">
+      <p>NSE simultaneously lists option contracts for multiple expiry dates — weekly, biweekly, monthly, and quarterly. Not all expiries have the same liquidity, analytical relevance, or trading suitability. The dashboard classifies every contract into one of three tiers based on Days-to-Expiry (DTE), and applies tier-specific inclusion rules across all panels.</p>
+
+      <div class="tw"><table>
+        <thead><tr><th>Tier</th><th>DTE</th><th>Dashboard Use</th><th>Why This Range</th><th>Typical Contracts</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong style="color:var(--green)">TIER1_NEAR</strong></td>
+            <td>≤ 12 days</td>
+            <td>Everything: GEX, CoC, PCR, Strike Screener, S_score, Position Monitor, IV Surface. <strong>Primary trading universe.</strong></td>
+            <td>Highest liquidity. Tightest bid-ask spreads. Sharpest gamma response to spot moves. Theta decay rapid enough to matter for intraday SL calculations.</td>
+            <td>Current week NIFTY weekly expiry, next week expiry.</td>
+          </tr>
+          <tr>
+            <td><strong style="color:var(--blue)">TIER1_FAR</strong></td>
+            <td>≥ 35 days</td>
+            <td>GEX (included in total Net GEX), IV term structure charting, CoC term structure comparison. Not used for S_score or Strike Screener.</td>
+            <td>Enough liquidity for GEX computation to be meaningful. More stable theta profile. Spreads acceptable for monthly options. Provides "anchor" GEX contrast with near-expiry.</td>
+            <td>Near-month expiry (last Thursday of month), next monthly. Index monthly series.</td>
+          </tr>
+          <tr>
+            <td><strong style="color:var(--red2)">TIER2_IV_ONLY</strong></td>
+            <td>13–34 days</td>
+            <td>IV term structure and IV surface charts <em>only</em>. Excluded from all trading analytics. Not in GEX, screener, or PCR.</td>
+            <td>Liquidity gap zone. Wide bid-ask spreads, low OI, unreliable GEX contribution. Including in screener would surface illiquid strikes that look attractive on paper but are poor to trade.</td>
+            <td>Mid-month or biweekly expiries falling in this DTE window. Chart-only.</td>
+          </tr>
+        </tbody>
+      </table></div>
+
+      <h4>Tier Assignment Is Dynamic</h4>
+      <div class="formula">
+        DTE = (expiry_date − trade_date).days<br><br>
+        <span class="fcom">Tier re-evaluated daily as DTE counts down.</span><br>
+        <span class="fcom">Example: A monthly expiry 40 days out = TIER1_FAR</span><br>
+        <span class="fcom">       Same expiry 20 days out = TIER2_IV_ONLY</span><br>
+        <span class="fcom">       Same expiry 8 days out   = TIER1_NEAR (enters active trading universe)</span>
+      </div>
+
+      <div class="sigs">
+        <div class="sig sig-bull"><div class="slbl">Trade in TIER1_NEAR</div><div class="stxt">Maximum liquidity. Sub-₹1 spreads on ATM NIFTY options typical. S_score slippage penalty ρ will be very low. All entry signals use this tier.</div></div>
+        <div class="sig sig-warn"><div class="slbl">Avoid TIER2 for Trading</div><div class="stxt">Even if S_score looks attractive, TIER2 strikes have 5–15 point spreads. The slippage penalty ρ will be high, correctly suppressing the score and warning you away.</div></div>
+        <div class="sig sig-warn"><div class="slbl">Expiry Day (DTE = 0)</div><div class="stxt">Do not buy options of that expiry. Gamma is extreme, theta collapse accelerates after noon, spreads widen sharply. S_score collapses automatically on DTE=0 due to extreme theta denominator. Treat as exit-only.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ATM Window -->
+  <div class="cc" id="c-atm">
+    <div class="cc-hd">
+      <div class="cc-icon" style="background:#dcfce7;color:var(--green)">ATM</div>
+      <div class="cc-hd-txt">
+        <h3>ATM Window</h3>
+        <div class="cc-tag">STRIKE UNIVERSE · DAY-OPEN ANCHOR · DAILY CONSISTENCY</div>
+      </div>
+    </div>
+    <div class="cc-body">
+      <p>The ATM Window defines the exact set of strikes included in all dashboard analytics for each underlying every day. It is anchored to the <strong>day-opening spot price from the 09:15 snapshot</strong> — not the current live price. This ensures the strike universe is completely consistent from 09:15 to 15:30, making cross-snapshot comparisons meaningful.</p>
+
+      <div class="formula">
+        <div class="flbl">Step 1 — Day-open spot from first snapshot</div>
+        Day_Open_Spot = underlying_spot from earliest record_time on trade_date<br><br>
+        <div class="flbl" style="margin-top:12px">Step 2 — Round to nearest strike interval</div>
+        ATM_Strike = ROUND(Day_Open_Spot / Strike_Interval) × Strike_Interval<br><br>
+        <div class="flbl" style="margin-top:12px">Step 3 — Window bounds (±8 strikes)</div>
+        Lower = ATM_Strike − (8 × Strike_Interval)<br>
+        Upper = ATM_Strike + (8 × Strike_Interval)<br><br>
+        NIFTY      (interval=50):  17 strikes, 800-point range<br>
+        BANKNIFTY  (interval=100): 17 strikes, 1,600-point range<br>
+        FINNIFTY   (interval=50):  17 strikes, 800-point range<br>
+        MIDCPNIFTY (interval=25):  17 strikes, 400-point range<br>
+        NIFTYNXT50 (interval=50):  17 strikes, 800-point range
+      </div>
+
+      <p>The window file is computed from the first pull of each day and saved immediately to <code>data/processed/atm_windows/YYYY-MM-DD.json</code>. It is never updated mid-day — the same fixed window applies from 09:15:00 to 15:30:00.</p>
+
+      <div class="formula">
+        <div class="flbl">Example: data/processed/atm_windows/2026-02-23.json</div>
+        {"NIFTY": {"atm": 25000, "lower": 24600, "upper": 25400, "interval": 50},<br>
+        &nbsp;"BANKNIFTY": {"atm": 52000, "lower": 51200, "upper": 52800, "interval": 100},<br>
+        &nbsp;"FINNIFTY": {"atm": 23500, "lower": 23100, "upper": 23900, "interval": 50}}
+      </div>
+
+      <div class="co co-tip"><span class="co-icon">💡</span><span><strong>Gap-up example:</strong> NIFTY closed Friday at 25,000 but opens Monday at 25,600 (+600 gap). The Monday ATM window anchors at 25,600, spanning 25,200 to 26,000. The entire strike set shifts up 600 points. This is correct — the relevant strikes for Monday are centred on Monday's actual open, not Friday's close.</span></div>
+    </div>
+  </div>
+
+  <!-- Moneyness -->
+  <div class="cc" id="c-moneyness">
+    <div class="cc-hd">
+      <div class="cc-icon" style="background:#dbeafe;color:var(--navy)">M%</div>
+      <div class="cc-hd-txt">
+        <h3>Moneyness</h3>
+        <div class="cc-tag">STRIKE POSITION RELATIVE TO SPOT · CROSS-UNDERLYING COMPARABILITY</div>
+      </div>
+    </div>
+    <div class="cc-body">
+      <p>Moneyness expresses where a strike sits relative to the current spot price as a percentage. It allows comparison of option positions across different underlyings on a common scale — a 2% OTM NIFTY option is comparable to a 2% OTM BANKNIFTY option even though the raw strikes differ by tens of thousands of points.</p>
+
+      <div class="formula">
+        Moneyness% = (Strike_Price − Underlying_Spot) / Underlying_Spot × 100<br><br>
+        <span class="fcom">For Calls (CE):  Positive moneyness = OTM, Negative = ITM</span><br>
+        <span class="fcom">For Puts  (PE):  Negative moneyness = OTM, Positive = ITM</span><br><br>
+        <span class="fcom">ATM: Moneyness% ≈ 0%,   Delta CE ≈ +0.50,  Delta PE ≈ −0.50</span><br>
+        <span class="fcom">1% OTM CE:   Moneyness = +1%, Delta CE ≈ 0.35</span><br>
+        <span class="fcom">1% OTM PE:   Moneyness = −1%, Delta PE ≈ −0.35</span>
+      </div>
+
+      <div class="tw"><table>
+        <thead><tr><th>|Moneyness|</th><th>Zone</th><th>CE/PE Delta</th><th>Best Use</th></tr></thead>
+        <tbody>
+          <tr><td>&lt;0.5%</td><td>ATM</td><td>0.45–0.55</td><td>Max liquidity, max gamma. Best for short-duration intraday plays.</td></tr>
+          <tr><td>0.5%–2%</td><td>Near OTM</td><td>0.25–0.45</td><td>Best S_score zone. Higher EffRatio. Lower premium than ATM. Recommended for most screener selections.</td></tr>
+          <tr><td>2%–4%</td><td>OTM</td><td>0.10–0.25</td><td>Cheaper premium, needs larger move. Higher slippage penalty typical.</td></tr>
+          <tr><td>&gt;4%</td><td>Far OTM</td><td>&lt;0.10</td><td>Very low probability. Usually filtered out by ATM window (±8 strikes ≈ ±2–4%).</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- Snapshot Timing -->
+  <div class="cc" id="c-snap">
+    <div class="cc-hd">
+      <div class="cc-icon" style="background:#f3e8ff;color:#6b21a8">⏱</div>
+      <div class="cc-hd-txt">
+        <h3>Snapshot Timing &amp; Data Latency</h3>
+        <div class="cc-tag">PIPELINE SCHEDULING · DATA FRESHNESS · WHEN TO ACT</div>
+      </div>
+    </div>
+    <div class="cc-body">
+      <p>Understanding exactly when data is captured, processed, and visible on the dashboard is critical for interpreting signals correctly and knowing whether you are acting on current or slightly stale information.</p>
+
+      <div class="tw"><table>
+        <thead><tr><th>Event</th><th>Time (IST)</th><th>Detail</th></tr></thead>
+        <tbody>
+          <tr><td>Market opens</td><td>09:15:00</td><td>NSE continuous session begins. First continuous prices available.</td></tr>
+          <tr><td>First BigQuery record</td><td>~09:15:30</td><td>Data provider records 09:15 snapshot. record_time = "2026-02-23 09:15:00 UTC".</td></tr>
+          <tr><td>First pipeline pull</td><td>09:16:30</td><td>APScheduler fires. Queries BigQuery for all records since the watermark. Captures 09:15 opening data.</td></tr>
+          <tr><td>Parquet written</td><td>~09:16:35</td><td>Validation + processing complete. Parquet saved. DuckDB view refreshed.</td></tr>
+          <tr><td>Dashboard updates</td><td>~09:16:40</td><td>Frontend polls API at next 5-second interval. Fresh data visible. ATM window computed.</td></tr>
+          <tr><td>Subsequent pulls</td><td>09:21:30, 09:26:30…</td><td>Every 5 min, offset 30s from each minute mark. The 30-second offset allows BigQuery to finalise the previous snapshot before pulling.</td></tr>
+          <tr><td>Last pull</td><td>≤15:31:30</td><td>Final pull captures records to 15:30 IST. Scheduler stops. No further automatic pulls until next trading day.</td></tr>
+        </tbody>
+      </table></div>
+
+      <div class="formula">
+        <div class="flbl">Total data latency from NSE trade to dashboard display</div>
+        BigQuery ingestion:  ~30 seconds<br>
+        Pipeline pull + processing: ~10 seconds<br>
+        Frontend poll cycle: 0–5 seconds<br>
+        Total end-to-end: ~45–90 seconds
+      </div>
+
+      <div class="sigs">
+        <div class="sig sig-warn"><div class="slbl">Stale Data Check</div><div class="stxt">Dashboard header shows last snapshot timestamp. If it reads &gt;6 minutes ago during market hours, check the pipeline tab — the 5-min pull may have failed or BigQuery is slow.</div></div>
+        <div class="sig sig-neu"><div class="slbl">Entry Price Drift</div><div class="stxt">The LTP shown in Strike Screener may be 60–90 seconds old. When executing, verify the current market price and expect some slippage from the screener's displayed LTP.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Watermark -->
+  <div class="cc" id="c-watermark">
+    <div class="cc-hd">
+      <div class="cc-icon" style="background:#dcfce7;color:var(--green)">💧</div>
+      <div class="cc-hd-txt">
+        <h3>Watermark — Incremental Pull State</h3>
+        <div class="cc-tag">STATE MANAGEMENT · IDEMPOTENCY · CRASH RESILIENCE</div>
+      </div>
+    </div>
+    <div class="cc-body">
+      <p>The watermark is a single timestamp in <code>data/watermark.json</code> recording the last moment successfully pulled from BigQuery. Every incremental pull queries for records <em>newer than</em> this timestamp, then advances it to the latest record time in the new batch.</p>
+
+      <p>This provides three critical properties: <strong>(1) No duplicates</strong> — the same records are never pulled twice. <strong>(2) No gaps</strong> — every record between old and new watermark is always captured. <strong>(3) Crash resilience</strong> — if the pipeline crashes mid-pull before writing Parquet, the watermark has not advanced yet, so the next run re-pulls that batch safely.</p>
+
+      <div class="formula">
+        <div class="flbl">Watermark file format</div>
+        {"watermark": "2026-02-23 09:21:00"}&nbsp;&nbsp;&nbsp;<span class="fcom"># IST, no timezone suffix, no Z, no +05:30</span><br><br>
+        <div class="flbl" style="margin-top:12px">BigQuery pull query using watermark</div>
+        SELECT * FROM `universal-ion-437606-b7.bgquery.upxtx`<br>
+        WHERE record_time &gt; TIMESTAMP("2026-02-23 09:21:00")<br>
+        ORDER BY record_time ASC<br><br>
+        <div class="flbl" style="margin-top:12px">Watermark saved atomically (macOS APFS)</div>
+        Write to data/watermark.json.tmp → Path.replace() → data/watermark.json
+      </div>
+
+      <div class="co co-warn"><span class="co-icon">⚠️</span><span><strong>Never manually edit watermark.json</strong> unless you know exactly what you are doing. Setting it backward causes duplicate data; setting it forward creates a gap in historical data. To diagnose a suspected gap, compare Parquet filenames (HHMM) against the watermark timestamp.</span></div>
+    </div>
+  </div>
+
+  <!-- GEX Regime States -->
+  <div class="cc" id="c-gexregime">
+    <div class="cc-hd">
+      <div class="cc-icon" style="background:#dbeafe;color:var(--navy)">Γ±</div>
+      <div class="cc-hd-txt">
+        <h3>GEX Regime States</h3>
+        <div class="cc-tag">FOUR MARKET STRUCTURE REGIMES · DEALER BEHAVIOUR CLASSIFICATION</div>
+      </div>
+    </div>
+    <div class="cc-body">
+      <p>The dashboard classifies market structure into four distinct GEX regimes. The regime is determined by the sign of Net GEX and its trajectory relative to the day's peak.</p>
+
+      <div class="tw"><table>
+        <thead><tr><th>Regime</th><th>Condition</th><th>Dealer Behaviour</th><th>Market Effect</th><th>Option Buyer Strategy</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong style="color:var(--blue)">POSITIVE_CHOP</strong></td>
+            <td>GEX &gt;0, &gt;80% of peak</td>
+            <td>Long gamma. Sell rallies, buy dips actively.</td>
+            <td>Mean-reverting. IV compressed. Range-bound. Options bleed premium.</td>
+            <td>Avoid momentum plays. Wait for regime to change. Use the time to study signals.</td>
+          </tr>
+          <tr>
+            <td><strong style="color:var(--gold)">POSITIVE_WEAKENING</strong></td>
+            <td>GEX &gt;0, 50–80% of peak</td>
+            <td>Long gamma but hedging force decaying. Reducing positions.</td>
+            <td>Range beginning to crack. Direction uncertain. Volatility picking up.</td>
+            <td>Gate starts scoring (Condition 1 hits). Watch for confirmation signals. Prepare entry candidates from screener.</td>
+          </tr>
+          <tr>
+            <td><strong style="color:var(--red2)">POSITIVE_COLLAPSING</strong></td>
+            <td>GEX &gt;0, &lt;50% of peak</td>
+            <td>Rapidly unwinding hedges. Pinning support almost gone.</td>
+            <td>Breakout in progress or imminent. Volume surge typical. Large candles forming.</td>
+            <td>Best buying conditions. Both GEX Gate points (2 pts) fully scored. High-conviction entry.</td>
+          </tr>
+          <tr>
+            <td><strong style="color:var(--red)">NEGATIVE_TREND</strong></td>
+            <td>GEX &lt;0</td>
+            <td>Short gamma. Must buy strength and sell weakness — amplifies every move.</td>
+            <td>Strong trending. Self-reinforcing momentum. Moves exceed normal expectations. High volatility.</td>
+            <td>Most aggressive buying opportunity. Trend-following with wide initial SL. Be alert for sharp reversals when GEX flips back positive.</td>
+          </tr>
+        </tbody>
+      </table></div>
+
+      <div class="co co-tip"><span class="co-icon">💡</span><span><strong>Most important transition:</strong> POSITIVE_WEAKENING → POSITIVE_COLLAPSING (GEX crosses below 70% of peak). This transition — visible on the GEX % gauge in real-time — frequently precedes the day's main directional move by 1–3 five-minute bars. Combined with V_CoC &lt;−10, this is the highest-conviction setup the dashboard produces.</span></div>
+    </div>
+  </div>
+
+  <!-- Volume Velocity -->
+  <div class="cc" id="c-volvelocity">
+    <div class="cc-hd">
+      <div class="cc-icon" style="background:#f3e8ff;color:#6b21a8">V↑</div>
+      <div class="cc-hd-txt">
+        <h3>Volume Velocity</h3>
+        <div class="cc-tag">UNUSUAL ACTIVITY DETECTION · INFORMED FLOW IDENTIFICATION</div>
+      </div>
+    </div>
+    <div class="cc-body">
+      <p>Volume Velocity measures how current options volume compares to the session baseline established in the first 60 minutes of trading. Sudden volume acceleration — especially in specific strikes — often precedes large price moves and may indicate informed institutional flow.</p>
+
+      <div class="formula">
+        <div class="flbl">Baseline (average of 09:20–10:15 snapshots)</div>
+        V_baseline = Mean(volume_09:20, volume_09:25, ..., volume_10:15)<br><br>
+        <div class="flbl" style="margin-top:12px">Volume Velocity ratio at time t</div>
+        Vol_Velocity(t) = snapshot_volume(t) / V_baseline<br><br>
+        <span class="fcom">Ratio 1.0 = exactly at baseline (normal activity)</span><br>
+        <span class="fcom">Ratio 2.0 = 2× baseline → VOLUME_SPIKE alert triggered in Alert Feed</span><br>
+        <span class="fcom">Ratio 3.0+ = extreme activity, likely institutional block trade or news catalyst</span>
+      </div>
+
+      <div class="sigs">
+        <div class="sig sig-warn"><div class="slbl">VOLUME_SPIKE Alert (Ratio &gt;2)</div><div class="stxt">Check: is the spike in CE or PE strikes? Is it concentrated in one strike (informed) or spread across many (retail panic)?</div></div>
+        <div class="sig sig-bear"><div class="slbl">PE Spike + V_CoC &lt;−10</div><div class="stxt">Dual confirmation of institutional bearish flow. Highest conviction PE setup. Rare but extremely reliable when it occurs.</div></div>
+        <div class="sig sig-bull"><div class="slbl">CE Spike + V_CoC &gt;+10</div><div class="stxt">Dual confirmation of institutional bullish flow. Highest conviction CE setup.</div></div>
+        <div class="sig sig-neu"><div class="slbl">Volume Spike Alone</div><div class="stxt">Without confirming GEX or CoC signal, a volume spike may be retail noise. Do not act on volume alone.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TRADING WORKFLOW ══ -->
+<div class="sec" id="w-pre">
+  <div class="sec-hd"><div class="sec-num">5</div><h2 class="sh">Trading Workflow — Six Phases</h2></div>
+  <p>The dashboard is built around a structured daily routine. Consistency in following this sequence matters more than any individual signal. The system's edge comes from discipline applied over many trades, not from any single perfect call.</p>
+  <div class="co co-info"><span class="co-icon">ℹ️</span><span>Verify your Mac clock shows IST before each trading day: run <code>date</code> in Terminal. The pipeline's market-hours detection uses local system time — if it is off by even one minute, the first pull may be missed.</span></div>
+
+  <!-- Phase 1 -->
+  <div class="phase">
+    <div class="phase-hd">
+      <div class="phase-badge" style="background:#dbeafe;color:var(--navy)">PHASE 1</div>
+      <h3>Pre-Market Setup (09:00–09:15 IST)</h3>
+    </div>
+    <div class="phase-body">
+      <p>The 15 minutes before market open establish your context for the day. Do not enter the session without reviewing yesterday's conditions and setting your bias.</p>
+      <ul class="checklist">
+        <li><div class="check-box check-fill"></div><span>Open Terminal tabs 1, 2, 3. Start pipeline → API → dashboard in that order. Wait 60 seconds between each for initialisation.</span></li>
+        <li><div class="check-box check-fill"></div><span>Verify at <code>:8000/docs</code> (15 endpoints visible) and <code>:5173</code> (panels load with no error banners).</span></li>
+        <li><div class="check-box check-fill"></div><span>Select yesterday's date. Review closing GEX trend: rising into close (pinned = chop expected tomorrow morning) or collapsing (directional continuation possible)?</span></li>
+        <li><div class="check-box check-fill"></div><span>Note yesterday's closing CoC: in premium (neutral) or in discount (sellers dominated into close)? Discount CoC into yesterday's close = bearish carry-over today.</span></li>
+        <li><div class="check-box check-fill"></div><span>Check IVP level: &lt;30% → structural buying advantage today. &gt;70% → plan debit spreads, not naked longs.</span></li>
+        <li><div class="check-box check-fill"></div><span>Check pre-market macro: SGX NIFTY direction, US overnight close, RBI or major news. Large gap expectations shift ATM window significantly at open.</span></li>
+        <li><div class="check-box check-fill"></div><span>Set a directional prior: CE-biased, PE-biased, or neutral. Write it down. The dashboard will confirm or contradict it — both are useful information.</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Phase 2 -->
+  <div class="phase" id="w-open">
+    <div class="phase-hd">
+      <div class="phase-badge" style="background:#fef3c7;color:var(--amb)">PHASE 2</div>
+      <h3>Market Open — Information Gathering (09:15–09:45 IST)</h3>
+    </div>
+    <div class="phase-body">
+      <p>This phase is observation-only. Do not take positions. The opening 30 minutes resolve the overnight gap, establish the day's GEX baseline, and reveal whether institutional flow is directional or balanced.</p>
+      <div class="tl">
+        <div class="tl-item">
+          <div class="tl-dot on"></div>
+          <div class="tl-time">09:15:00</div>
+          <div class="tl-title">Market Opens</div>
+          <div class="tl-body">NSE auction clears. First prices available. Options spreads widest right now — avoid activity. Watch the gap direction and opening volume.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot on"></div>
+          <div class="tl-time">09:16:30 → 09:16:40</div>
+          <div class="tl-title">First Pipeline Pull → Dashboard Updates</div>
+          <div class="tl-body">Opening snapshot captured and processed. ATM window computed and saved. All panels show live data for the first time today. Check: Is CoC already in discount? What is V_CoC on first reading? What is the opening GEX level?</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-time">09:21:30</div>
+          <div class="tl-title">Second Pull — Gate First Meaningful Reading</div>
+          <div class="tl-body">Environment Gate now has two snapshots of data. First meaningful score appears. Smoothed OBI begins accumulating. Check the Gate score: if it is already 5+ at this point with V_CoC &lt;−10, an institutional campaign started at open — high-alert session.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-time">09:26:30</div>
+          <div class="tl-title">Third Pull — Screener Stabilises</div>
+          <div class="tl-body">S_scores stabilise with three data points. The Strike Screener now shows reliable rankings. Note your top 3–5 candidates for CE and PE separately. You won't have time to research them when the Gate flips GO.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-time">09:30–09:45</div>
+          <div class="tl-title">Watch GEX % of Peak</div>
+          <div class="tl-body">This is the metric to track during Phase 2. Is it declining from the opening reading? Has V_CoC crossed −10? Is PCR divergence building? The Gate will turn GO only when multiple conditions align.</div>
+        </div>
+      </div>
+      <div class="co co-warn"><span class="co-icon">⚠️</span><span><strong>First-15-minute rule:</strong> Never execute a trade between 09:15 and 09:30. ATM NIFTY options spreads can be ₹3–8 wide at open versus ₹0.25–0.50 by 09:30. That spread alone is a 15–40% penalty on a ₹20 option. Wait.</span></div>
+    </div>
+  </div>
+
+  <!-- Phase 3 -->
+  <div class="phase" id="w-entry">
+    <div class="phase-hd">
+      <div class="phase-badge" style="background:#dcfce7;color:var(--green)">PHASE 3</div>
+      <h3>Trade Entry (09:30–10:30 IST)</h3>
+    </div>
+    <div class="phase-body">
+      <p>Once the Gate turns GO (≥4 pts), entry decisions should take under two minutes. The analysis is done — Phase 2 prepared your candidate strikes. The only decision now is which strike from your pre-screened list to buy, and how many lots.</p>
+
+      <h4>Entry Decision: Gate Score → Lot Size</h4>
+      <div class="tw"><table>
+        <thead><tr><th>Gate Score</th><th>V_CoC</th><th>Action</th><th>Size</th></tr></thead>
+        <tbody>
+          <tr><td style="color:var(--green);font-weight:700">7–9</td><td>&lt;−10 or &gt;+10</td><td>Maximum confidence directional entry</td><td>100% of planned lots</td></tr>
+          <tr><td style="color:var(--green);font-weight:700">5–6</td><td>Confirming</td><td>Strong confidence entry</td><td>75% of planned lots</td></tr>
+          <tr><td style="color:var(--amb);font-weight:700">4</td><td>Neutral</td><td>Borderline GO — minimal entry</td><td>50% of planned lots</td></tr>
+          <tr><td style="color:var(--amb);font-weight:700">2–3</td><td>Any</td><td>WAIT — no entry</td><td>0%</td></tr>
+          <tr><td style="color:var(--red);font-weight:700">0–1</td><td>Any</td><td>NO-GO — absolutely no entry</td><td>0%</td></tr>
+        </tbody>
+      </table></div>
+
+      <h4>Strike Selection Sequence</h4>
+      <ol style="padding-left:20px;color:var(--ink2);font-size:13.5px;line-height:2.2;margin-bottom:14px">
+        <li>Filter Strike Screener by direction determined by Gate: V_CoC &lt;0 → PE, V_CoC &gt;0 → CE, PCR signal → confirms</li>
+        <li>Sort by S_score descending. Review top 5 candidates.</li>
+        <li>Eliminate any with slippage penalty ρ &gt;0.15 (thin order book — execution risk)</li>
+        <li>Eliminate any with IV &gt;25% (expensive volatility — unfavourable entry)</li>
+        <li>Eliminate any with delta &lt;0.20 (too far OTM — low probability of profit)</li>
+        <li>Buy the strike with the highest remaining S_score</li>
+        <li>Immediately enter the position into the Position Monitor panel before the next 5-minute refresh</li>
+      </ol>
+
+      <div class="co co-tip"><span class="co-icon">💡</span><span><strong>The screener LTP may be 60–90 seconds old.</strong> When you execute, check the current market price. If the premium has already moved significantly from the screener value (e.g., more than 10%), the S_score has degraded — either accept the new price or skip to the next candidate.</span></div>
+    </div>
+  </div>
+
+  <!-- Phase 4 -->
+  <div class="phase" id="w-trade">
+    <div class="phase-hd">
+      <div class="phase-badge" style="background:#e0e7ff;color:#3730a3">PHASE 4</div>
+      <h3>In the Trade (Entry → 14:30 IST)</h3>
+    </div>
+    <div class="phase-body">
+      <p>Once in a position, the goal is disciplined monitoring with minimal interference. The theta-adjusted SL is doing its job. Your role is to watch for system-level signals that require action, not to micromanage the P&amp;L with every price tick.</p>
+
+      <h4>Every 5-Minute Refresh — Monitoring Checklist</h4>
+      <div class="tw"><table>
+        <thead><tr><th>Panel</th><th>Watch For</th><th>Action Required</th></tr></thead>
+        <tbody>
+          <tr><td>Position Monitor</td><td>Status changes from IN_TRADE</td><td>STOP_HIT → exit immediately. PROFIT_100PCT → book 50%, raise SL to entry.</td></tr>
+          <tr><td>Alert Feed</td><td>New HIGH severity alert</td><td>COC_VELOCITY or GEX_DECLINE ≥HIGH → reassess Gate score. Consider partial exit.</td></tr>
+          <tr><td>Environment Gate</td><td>Score dropped</td><td>GO→WAIT (2–3 pts) → exit 50%. GO→NO-GO (0–1 pts) → exit 75–100% immediately.</td></tr>
+          <tr><td>PCR Divergence</td><td>Sharp reversal against position</td><td>Divergence flipped direction by &gt;0.30 → consider 25% partial exit as contra-signal hedge.</td></tr>
+          <tr><td>GEX Panel</td><td>GEX spiking back up toward peak</td><td>Pinning force returning. Directional momentum may stall. Tighten SL manually or reduce size.</td></tr>
+        </tbody>
+      </table></div>
+
+      <h4>Profit Booking Protocol</h4>
+      <div class="vb v-go">
+        <div class="v-lbl">+50% Gain</div>
+        <div class="v-txt">LTP = 1.5× entry. Optional partial booking (25% of lots) if signals are weakening. Not required if Gate score is still high and directional signals confirm.</div>
+      </div>
+      <div class="vb v-go">
+        <div class="v-lbl">+100% Gain</div>
+        <div class="v-txt"><strong>Book 50% of remaining lots at market.</strong> Raise SL on remaining lots to your original entry LTP. Position Monitor shows PROFIT_100PCT_PARTIAL_EXIT. You are now in a free trade — maximum loss from this point is ₹0.</div>
+      </div>
+      <div class="vb v-go">
+        <div class="v-lbl">+150%–200%</div>
+        <div class="v-txt">Continue trailing with theta-adjusted SL. Consider booking another 25% of the original position at each 50% increment. Keep the last tranche running until time exit at 14:30 or STOP_HIT. Extraordinary gains (3–5×) are possible when GEX regime stays NEGATIVE_TREND throughout the session.</div>
+      </div>
+
+      <h4>Handling a Contra-Signal While In the Trade</h4>
+      <p>Example: You are long PE (bearish) and PCR Divergence suddenly spikes to +0.35 (retail panic-buying puts = contrarian bounce signal). This contradicts your position. How to handle:</p>
+      <ul class="bl">
+        <li>If PE has not yet hit its SL and is in profit: hold. A contra-signal is not a stop loss hit. The theta SL is protecting you.</li>
+        <li>If PE is profitable (+30%+) and a strong contra-signal appears: consider booking 50% to lock gains before a potential bounce against you.</li>
+        <li>If Gate drops to 0–1 <em>and</em> a strong contra-signal appears simultaneously: exit the full position. Both structural edge and sentiment have reversed.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Phase 5 -->
+  <div class="phase" id="w-exit">
+    <div class="phase-hd">
+      <div class="phase-badge" style="background:#fee2e2;color:var(--red)">PHASE 5</div>
+      <h3>Exit Rules — Strict Priority Order</h3>
+    </div>
+    <div class="phase-body">
+      <p>Exit rules are enforced in the order listed. Rule 1 always overrides Rules 2–5. Never override Rule 1 for any reason — it is a hard system rule, not a discretionary guideline.</p>
+
+      <div class="vb v-no">
+        <div class="v-lbl">RULE 1</div>
+        <div class="v-txt"><strong>Stop Loss Hit (absolute, non-negotiable):</strong> Position Monitor shows STOP_HIT in red. LTP dropped below SL_adj. Exit the entire remaining position at market immediately. No waiting for a bounce. No averaging down. No exceptions. The system has confirmed the directional thesis is wrong. This is the most important discipline in the entire workflow.</div>
+      </div>
+      <div class="vb v-no">
+        <div class="v-lbl">RULE 2</div>
+        <div class="v-txt"><strong>Environment Gate Collapse:</strong> Gate drops from GO to NO-GO (0–1 pts) while in a position. All structural conditions that justified your entry have reversed. Exit 75–100% of position immediately. The edge is gone entirely.</div>
+      </div>
+      <div class="vb v-wait">
+        <div class="v-lbl">RULE 3</div>
+        <div class="v-txt"><strong>Gate Weakening:</strong> Gate drops from GO to WAIT (2–3 pts). Exit 50% of position. Raise SL on remaining 50% to entry LTP (free trade). The edge has diminished but has not reversed completely.</div>
+      </div>
+      <div class="vb v-go">
+        <div class="v-lbl">RULE 4</div>
+        <div class="v-txt"><strong>100% Profit Target:</strong> LTP reaches 2× entry. Book 50% of lots at market. Raise SL on remaining lots to entry LTP. This locks in your profit and creates a risk-free remainder.</div>
+      </div>
+      <div class="vb v-wait">
+        <div class="v-lbl">RULE 5</div>
+        <div class="v-txt"><strong>Time Exit at 14:30 IST (hard deadline):</strong> Close all remaining positions by 14:30 regardless of P&amp;L. Theta decay accelerates sharply in the final 60 minutes for near-expiry options. The risk-reward of holding deteriorates rapidly. Even profitable positions should be exited by 14:30 on TIER1_NEAR contracts. This is not optional.</div>
+      </div>
+
+      <div class="co co-info"><span class="co-icon">ℹ️</span><span><strong>Why 14:30 and not 15:25?</strong> For a NIFTY weekly option with 3 DTE, the theta per minute in the final hour is approximately 3–4× the theta per minute earlier in the day. A position worth ₹20 at 14:30 may be worth only ₹8–12 at 15:25 with zero spot movement. The liquidity also deteriorates as dealers reduce risk into close. Exit while the market is still orderly.</span></div>
+    </div>
+  </div>
+
+  <!-- Phase 6 -->
+  <div class="phase" id="w-review">
+    <div class="phase-hd">
+      <div class="phase-badge" style="background:var(--parch);color:var(--ink3)">PHASE 6</div>
+      <h3>End-of-Day Review (15:30+ IST)</h3>
+    </div>
+    <div class="phase-body">
+      <p>After market close and all positions are closed, spend 10–15 minutes reviewing today's session. Improvement as a systematic trader comes from post-session analysis, not from trading more.</p>
+      <ul class="checklist">
+        <li><div class="check-box check-fill"></div><span><strong>GEX Chart replay:</strong> At what time did GEX peak? When did it collapse below 70%? Did a large spot move correlate with that timing? Was the signal early enough to have traded?</span></li>
+        <li><div class="check-box check-fill"></div><span><strong>Alert Feed review:</strong> All today's alerts are preserved. Were COC_VELOCITY alerts accurate? Were RETAIL_PANIC alerts followed by a bounce? Build your own statistics over weeks.</span></li>
+        <li><div class="check-box check-fill"></div><span><strong>P&amp;L attribution in Position Monitor:</strong> What percentage came from Delta vs Vega vs Theta? A vega-heavy gain means IV expansion was the main driver — less predictable. A delta-heavy gain means the spot move was the driver — more aligned with the thesis.</span></li>
+        <li><div class="check-box check-fill"></div><span><strong>Gate accuracy check:</strong> Did you enter at Gate ≥4? Did the trade move in the predicted direction within the first 30 minutes? Over time, track your win rate vs Gate score to calibrate the system to your own trading style.</span></li>
+        <li><div class="check-box check-fill"></div><span><strong>No-trade day validation:</strong> If Gate never reached 4 and you correctly did not trade, record this as a green day — capital preserved is as valuable as capital gained.</span></li>
+        <li><div class="check-box check-fill"></div><span><strong>Close Terminal tabs.</strong> Data is safe on disk. No need to stop any database or clean up files. Everything persists safely.</span></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ══ POSITION SIZING ══ -->
+<div class="sec" id="ps-intro">
+  <div class="sec-hd"><div class="sec-num">6</div><h2 class="sh">Position Sizing Framework</h2></div>
+  <p>The dashboard provides signals, but position sizing is entirely your responsibility. No signal eliminates the probability of loss. This framework ties lot size directly to the Environment Gate score and a defined maximum risk per trade.</p>
+
+  <h3 id="ps-rules">Sizing by Gate Score</h3>
+  <div class="tw"><table>
+    <thead><tr><th>Gate Score</th><th>Regime</th><th>Position Fraction</th><th>Rationale</th></tr></thead>
+    <tbody>
+      <tr><td style="color:var(--green);font-weight:700">7–9</td><td>Strong GO</td><td><strong>100%</strong> of planned size</td><td>All conditions aligned. Maximum edge. Deploy full allocation.</td></tr>
+      <tr><td style="color:var(--green2);font-weight:700">5–6</td><td>GO with minor gaps</td><td><strong>75%</strong> of planned size</td><td>Strong signal, one or two conditions not met. Slightly reduced.</td></tr>
+      <tr><td style="color:var(--amb);font-weight:700">4</td><td>Borderline GO</td><td><strong>50%</strong> of planned size</td><td>Minimum threshold. Half size only. Exit faster if Gate doesn't improve.</td></tr>
+      <tr><td style="color:var(--red2);font-weight:700">2–3</td><td>WAIT</td><td><strong>0%</strong></td><td>Mixed signals. No edge. Waiting costs nothing; trading without edge costs capital.</td></tr>
+      <tr><td style="color:var(--red);font-weight:700">0–1</td><td>NO-GO</td><td><strong>0%</strong></td><td>Sit out entirely. The best trade on a NO-GO day is no trade.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Maximum Risk per Trade</h3>
+  <p>Never risk more than 2% of total trading capital on any single option position. With the theta-adjusted SL set at a maximum 30% loss from entry, calculate your maximum lot size as:</p>
+
+  <div class="formula">
+    Max_Risk_₹  = Total_Capital × 0.02<br>
+    SL_Loss_₹   = Entry_LTP × 0.30 × Lot_Size<br>
+    Max_Lots     = floor(Max_Risk_₹ / SL_Loss_₹)<br><br>
+    <span class="fcom">Example: Capital = ₹5,00,000. Entry LTP = ₹20. NIFTY lot size = 75 units.</span><br>
+    <span class="fcom">Max_Risk = ₹10,000</span><br>
+    <span class="fcom">SL_Loss per lot = ₹20 × 0.30 × 75 = ₹450</span><br>
+    <span class="fcom">Max_Lots = floor(10,000 / 450) = 22 lots at full Gate score</span><br>
+    <span class="fcom">At Gate score 4 (50% fraction): 11 lots</span>
+  </div>
+
+  <div class="g3">
+    <div class="card">
+      <div class="card-title"><div class="cicon" style="background:#fee2e2">🛑</div>Daily Loss Limit</div>
+      <p style="font-size:13px;margin:0">If you lose 3× the risk on a single trade (6% of capital) in one day, stop trading. Dashboard stays open for monitoring, but no new entries. Reset tomorrow.</p>
+    </div>
+    <div class="card">
+      <div class="card-title"><div class="cicon" style="background:#dcfce7">📐</div>NSE Lot Sizes</div>
+      <p style="font-size:13px;margin:0">NIFTY = 75 · BANKNIFTY = 30 · FINNIFTY = 65 · MIDCPNIFTY = 120 · NIFTYNXT50 = 25 units per lot. Check NSE website for updates — lot sizes change periodically.</p>
+    </div>
+    <div class="card">
+      <div class="card-title"><div class="cicon" style="background:#fef3c7">🌱</div>Start Small</div>
+      <p style="font-size:13px;margin:0">First two weeks: trade minimum lots only regardless of Gate score. Use this period to calibrate signal reading before committing significant capital.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══ STRATEGY PLAYBOOKS ══ -->
+<div class="sec" id="play-bear">
+  <div class="sec-hd"><div class="sec-num">7</div><h2 class="sh">Strategy Playbooks</h2></div>
+  <p>These playbooks describe the ideal signal stack for the three most common session types. Use them as target patterns to recognise, not rigid rules to force.</p>
+
+  <!-- Bearish -->
+  <div class="cc">
+    <div class="cc-hd">
+      <div class="cc-icon" style="background:#fee2e2;color:var(--red)">PE↑</div>
+      <div class="cc-hd-txt">
+        <h3 id="play-bear">Bearish Setup — Put Option Buying</h3>
+        <div class="cc-tag">IDEAL SIGNAL STACK · HIGH-CONFIDENCE DIRECTIONAL SELL SETUP</div>
+      </div>
+    </div>
+    <div class="cc-body">
+      <p>The ideal bearish setup occurs when institutional selling is visible in futures (CoC/V_CoC), market maker hedging support is collapsing (GEX), and retail traders are incorrectly positioned (PCR). All three simultaneously is rare and extremely high-conviction.</p>
+
+      <div class="tw"><table>
+        <thead><tr><th>Signal</th><th>Target Reading</th><th>Gate Pts</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>V_CoC</td><td>&lt;−10 (entry), &lt;−20 (maximum conviction)</td><td>2</td><td><strong>Required</strong> — institutional selling confirmed</td></tr>
+          <tr><td>GEX % of Peak</td><td>&lt;70% (entry signal), &lt;50% (full conviction)</td><td>2</td><td><strong>Required</strong> — pinning force absent</td></tr>
+          <tr><td>CoC level</td><td>In discount (futures below spot)</td><td>1</td><td>Strongly preferred — confirms sustained selling</td></tr>
+          <tr><td>PCR Divergence</td><td>&gt;+0.25 (retail panic puts = retail trap)</td><td>1</td><td>Optional but adds conviction</td></tr>
+          <tr><td>Options OBI</td><td>Smoothed &lt;−0.15</td><td>1</td><td>Optional — confirms sell-side aggression</td></tr>
+          <tr><td>IVP</td><td>&lt;50%</td><td>2</td><td>Required for max score — cheap puts preferred</td></tr>
+        </tbody>
+      </table></div>
+
+      <h4>Execution</h4>
+      <ol style="padding-left:20px;color:var(--ink2);font-size:13.5px;line-height:2.1;margin-bottom:14px">
+        <li>Gate ≥5 with V_CoC &lt;−10 confirmed as anchor condition</li>
+        <li>Screener: filter PE, sort S_score descending, select top with ρ &lt;0.15 and delta −0.25 to −0.45</li>
+        <li>Buy 75–100% of planned lots depending on Gate score</li>
+        <li>Position Monitor: input expiry, strike PE, entry LTP, theta. SL plots immediately.</li>
+        <li>Target: 100% gain. Book 50% at target. Trail remainder with theta SL.</li>
+      </ol>
+
+      <div class="sigs">
+        <div class="sig sig-bear"><div class="slbl">Best Entry Window</div><div class="stxt">09:30–10:15 IST. Institutional selling that started before open (visible in V_CoC) typically drives the main move in the first 90 minutes.</div></div>
+        <div class="sig sig-warn"><div class="slbl">PE Skew Warning</div><div class="stxt">PEs are always priced higher than equivalent CEs due to structural skew. If IVP &gt;60%, the PE is already expensive. Reduce size or target a slightly OTM PE to reduce vega exposure.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bullish -->
+  <div class="cc" id="play-bull">
+    <div class="cc-hd">
+      <div class="cc-icon" style="background:#dcfce7;color:var(--green)">CE↑</div>
+      <div class="cc-hd-txt">
+        <h3>Bullish Setup — Call Option Buying</h3>
+        <div class="cc-tag">IDEAL SIGNAL STACK · HIGH-CONFIDENCE DIRECTIONAL BUY SETUP</div>
+      </div>
+    </div>
+    <div class="cc-body">
+      <p>The ideal bullish setup mirrors the bearish setup exactly but in reverse. V_CoC &gt;+10 signals institutional futures buying; GEX collapse removes the overhead dealer resistance; PCR divergence below −0.20 (retail panic-selling calls into a squeeze) adds contrarian confirmation.</p>
+
+      <div class="tw"><table>
+        <thead><tr><th>Signal</th><th>Target Reading</th><th>Gate Pts</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>V_CoC</td><td>&gt;+10</td><td>2</td><td><strong>Required</strong> — institutional buying confirmed</td></tr>
+          <tr><td>GEX % of Peak</td><td>&lt;70%</td><td>2</td><td><strong>Required</strong> — overhead resistance from dealers gone</td></tr>
+          <tr><td>CoC level</td><td>In premium and widening</td><td>—</td><td>Confirming — not directly Gate-scored but adds conviction</td></tr>
+          <tr><td>PCR Divergence</td><td>&lt;−0.20 (retail panic-selling calls)</td><td>1</td><td>Optional — contrarian squeeze catalyst</td></tr>
+          <tr><td>IVP</td><td>&lt;50%</td><td>2</td><td>Required for max score — cheap calls preferred</td></tr>
+        </tbody>
+      </table></div>
+
+      <p><strong>CE vs PE asymmetry:</strong> Because IV skew makes PEs structurally more expensive, CEs at the same moneyness are relatively cheaper. The S_score for ATM CEs tends to be slightly higher than equivalent PEs on a flat-IV day, making strike selection easier for bullish plays.</p>
+
+      <div class="sigs">
+        <div class="sig sig-bull"><div class="slbl">Best CE Entry Window</div><div class="stxt">09:30–10:30 IST. Bullish institutional buying often starts at open and continues through mid-morning. NIFTY makes its intraday high before 11:30 on strong bullish days.</div></div>
+        <div class="sig sig-warn"><div class="slbl">Afternoon CE Warning</div><div class="stxt">Buying CEs after 12:00 IST on a day that has already rallied significantly is high risk. The move is mature, theta accelerates, and reversal risk increases. Avoid new CE entries after noon unless a fresh breakout signal fires.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chop Day -->
+  <div class="cc" id="play-chop">
+    <div class="cc-hd">
+      <div class="cc-icon" style="background:var(--parch);color:var(--ink3)">—</div>
+      <div class="cc-hd-txt">
+        <h3>Chop Day — No-Trade Protocol</h3>
+        <div class="cc-tag">CAPITAL PRESERVATION · RECOGNISING UNFAVOURABLE CONDITIONS</div>
+      </div>
+    </div>
+    <div class="cc-body">
+      <p>A chop day is when the Environment Gate stays at 0–3 all session and no setup triggers. GEX remains high, V_CoC is flat, PCR shows balanced flows. Option premiums slowly bleed from theta. Recognising this early — and not forcing trades — is one of the highest-value skills the dashboard enables.</p>
+
+      <h4>Chop Day Identification (by 10:30 IST)</h4>
+      <div class="sigs">
+        <div class="sig sig-warn"><div class="slbl">GEX stays &gt;80% of peak</div><div class="stxt">Dealers heavily hedged and actively defending range. Market pinned. No breakout energy building.</div></div>
+        <div class="sig sig-warn"><div class="slbl">V_CoC stays −5 to +5</div><div class="stxt">No institutional campaign. FIIs inactive or perfectly balanced. No footprint visible in futures.</div></div>
+        <div class="sig sig-warn"><div class="slbl">PCR Divergence stays ±0.15</div><div class="stxt">Retail and institutional flows broadly aligned. No mis-positioning to exploit. No contrarian edge.</div></div>
+        <div class="sig sig-warn"><div class="slbl">Gate stays at 0–3</div><div class="stxt">Structural confirmation of no edge. The system is explicitly telling you: today is not a day to buy options.</div></div>
+      </div>
+
+      <h4>Protocol for a Confirmed Chop Day</h4>
+      <ul class="bl">
+        <li>If Gate has not reached 4 by 10:30 IST, officially declare it a chop day. No new entries for the remainder of the session.</li>
+        <li>Use the day for passive learning: watch the screener update every 5 minutes, observe how S_scores shift as the session progresses, build intuition for what "normal" readings look like.</li>
+        <li>Review yesterday's or last week's high-conviction sessions using the date picker to reinforce pattern recognition.</li>
+        <li>Do not lower your Gate threshold. "4 is the minimum" is a system rule — not a guideline you adjust when bored.</li>
+        <li>Record in your journal: "Chop day confirmed 10:30. Gate stayed at X. No trades. Capital preserved."</li>
+      </ul>
+
+      <div class="co co-ok"><span class="co-icon">✅</span><span><strong>A correctly identified and respected chop day is a winning trade.</strong> You preserved capital that would have been lost fighting the GEX pin. Over a month, the average number of high-quality (Gate 5+) sessions is 8–12. All other days, profitable action is inaction. The dashboard makes chop days obvious — this is one of its most valuable features.</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="co co-info" style="max-width:var(--mc);margin-top:40px">
+  <span class="co-icon">📄</span>
+  <span><strong>Continued in Part 3:</strong> Complete Signal Quick-Reference Table covering all 22 signals with thresholds and actions · Comprehensive Troubleshooting Guide (15 common issues) · Full Glossary of 45+ terms · Closing HTML tags. When merging, the content of Part 3 goes after this file's closing tags.</span>
+</div>
+
+</main>
+</div>
+</body>
+</html>

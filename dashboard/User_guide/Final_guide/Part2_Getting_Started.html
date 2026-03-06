@@ -1,0 +1,1364 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Option Buying Dashboard v2.0 — Part 2: Getting Started</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        :root {
+            --cream: #faf8f4;
+            --warm: #f5f2eb;
+            --parch: #ede9df;
+            --bdr: #ddd8cc;
+            --bdr-s: #e8e4da;
+            --ink: #1a1714;
+            --ink2: #3d3830;
+            --ink3: #6b6458;
+            --ink4: #9b9388;
+            --navy: #0f2744;
+            --navy2: #1a3d6b;
+            --blue: #2563a8;
+            --blue2: #3b82d4;
+            --blue-p: #dbeafe;
+            --gold: #b8860b;
+            --gold-p: #fef3c7;
+            --amb: #92400e;
+            --amb-p: #fef3c7;
+            --green: #166534;
+            --green2: #16a34a;
+            --green-p: #dcfce7;
+            --red: #991b1b;
+            --red2: #dc2626;
+            --red-p: #fee2e2;
+            --F: 'Libre Baskerville', Georgia, serif;
+            --S: 'DM Sans', system-ui, sans-serif;
+            --M: 'DM Mono', 'Courier New', monospace;
+            --sw: 272px;
+            --mc: 860px;
+        }
+
+        html {
+            scroll-behavior: smooth
+        }
+
+        body {
+            font-family: var(--S);
+            background: var(--cream);
+            color: var(--ink);
+            line-height: 1.7;
+            font-size: 15px
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background: radial-gradient(ellipse 80% 60% at 8% 0%, rgba(37, 99, 168, .09) 0%, transparent 55%),
+                radial-gradient(ellipse 60% 70% at 92% 5%, rgba(184, 134, 11, .07) 0%, transparent 50%),
+                linear-gradient(158deg, #faf8f4 0%, #f0eade 45%, #f6f3ed 100%)
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+            z-index: 1
+        }
+
+        .sidebar {
+            width: var(--sw);
+            flex-shrink: 0;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            padding: 28px 0 40px;
+            background: rgba(250, 248, 244, .92);
+            backdrop-filter: blur(14px);
+            border-right: 1px solid var(--bdr)
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 3px
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--bdr);
+            border-radius: 2px
+        }
+
+        .sb-logo {
+            padding: 0 22px 24px;
+            border-bottom: 1px solid var(--bdr-s);
+            margin-bottom: 18px
+        }
+
+        .sb-logo .prod {
+            font-family: var(--M);
+            font-size: 10px;
+            color: var(--blue);
+            letter-spacing: .08em;
+            text-transform: uppercase
+        }
+
+        .sb-logo .name {
+            font-family: var(--F);
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--navy);
+            line-height: 1.25;
+            margin-top: 4px
+        }
+
+        .sb-logo .ver {
+            display: inline-block;
+            margin-top: 8px;
+            font-size: 10px;
+            font-family: var(--M);
+            color: var(--ink4);
+            background: var(--parch);
+            padding: 2px 8px;
+            border-radius: 20px;
+            border: 1px solid var(--bdr)
+        }
+
+        .part-tag {
+            margin: 0 22px 18px;
+            padding: 8px 14px;
+            background: var(--navy);
+            border-radius: 8px;
+            font-family: var(--M);
+            font-size: 10px;
+            color: rgba(255, 255, 255, .7);
+            letter-spacing: .06em;
+            text-transform: uppercase
+        }
+
+        .part-tag span {
+            display: block;
+            color: #fff;
+            font-size: 12px;
+            margin-top: 2px;
+            font-family: var(--F);
+            font-weight: 700;
+            letter-spacing: 0;
+            text-transform: none
+        }
+
+        .nav-grp {
+            margin-bottom: 4px
+        }
+
+        .nav-lbl {
+            padding: 8px 22px 3px;
+            font-size: 9.5px;
+            font-weight: 600;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--ink4)
+        }
+
+        .nl {
+            display: block;
+            padding: 6px 22px;
+            font-size: 13px;
+            color: var(--ink3);
+            text-decoration: none;
+            border-left: 2px solid transparent;
+            transition: all .15s
+        }
+
+        .nl:hover {
+            color: var(--blue);
+            background: rgba(37, 99, 168, .06);
+            border-left-color: var(--blue2)
+        }
+
+        .nl.active {
+            color: var(--navy);
+            font-weight: 600;
+            border-left-color: var(--blue);
+            background: rgba(37, 99, 168, .08)
+        }
+
+        .nav-parts {
+            padding: 14px 22px 0;
+            border-top: 1px solid var(--bdr-s);
+            margin-top: 8px
+        }
+
+        .nav-parts .np-lbl {
+            font-size: 9.5px;
+            font-weight: 600;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--ink4);
+            margin-bottom: 6px
+        }
+
+        .np-link {
+            display: block;
+            padding: 4px 0;
+            font-size: 12px;
+            color: var(--ink4);
+            text-decoration: none;
+            transition: color .15s
+        }
+
+        .np-link:hover {
+            color: var(--blue)
+        }
+
+        .np-link.cur {
+            color: var(--navy);
+            font-weight: 600
+        }
+
+        .main {
+            flex: 1;
+            min-width: 0;
+            padding: 56px 60px 100px
+        }
+
+        .sec {
+            max-width: var(--mc);
+            padding-top: 24px;
+            margin-bottom: 72px
+        }
+
+        .sec+.sec {
+            border-top: 1px solid var(--bdr-s);
+            padding-top: 60px
+        }
+
+        .hero {
+            max-width: var(--mc);
+            padding-bottom: 52px;
+            border-bottom: 1px solid var(--bdr);
+            margin-bottom: 60px
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--M);
+            font-size: 10.5px;
+            color: var(--blue);
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            margin-bottom: 18px
+        }
+
+        .eyebrow::before {
+            content: '';
+            display: block;
+            width: 22px;
+            height: 1px;
+            background: var(--blue)
+        }
+
+        .hero h1 {
+            font-family: var(--F);
+            font-size: 38px;
+            font-weight: 700;
+            line-height: 1.15;
+            color: var(--navy);
+            margin-bottom: 14px
+        }
+
+        .hero h1 em {
+            font-style: italic;
+            color: var(--blue)
+        }
+
+        .hero-lead {
+            font-size: 16px;
+            color: var(--ink2);
+            line-height: 1.78;
+            max-width: 680px
+        }
+
+        h2.sh {
+            font-family: var(--F);
+            font-size: 27px;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 14px;
+            line-height: 1.2
+        }
+
+        h3 {
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--ink);
+            margin: 32px 0 11px
+        }
+
+        h4 {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--ink3);
+            margin: 22px 0 7px;
+            text-transform: uppercase;
+            letter-spacing: .07em
+        }
+
+        p {
+            color: var(--ink2);
+            margin-bottom: 14px;
+            line-height: 1.78
+        }
+
+        strong {
+            color: var(--ink);
+            font-weight: 600
+        }
+
+        code {
+            background: var(--parch);
+            border: 1px solid var(--bdr);
+            border-radius: 4px;
+            padding: 1px 6px;
+            font-size: 12px;
+            color: var(--navy2);
+            font-family: var(--M)
+        }
+
+        ul.bl {
+            padding-left: 22px;
+            color: var(--ink2);
+            font-size: 13.5px;
+            line-height: 2.1;
+            margin-bottom: 14px
+        }
+
+        .sec-hd {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 28px
+        }
+
+        .sec-num {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--navy);
+            color: #fff;
+            font-family: var(--M);
+            font-size: 12.5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0
+        }
+
+        .card {
+            background: #fff;
+            border: 1px solid var(--bdr);
+            border-radius: 11px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, .04)
+        }
+
+        .g2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin: 14px 0
+        }
+
+        .g3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+            margin: 14px 0
+        }
+
+        .co {
+            border-radius: 9px;
+            padding: 14px 18px;
+            margin: 18px 0;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            font-size: 13.5px;
+            line-height: 1.6
+        }
+
+        .co-icon {
+            font-size: 17px;
+            flex-shrink: 0;
+            margin-top: 1px
+        }
+
+        .co-info {
+            background: var(--blue-p);
+            border: 1px solid #bfdbfe;
+            color: var(--navy2)
+        }
+
+        .co-warn {
+            background: var(--amb-p);
+            border: 1px solid #fde68a;
+            color: var(--amb)
+        }
+
+        .co-ok {
+            background: var(--green-p);
+            border: 1px solid #bbf7d0;
+            color: var(--green)
+        }
+
+        .co-tip {
+            background: var(--gold-p);
+            border: 1px solid #fde68a;
+            color: var(--gold)
+        }
+
+        .co strong {
+            color: inherit
+        }
+
+        .tw {
+            overflow-x: auto;
+            margin: 14px 0;
+            border-radius: 9px;
+            border: 1px solid var(--bdr)
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            background: #fff
+        }
+
+        th {
+            background: var(--warm);
+            color: var(--ink2);
+            font-weight: 600;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            padding: 9px 14px;
+            text-align: left;
+            border-bottom: 2px solid var(--bdr)
+        }
+
+        td {
+            padding: 9px 14px;
+            border-bottom: 1px solid var(--bdr-s);
+            color: var(--ink2);
+            vertical-align: top;
+            line-height: 1.5
+        }
+
+        tr:last-child td {
+            border-bottom: none
+        }
+
+        .cb {
+            background: #1e2028;
+            color: #cdd6e0;
+            border-radius: 10px;
+            padding: 18px 22px;
+            font-size: 13px;
+            line-height: 1.72;
+            overflow-x: auto;
+            margin: 14px 0;
+            position: relative;
+            font-family: var(--M)
+        }
+
+        .cb-lbl {
+            position: absolute;
+            top: 10px;
+            right: 14px;
+            font-size: 9.5px;
+            color: #666;
+            letter-spacing: .06em;
+            text-transform: uppercase
+        }
+
+        .kw {
+            color: #569cd6
+        }
+
+        .st {
+            color: #ce9178
+        }
+
+        .cm {
+            color: #6a9955;
+            font-style: italic
+        }
+
+        .fn {
+            color: #dcdcaa
+        }
+
+        .pm {
+            color: #9cdcfe
+        }
+
+        .tab-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 14px;
+            margin: 18px 0
+        }
+
+        .tab-card {
+            border-radius: 11px;
+            border: 2px solid;
+            overflow: hidden
+        }
+
+        .tab-card-hd {
+            padding: 10px 16px;
+            font-weight: 600;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px
+        }
+
+        .tab-card-body {
+            padding: 14px 16px;
+            font-size: 12.5px;
+            color: var(--ink2);
+            line-height: 1.6
+        }
+
+        .tab-card-body code {
+            font-size: 11px
+        }
+
+        .tab-blue {
+            border-color: #93c5fd
+        }
+
+        .tab-blue .tab-card-hd {
+            background: #dbeafe;
+            color: var(--navy)
+        }
+
+        .tab-green {
+            border-color: #86efac
+        }
+
+        .tab-green .tab-card-hd {
+            background: #dcfce7;
+            color: var(--green)
+        }
+
+        .tab-purple {
+            border-color: #d8b4fe
+        }
+
+        .tab-purple .tab-card-hd {
+            background: #f3e8ff;
+            color: #6b21a8
+        }
+
+        .steps {
+            list-style: none;
+            counter-reset: steps
+        }
+
+        .step {
+            counter-increment: steps;
+            position: relative;
+            padding: 0 0 28px 56px;
+            border-left: 2px solid var(--bdr);
+            margin-left: 14px
+        }
+
+        .step:last-child {
+            border-left-color: transparent;
+            padding-bottom: 0
+        }
+
+        .step::before {
+            content: counter(steps);
+            position: absolute;
+            left: -15px;
+            top: 0;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--navy);
+            color: #fff;
+            font-family: var(--M);
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center
+        }
+
+        .step-t {
+            font-weight: 600;
+            font-size: 14.5px;
+            color: var(--ink);
+            margin-bottom: 6px
+        }
+
+        .step-b {
+            color: var(--ink2);
+            font-size: 13.5px;
+            line-height: 1.72
+        }
+
+        .chk {
+            list-style: none;
+            margin: 10px 0
+        }
+
+        .chk li {
+            padding: 5px 0;
+            padding-left: 26px;
+            position: relative;
+            font-size: 13.5px;
+            color: var(--ink2)
+        }
+
+        .chk li::before {
+            content: '□';
+            position: absolute;
+            left: 0;
+            color: var(--blue2);
+            font-size: 15px;
+            line-height: 1
+        }
+
+        .phase-block {
+            background: #fff;
+            border: 1px solid var(--bdr);
+            border-radius: 11px;
+            overflow: hidden;
+            margin-bottom: 16px
+        }
+
+        .phase-hd {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 13px 18px;
+            border-bottom: 1px solid var(--bdr-s);
+            background: var(--warm)
+        }
+
+        .phase-badge {
+            padding: 3px 11px;
+            border-radius: 20px;
+            font-size: 10.5px;
+            font-weight: 600;
+            font-family: var(--M)
+        }
+
+        .phase-hd h3 {
+            margin: 0;
+            font-size: 14.5px;
+            color: var(--navy)
+        }
+
+        .phase-body {
+            padding: 16px 18px
+        }
+
+        .phase-body p {
+            font-size: 13.5px;
+            margin-bottom: 10px
+        }
+
+        .phase-body p:last-child {
+            margin-bottom: 0
+        }
+
+        .timing-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 9px 0;
+            border-bottom: 1px solid var(--bdr-s)
+        }
+
+        .timing-row:last-child {
+            border-bottom: none
+        }
+
+        .timing-t {
+            font-family: var(--M);
+            font-size: 12px;
+            color: var(--blue);
+            font-weight: 500;
+            min-width: 100px;
+            flex-shrink: 0;
+            padding-top: 2px
+        }
+
+        .timing-a {
+            font-size: 13.5px;
+            color: var(--ink2);
+            line-height: 1.6
+        }
+
+        @media(max-width:900px) {
+            .sidebar {
+                display: none
+            }
+
+            .main {
+                padding: 28px 22px 60px
+            }
+
+            .g2,
+            .g3,
+            .tab-grid {
+                grid-template-columns: 1fr
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layout">
+
+        <nav class="sidebar">
+            <div class="sb-logo">
+                <div class="prod">User Guide · 2026</div>
+                <div class="name">Option Buying<br>Dashboard</div>
+                <span class="ver">v2.0 — macOS Edition</span>
+            </div>
+            <div class="part-tag">Part 2 of 8<span>Getting Started</span></div>
+            <div class="nav-grp">
+                <div class="nav-lbl">This Part</div>
+                <a class="nl active" href="#prereqs">Prerequisites</a>
+                <a class="nl" href="#ist">Timezone Setup</a>
+                <a class="nl" href="#launch">Three-Terminal Launch</a>
+                <a class="nl" href="#verify">Verifying Startup</a>
+                <a class="nl" href="#backfill">Backfill Process</a>
+                <a class="nl" href="#routine">Daily Routine</a>
+                <a class="nl" href="#shutdown">Shutting Down</a>
+            </div>
+            <div class="nav-parts">
+                <div class="np-lbl">All 8 Parts</div>
+                <a class="np-link" href="Part1_Introduction_Architecture.html">1 · Introduction &amp; Architecture</a>
+                <a class="np-link cur" href="Part2_Getting_Started.html">2 · Getting Started</a>
+                <a class="np-link" href="Part3_Dashboard_Panels_Row1.html">3 · Panels A, B, C</a>
+                <a class="np-link" href="Part4_Dashboard_Panels_Row2_Row3.html">4 · Panels D–H</a>
+                <a class="np-link" href="Part5_Concept_Library_Core.html">5 · Concepts: Core</a>
+                <a class="np-link" href="Part6_Concept_Library_Advanced.html">6 · Concepts: Advanced</a>
+                <a class="np-link" href="Part7_Trading_Workflow_Playbooks.html">7 · Workflow &amp; Playbooks</a>
+                <a class="np-link" href="Part8_Reference_Troubleshooting_Glossary.html">8 · Reference &amp; Glossary</a>
+            </div>
+        </nav>
+
+        <main class="main">
+
+            <div class="hero" id="intro-hero">
+                <div class="eyebrow">Part 2 of 8 · Getting Started</div>
+                <h1>Launching the<br><em>Dashboard System</em></h1>
+                <p class="hero-lead">Everything you need to get all three processes running, verify the backfill
+                    completed correctly, and establish your daily pre-market routine. Estimated first-time setup: 15
+                    minutes.</p>
+            </div>
+
+            <!-- PREREQUISITES -->
+            <div class="sec" id="prereqs">
+                <div class="sec-hd">
+                    <div class="sec-num">1</div>
+                    <h2 class="sh">Prerequisites</h2>
+                </div>
+                <p>Before starting, verify these items are in place. If any are missing, the system cannot run.</p>
+
+                <div class="tw">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Requirement</th>
+                                <th>How to Verify</th>
+                                <th>Where to Fix</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td><strong>Python 3.11</strong> installed on macOS</td>
+                                <td><code>python3.11 --version</code> → should show <code>3.11.x</code></td>
+                                <td>Install from <code>python.org</code> or via Homebrew:
+                                    <code>brew install python@3.11</code></td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td><strong>Node.js 18+</strong> installed</td>
+                                <td><code>node --version</code> → should show <code>v18.x</code> or higher</td>
+                                <td><code>brew install node</code> or download from <code>nodejs.org</code></td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td><strong>Service account key</strong> file exists</td>
+                                <td><code>ls /Users/apple/Documents/OptDash/universal-ion-437606-b7-5629bd4bc421.json</code>
+                                </td>
+                                <td>Key is provided by your BigQuery data source setup. Do not regenerate unless
+                                    instructed.</td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td><strong>Python virtual environment</strong> created</td>
+                                <td><code>ls /Users/apple/Documents/OptDash/.venv/bin/python</code></td>
+                                <td>Create:
+                                    <code>cd /Users/apple/Documents/OptDash &amp;&amp; python3.11 -m venv .venv</code>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td><strong>Python dependencies</strong> installed in venv</td>
+                                <td><code>source .venv/bin/activate &amp;&amp; pip show fastapi duckdb pandas</code>
+                                </td>
+                                <td>Install: <code>pip install -r requirements.txt</code></td>
+                            </tr>
+                            <tr>
+                                <td>6</td>
+                                <td><strong>Node dependencies</strong> installed in dashboard</td>
+                                <td><code>ls /Users/apple/Documents/OptDash/dashboard/node_modules</code></td>
+                                <td>Install: <code>cd dashboard &amp;&amp; npm install</code></td>
+                            </tr>
+                            <tr>
+                                <td>7</td>
+                                <td><strong>Data directories</strong> exist</td>
+                                <td><code>ls /Users/apple/Documents/OptDash/data/raw/</code></td>
+                                <td>Create:
+                                    <code>mkdir -p data/raw/options data/raw/futures data/processed/atm_windows data/db logs</code>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="co co-warn"><span class="co-icon">⚠️</span><span><strong>Virtual environment is
+                            mandatory.</strong> Never run <code>run_pipeline.py</code> or <code>run_api.py</code> with
+                        the system Python. Always activate <code>source .venv/bin/activate</code> first in every
+                        terminal tab before running any Python command.</span></div>
+            </div>
+
+            <!-- IST TIMEZONE -->
+            <div class="sec" id="ist">
+                <div class="sec-hd">
+                    <div class="sec-num">2</div>
+                    <h2 class="sh">IST Timezone Setup</h2>
+                </div>
+                <p>The pipeline uses your Mac's system timezone for the APScheduler — the scheduled job triggers must
+                    fire at the correct IST times. If your Mac is set to a different timezone, the pipeline will pull at
+                    the wrong times.</p>
+
+                <h3>Setting System Timezone to IST (Permanent)</h3>
+                <div class="cb"><span class="cb-lbl">zsh · System Preferences</span>
+                    <span class="cm"># Option A: macOS System Preferences (recommended)</span>
+                    <span class="cm"># → System Settings → General → Date &amp; Time → Time Zone</span>
+                    <span class="cm"># → Set to "Asia/Kolkata" or "Mumbai"</span>
+
+                    <span class="cm"># Option B: Terminal command (requires admin)</span>
+                    sudo systemsetup -settimezone "Asia/Kolkata"
+
+                    <span class="cm"># Verify:</span>
+                    date <span class="cm"># Should show IST after the time</span>
+                </div>
+
+                <h3>Alternative: Environment Variable Per Session</h3>
+                <p>If you cannot change the system timezone (e.g., shared Mac), set the <code>TZ</code> variable in each
+                    terminal session before running the pipeline:</p>
+                <div class="cb">
+                    <span class="pm">export</span> TZ=Asia/Kolkata
+                    <span class="cm"># Add this to the top of your ~/.zshrc for it to persist across all new
+                        sessions</span>
+                </div>
+
+                <div class="co co-info"><span class="co-icon">ℹ️</span><span>The API and dashboard are <strong>not
+                            time-sensitive</strong> in the same way. Only the pipeline's APScheduler needs IST
+                        alignment. The <code>record_time</code> values in BigQuery are already stored as IST — no
+                        conversion happens in the data path.</span></div>
+            </div>
+
+            <!-- THREE-TERMINAL LAUNCH -->
+            <div class="sec" id="launch">
+                <div class="sec-hd">
+                    <div class="sec-num">3</div>
+                    <h2 class="sh">Three-Terminal Launch</h2>
+                </div>
+                <p>Open three separate Terminal tabs (⌘+T in Terminal.app, or three panes in iTerm2). Run one process
+                    per tab. <strong>Always start in this order:</strong> Pipeline first, API second, Dashboard third.
+                    This ensures the API has data to serve before the dashboard starts polling.</p>
+
+                <div class="tab-grid">
+                    <div class="tab-card tab-blue">
+                        <div class="tab-card-hd">🔄 Tab 1 — Pipeline</div>
+                        <div class="tab-card-body">
+                            Starts the 5-minute data ingestion loop. Run from project root. Expects IST timezone.
+                        </div>
+                    </div>
+                    <div class="tab-card tab-green">
+                        <div class="tab-card-hd">⚡ Tab 2 — API Server</div>
+                        <div class="tab-card-body">
+                            Starts FastAPI + Uvicorn on port 8000. Serves all analytical endpoints to the dashboard.
+                        </div>
+                    </div>
+                    <div class="tab-card tab-purple">
+                        <div class="tab-card-hd">🖥 Tab 3 — Dashboard</div>
+                        <div class="tab-card-body">
+                            Starts the Vite dev server on port 5173. Open browser to this URL after it starts.
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Tab 1 — Pipeline Process</h3>
+                <div class="cb"><span class="cb-lbl">Terminal Tab 1</span>
+                    <span class="cm"># Navigate to project root</span>
+                    <span class="kw">cd</span> /Users/apple/Documents/OptDash
+
+                    <span class="cm"># Activate the Python 3.11 virtual environment</span>
+                    <span class="pm">source</span> .venv/bin/activate
+
+                    <span class="cm"># Verify you're in the venv (prompt should show (.venv))</span>
+                    which python <span class="cm"># Should show: /Users/apple/Documents/OptDash/.venv/bin/python</span>
+
+                    <span class="cm"># Start the pipeline (runs backfill first, then switches to live scheduler)</span>
+                    python run_pipeline.py
+                </div>
+
+                <p><strong>Expected output after starting:</strong></p>
+                <div class="cb"><span class="cb-lbl">Expected Output</span>
+                    <span class="cm">2026-02-20 09:10:00,123 INFO [backfill] Starting backfill: 2026-02-17 →
+                        2026-02-20</span>
+                    <span class="cm">2026-02-20 09:10:01,441 INFO [backfill] Pulling trade_date=2026-02-17 ...</span>
+                    <span class="cm">2026-02-20 09:10:08,220 INFO [backfill] Wrote 22,400 rows →
+                        data/raw/options/trade_date=2026-02-17/</span>
+                    <span class="cm">2026-02-20 09:10:09,330 INFO [backfill] trade_date=2026-02-17 complete. Advancing
+                        watermark.</span>
+                    ...
+                    <span class="cm">2026-02-20 09:11:45,100 INFO [backfill] Backfill complete. Watermark: 2026-02-20
+                        15:30:00</span>
+                    <span class="cm">2026-02-20 09:11:45,101 INFO [scheduler] Live scheduler started. First pull at
+                        09:16:30 IST.</span>
+                </div>
+
+                <h3>Tab 2 — API Server</h3>
+                <div class="cb"><span class="cb-lbl">Terminal Tab 2</span>
+                    <span class="kw">cd</span> /Users/apple/Documents/OptDash
+                    <span class="pm">source</span> .venv/bin/activate
+                    python run_api.py
+                </div>
+                <p><strong>Expected output:</strong></p>
+                <div class="cb"><span class="cb-lbl">Expected Output</span>
+                    INFO: Started server process [12345]
+                    INFO: Waiting for application startup.
+                    INFO: Application startup complete.
+                    INFO: Uvicorn running on <span class="st">http://127.0.0.1:8000</span> (Press CTRL+C to quit)
+                </div>
+                <p>Visit <strong><a href="http://localhost:8000/docs"
+                            style="color:var(--blue)">http://localhost:8000/docs</a></strong> in your browser to see the
+                    interactive Swagger UI with all 15+ endpoints listed and testable.</p>
+
+                <h3>Tab 3 — Dashboard</h3>
+                <div class="cb"><span class="cb-lbl">Terminal Tab 3</span>
+                    <span class="kw">cd</span> /Users/apple/Documents/OptDash/dashboard
+                    npm run dev
+                </div>
+                <p><strong>Expected output:</strong></p>
+                <div class="cb"><span class="cb-lbl">Expected Output</span>
+                    VITE v5.x.x ready in 312 ms
+
+                    ➜ Local: <span class="st">http://localhost:5173/</span>
+                    ➜ Network: use --host to expose
+                </div>
+                <p>Open <strong><a href="http://localhost:5173"
+                            style="color:var(--blue)">http://localhost:5173</a></strong> in Chrome or Safari. The
+                    dashboard should appear immediately.</p>
+
+                <div class="co co-warn"><span class="co-icon">⚠️</span><span><strong>Port conflicts:</strong> If port
+                        8000 is already in use (<code>address already in use</code> error), kill the existing process:
+                        <code>lsof -ti:8000 | xargs kill -9</code>. Likewise for port 5173:
+                        <code>lsof -ti:5173 | xargs kill -9</code>.</span></div>
+            </div>
+
+            <!-- VERIFYING STARTUP -->
+            <div class="sec" id="verify">
+                <div class="sec-hd">
+                    <div class="sec-num">4</div>
+                    <h2 class="sh">Verifying the System is Running Correctly</h2>
+                </div>
+                <p>After starting all three processes, run these checks to confirm everything is healthy before market
+                    open:</p>
+
+                <h3>Check 1 — Verify Parquet Files Exist</h3>
+                <div class="cb">
+                    ls -lh /Users/apple/Documents/OptDash/data/raw/options/
+                    <span class="cm"># Should show dated subdirectories: trade_date=2026-02-17/, trade_date=2026-02-18/,
+                        etc.</span>
+
+                    ls data/raw/options/trade_date=2026-02-20/
+                    <span class="cm"># Should show NIFTY.parquet, BANKNIFTY.parquet, FINNIFTY.parquet, etc.</span>
+                </div>
+
+                <h3>Check 2 — Verify Watermark Is Recent</h3>
+                <div class="cb">
+                    cat /Users/apple/Documents/OptDash/data/watermark.json
+                    <span class="cm"># Should show something like:</span>
+                    { <span class="st">"last_record_time"</span>: <span class="st">"2026-02-20 15:30:00"</span> }
+                </div>
+
+                <h3>Check 3 — Test the API Directly</h3>
+                <div class="cb">
+                    <span class="cm"># Test the environment gate endpoint (replace date as needed)</span>
+                    curl <span
+                        class="st">"http://localhost:8000/api/v1/env-gate?date=2026-02-20&amp;underlying=NIFTY"</span>
+                    <span class="cm"># Should return a JSON object with gate_score, conditions[], etc.</span>
+
+                    <span class="cm"># Test the GEX endpoint</span>
+                    curl <span class="st">"http://localhost:8000/api/v1/gex?date=2026-02-20&amp;underlying=NIFTY"</span>
+                    <span class="cm"># Should return an array of timeseries objects</span>
+                </div>
+
+                <h3>Check 4 — Verify DuckDB Can Read All Files</h3>
+                <div class="cb">
+                    <span class="pm">source</span> .venv/bin/activate
+                    python3 -c <span class="st">"
+                        import duckdb
+                        con = duckdb.connect('data/db/fo_analytics.duckdb')
+                        print(con.execute(\"SELECT COUNT(*) FROM options WHERE trade_date='2026-02-20'\").fetchone())
+                        "</span>
+                    <span class="cm"># Should print a row count (e.g., (89600,) for a full day)</span>
+                </div>
+
+                <div class="tw" style="margin-top:20px">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Check</th>
+                                <th>Expected Result</th>
+                                <th>If Failing</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Parquet files exist</td>
+                                <td>Dated directories under <code>data/raw/options/</code></td>
+                                <td>Backfill may have failed — check Tab 1 logs. See Part 8 Troubleshooting.</td>
+                            </tr>
+                            <tr>
+                                <td>Watermark file present</td>
+                                <td>JSON with timestamp ≈ 2026-02-20 15:30:xx</td>
+                                <td>Backfill did not complete. Re-run <code>run_pipeline.py</code>.</td>
+                            </tr>
+                            <tr>
+                                <td>API returns JSON</td>
+                                <td>Valid structured response from <code>/api/v1/</code> endpoints</td>
+                                <td>Check Tab 2 for Python errors. Ensure venv is active.</td>
+                            </tr>
+                            <tr>
+                                <td>DuckDB row count</td>
+                                <td>5,000–120,000+ rows per trade_date</td>
+                                <td>Parquet files may be malformed. Check pipeline logs in <code>logs/</code></td>
+                            </tr>
+                            <tr>
+                                <td>Dashboard displays</td>
+                                <td>All 8 panels visible on <code>localhost:5173</code></td>
+                                <td>Check Tab 3 for Vite errors. Ensure API is running on 8000.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- BACKFILL -->
+            <div class="sec" id="backfill">
+                <div class="sec-hd">
+                    <div class="sec-num">5</div>
+                    <h2 class="sh">The Backfill Process</h2>
+                </div>
+                <p>When you run <code>run_pipeline.py</code> for the first time (or after a fresh project setup), the
+                    backfill module runs automatically <em>before</em> the live scheduler starts. It pulls exactly 4
+                    days of historical data: <strong>2026-02-17 through 2026-02-20</strong>.</p>
+
+                <div class="card">
+                    <h3 style="margin-top:0">Why 4 Days?</h3>
+                    <p style="font-size:13.5px">Most analytical calculations — especially <strong>IVP (IV
+                            Percentile)</strong> which requires 90 days of IV data — will improve significantly with
+                        more history. However, the system is designed to be useful from day one with just 4 days of
+                        bootstrap data. As the live scheduler accumulates more trading days, IVP calculations become
+                        more accurate. IVP requires at least 10–15 trading days before the percentile rankings become
+                        reliable. <strong>The 4-day backfill is the minimum viable starting point, not the ideal steady
+                            state.</strong></p>
+                </div>
+
+                <h3>How the Backfill Works</h3>
+                <ol class="steps">
+                    <li class="step">
+                        <div class="step-t">Check for Existing Files (Idempotent)</div>
+                        <div class="step-b">For each trade date, checks if
+                            <code>data/raw/options/trade_date=YYYY-MM-DD/NIFTY.parquet</code> already exists. If yes,
+                            skips that date entirely. This means you can safely re-run <code>run_pipeline.py</code>
+                            without creating duplicate data or pulling redundant BigQuery rows.</div>
+                    </li>
+                    <li class="step">
+                        <div class="step-t">Pull One Full Day from BigQuery</div>
+                        <div class="step-b">Uses <code>WHERE DATE(record_time) = 'YYYY-MM-DD'</code> to pull all rows
+                            for that calendar date. Each trading day typically contains 75 snapshots × ~2,000 rows =
+                            ~150,000 rows. The pull is a single large query; BigQuery processes it in 5–15 seconds
+                            depending on slot availability.</div>
+                    </li>
+                    <li class="step">
+                        <div class="step-t">Process and Write Parquet</div>
+                        <div class="step-b">Runs the full validation + processing pipeline for the pulled data. Writes
+                            final Parquet files partitioned by underlying. For a full trading day, this produces 5
+                            option Parquet files (one per index underlying) and 1 futures Parquet file per trade_date
+                            directory.</div>
+                    </li>
+                    <li class="step">
+                        <div class="step-t">Advance Watermark After Each Day</div>
+                        <div class="step-b">After successfully writing a day's Parquet files, the watermark advances to
+                            the last <code>record_time</code> of that day (~15:30). This means if the backfill is
+                            interrupted after 2 days, re-running picks up from day 3, not from the beginning.</div>
+                    </li>
+                    <li class="step">
+                        <div class="step-t">Live Scheduler Takes Over</div>
+                        <div class="step-b">After all 4 backfill days are processed, the watermark sits at approximately
+                            <code>2026-02-20 15:30:00</code>. The APScheduler then starts its 5-minute live cycle. The
+                            first live pull (at 09:16:30 on the next trading day) picks up from that exact watermark.
+                            <strong>No gap, no overlap.</strong></div>
+                    </li>
+                </ol>
+
+                <h3>Expected Backfill Duration</h3>
+                <div class="tw">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Phase</th>
+                                <th>Duration</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>BigQuery pull per day</td>
+                                <td>5–20 seconds</td>
+                                <td>Depends on BigQuery slot availability and network</td>
+                            </tr>
+                            <tr>
+                                <td>Processing + writing per day</td>
+                                <td>10–30 seconds</td>
+                                <td>4 days total ≈ 2–5 minutes of Parquet writing</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Total backfill</strong></td>
+                                <td><strong>2–5 minutes</strong></td>
+                                <td>Expect it to be done before market opens</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="co co-ok"><span class="co-icon">✅</span><span><strong>First-run tip:</strong> Start the
+                        pipeline the evening before your first trading day (e.g., the night before a Monday), so the
+                        backfill completes overnight and the morning live pull fires cleanly at 09:16:30.</span></div>
+            </div>
+
+            <!-- DAILY ROUTINE -->
+            <div class="sec" id="routine">
+                <div class="sec-hd">
+                    <div class="sec-num">6</div>
+                    <h2 class="sh">Daily Routine</h2>
+                </div>
+                <p>Once the system is running, your everyday workflow with the dashboard follows this structure. The
+                    system handles data collection automatically — your only responsibility is to keep the three
+                    processes running and open the browser before market opens.</p>
+
+                <div class="phase-block">
+                    <div class="phase-hd">
+                        <div class="phase-badge" style="background:#fef3c7;color:var(--amb)">PRE-MARKET</div>
+                        <h3>08:45 — 09:00 IST · System Check</h3>
+                    </div>
+                    <div class="phase-body">
+                        <div class="timing-row">
+                            <div class="timing-t">08:45</div>
+                            <div class="timing-a">Open three terminal tabs. Navigate to project root in each. Activate
+                                venv in Tab 1 and Tab 2.</div>
+                        </div>
+                        <div class="timing-row">
+                            <div class="timing-t">08:47</div>
+                            <div class="timing-a">Run <code>python run_pipeline.py</code> in Tab 1. Wait for <em>"Live
+                                    scheduler started. First pull at 09:16:30"</em>.</div>
+                        </div>
+                        <div class="timing-row">
+                            <div class="timing-t">08:50</div>
+                            <div class="timing-a">Run <code>python run_api.py</code> in Tab 2. Confirm Uvicorn shows
+                                "Application startup complete".</div>
+                        </div>
+                        <div class="timing-row">
+                            <div class="timing-t">08:52</div>
+                            <div class="timing-a">Run <code>npm run dev</code> in Tab 3 from the <code>dashboard/</code>
+                                directory.</div>
+                        </div>
+                        <div class="timing-row">
+                            <div class="timing-t">08:54</div>
+                            <div class="timing-a">Open <code>http://localhost:5173</code> in Chrome. The dashboard loads
+                                with yesterday's close data — this is expected and correct.</div>
+                        </div>
+                        <div class="timing-row" style="border-bottom:none">
+                            <div class="timing-t">08:55</div>
+                            <div class="timing-a">Set the date selector in the dashboard to today's date. Select the
+                                underlying you plan to trade (NIFTY, BANKNIFTY, or FINNIFTY).</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="phase-block">
+                    <div class="phase-hd">
+                        <div class="phase-badge" style="background:#dbeafe;color:var(--navy)">MARKET OPEN</div>
+                        <h3>09:15 — 09:20 IST · First Data Arrives</h3>
+                    </div>
+                    <div class="phase-body">
+                        <div class="timing-row">
+                            <div class="timing-t">09:15</div>
+                            <div class="timing-a">Pre-open session. Dashboard still shows previous day's data.
+                                Environment Gate shows "Loading…" or yesterday's score.</div>
+                        </div>
+                        <div class="timing-row">
+                            <div class="timing-t">09:16:30</div>
+                            <div class="timing-a">Pipeline fires the first live pull. Fetches all rows since the
+                                watermark. ATM window is computed from the 09:15 snapshot spot price.</div>
+                        </div>
+                        <div class="timing-row">
+                            <div class="timing-t">09:17</div>
+                            <div class="timing-a">API picks up new Parquet files. Dashboard panels begin refreshing
+                                (TanStack Query detects new data within 5 seconds of the Parquet write).</div>
+                        </div>
+                        <div class="timing-row" style="border-bottom:none">
+                            <div class="timing-t">09:20</div>
+                            <div class="timing-a"><strong>All 8 panels should now show today's live data.</strong>
+                                Environment Gate should display a score. GEX chart shows the first data point. This is
+                                your entry window for Phase 2 analysis.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="phase-block">
+                    <div class="phase-hd">
+                        <div class="phase-badge" style="background:#dcfce7;color:var(--green)">TRADING HOURS</div>
+                        <h3>09:20 — 15:30 IST · Active Monitoring</h3>
+                    </div>
+                    <div class="phase-body">
+                        <div class="timing-row">
+                            <div class="timing-t">Every 5 min</div>
+                            <div class="timing-a">Pipeline auto-pulls. All panels update within 10 seconds. You do not
+                                need to do anything manually.</div>
+                        </div>
+                        <div class="timing-row">
+                            <div class="timing-t">09:30–10:30</div>
+                            <div class="timing-a">Primary entry window. Check Gate score, V_CoC direction, and Strike
+                                Screener before entering positions.</div>
+                        </div>
+                        <div class="timing-row">
+                            <div class="timing-t">If alert fires</div>
+                            <div class="timing-a">Alert Feed (Panel F) shows a new entry. Review it immediately.
+                                Cross-check against your open positions in Panel H.</div>
+                        </div>
+                        <div class="timing-row" style="border-bottom:none">
+                            <div class="timing-t">14:30–15:00</div>
+                            <div class="timing-a">Expiry tier switches to NEAR (DTE ≤ 1 for weekly expiries). Screener
+                                will deprioritise these. No new entries after 14:45 (see Part 7).</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="phase-block">
+                    <div class="phase-hd">
+                        <div class="phase-badge" style="background:#f3e8ff;color:#6b21a8">CLOSE</div>
+                        <h3>15:30 — 15:45 IST · End of Day</h3>
+                    </div>
+                    <div class="phase-body">
+                        <div class="timing-row">
+                            <div class="timing-t">15:31:30</div>
+                            <div class="timing-a">Final pipeline pull of the day. Watermark advances to the 15:30
+                                snapshot. Scheduler confirms no more pulls until next trading day at 09:16:30.</div>
+                        </div>
+                        <div class="timing-row" style="border-bottom:none">
+                            <div class="timing-t">After 15:35</div>
+                            <div class="timing-a">Review Position Monitor for final P&amp;L attribution. Log any
+                                observations in your trading journal. The three processes can be left running or shut
+                                down (see below).</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SHUTDOWN -->
+            <div class="sec" id="shutdown">
+                <div class="sec-hd">
+                    <div class="sec-num">7</div>
+                    <h2 class="sh">Shutting Down Cleanly</h2>
+                </div>
+                <p>The system can be stopped at any time without data loss. All three processes are stateless between
+                    pulls — no in-memory state is lost when they're killed, because all state is on disk in Parquet
+                    files and the watermark JSON.</p>
+
+                <h3>Clean Shutdown Sequence</h3>
+                <div class="cb">
+                    <span class="cm"># In Tab 3 (Dashboard) — press:</span>
+                    Ctrl+C
+
+                    <span class="cm"># In Tab 2 (API) — press:</span>
+                    Ctrl+C
+
+                    <span class="cm"># In Tab 1 (Pipeline) — press:</span>
+                    Ctrl+C
+                    <span class="cm"># APScheduler stops cleanly. If it's mid-pull, it completes the current batch
+                        first.</span>
+                    <span class="cm"># The watermark is already updated — no data is lost.</span>
+                </div>
+
+                <h3>Overnight / Weekend Shutdown</h3>
+                <p>It is safe to leave the Mac sleeping with all three processes stopped between trading sessions. On
+                    the next trading day, start all three tabs again before 09:15 IST. The backfill module will not
+                    re-run (files already exist for previous days), and the live scheduler fires cleanly from the last
+                    recorded watermark.</p>
+
+                <div class="co co-ok"><span class="co-icon">✅</span><span><strong>Recommended:</strong> Add a simple
+                        shell alias in <code>~/.zshrc</code> to start all three processes with one command. Or use
+                        iTerm2 profiles to auto-launch all three tabs with the correct commands.</span></div>
+
+                <div style="display:flex;gap:12px;margin-top:32px;flex-wrap:wrap">
+                    <a href="Part1_Introduction_Architecture.html"
+                        style="display:inline-flex;align-items:center;gap:8px;background:var(--parch);color:var(--navy);border:1px solid var(--bdr);padding:10px 20px;border-radius:8px;text-decoration:none;font-size:13.5px;font-weight:600">←
+                        Part 1: Architecture</a>
+                    <a href="Part3_Dashboard_Panels_Row1.html"
+                        style="display:inline-flex;align-items:center;gap:8px;background:var(--navy);color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:13.5px;font-weight:600">Next:
+                        Part 3 — Dashboard Panels →</a>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</body>
+
+</html>

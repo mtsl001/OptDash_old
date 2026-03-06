@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Option Buying Dashboard v2.0 — Part 7: Trading Workflow &amp; Playbooks</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        :root {
+            --cream: #faf8f4;
+            --warm: #f5f2eb;
+            --parch: #ede9df;
+            --bdr: #ddd8cc;
+            --bdr-s: #e8e4da;
+            --ink: #1a1714;
+            --ink2: #3d3830;
+            --ink3: #6b6458;
+            --ink4: #9b9388;
+            --navy: #0f2744;
+            --navy2: #1a3d6b;
+            --blue: #2563a8;
+            --blue2: #3b82d4;
+            --blue-p: #dbeafe;
+            --gold: #b8860b;
+            --gold-p: #fef3c7;
+            --amb: #92400e;
+            --amb-p: #fef3c7;
+            --green: #166534;
+            --green2: #16a34a;
+            --green-p: #dcfce7;
+            --red: #991b1b;
+            --red2: #dc2626;
+            --red-p: #fee2e2;
+            --F: 'Libre Baskerville', Georgia, serif;
+            --S: 'DM Sans', system-ui, sans-serif;
+            --M: 'DM Mono', 'Courier New', monospace;
+            --sw: 272px;
+            --mc: 860px;
+        }
+
+        html {
+            scroll-behavior: smooth
+        }
+
+        body {
+            font-family: var(--S);
+            background: var(--cream);
+            color: var(--ink);
+            line-height: 1.7;
+            font-size: 15px
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background: radial-gradient(ellipse 80% 60% at 8% 0%, rgba(37, 99, 168, .09) 0%, transparent 55%),
+                linear-gradient(158deg, #faf8f4 0%, #f0eade 45%, #f6f3ed 100%)
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+            z-index: 1
+        }
+
+        .sidebar {
+            width: var(--sw);
+            flex-shrink: 0;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            padding: 28px 0 40px;
+            background: rgba(250, 248, 244, .92);
+            backdrop-filter: blur(14px);
+            border-right: 1px solid var(--bdr)
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 3px
+        }
+
+        .sb-logo {
+            padding: 0 22px 24px;
+            border-bottom: 1px solid var(--bdr-s);
+            margin-bottom: 18px
+        }
+
+        .sb-logo .prod {
+            font-family: var(--M);
+            font-size: 10px;
+            color: var(--blue);
+            letter-spacing: .08em;
+            text-transform: uppercase
+        }
+
+        .sb-logo .name {
+            font-family: var(--F);
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--navy);
+            line-height: 1.25;
+            margin-top: 4px
+        }
+
+        .sb-logo .ver {
+            display: inline-block;
+            margin-top: 8px;
+            font-size: 10px;
+            font-family: var(--M);
+            color: var(--ink4);
+            background: var(--parch);
+            padding: 2px 8px;
+            border-radius: 20px;
+            border: 1px solid var(--bdr)
+        }
+
+        .part-tag {
+            margin: 0 22px 18px;
+            padding: 8px 14px;
+            background: var(--navy);
+            border-radius: 8px;
+            font-family: var(--M);
+            font-size: 10px;
+            color: rgba(255, 255, 255, .7);
+            letter-spacing: .06em;
+            text-transform: uppercase
+        }
+
+        .part-tag span {
+            display: block;
+            color: #fff;
+            font-size: 12px;
+            margin-top: 2px;
+            font-family: var(--F);
+            font-weight: 700;
+            letter-spacing: 0;
+            text-transform: none
+        }
+
+        .nl {
+            display: block;
+            padding: 6px 22px;
+            font-size: 13px;
+            color: var(--ink3);
+            text-decoration: none;
+            border-left: 2px solid transparent;
+            transition: all .15s
+        }
+
+        .nl:hover {
+            color: var(--blue);
+            background: rgba(37, 99, 168, .06);
+            border-left-color: var(--blue2)
+        }
+
+        .nl.active {
+            color: var(--navy);
+            font-weight: 600;
+            border-left-color: var(--blue);
+            background: rgba(37, 99, 168, .08)
+        }
+
+        .nav-lbl {
+            padding: 8px 22px 3px;
+            font-size: 9.5px;
+            font-weight: 600;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--ink4)
+        }
+
+        .nav-parts {
+            padding: 14px 22px 0;
+            border-top: 1px solid var(--bdr-s);
+            margin-top: 8px
+        }
+
+        .nav-parts .np-lbl {
+            font-size: 9.5px;
+            font-weight: 600;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--ink4);
+            margin-bottom: 6px
+        }
+
+        .np-link {
+            display: block;
+            padding: 4px 0;
+            font-size: 12px;
+            color: var(--ink4);
+            text-decoration: none;
+            transition: color .15s
+        }
+
+        .np-link:hover {
+            color: var(--blue)
+        }
+
+        .np-link.cur {
+            color: var(--navy);
+            font-weight: 600
+        }
+
+        .main {
+            flex: 1;
+            min-width: 0;
+            padding: 56px 60px 100px
+        }
+
+        .sec {
+            max-width: var(--mc);
+            padding-top: 24px;
+            margin-bottom: 68px
+        }
+
+        .sec+.sec {
+            border-top: 1px solid var(--bdr-s);
+            padding-top: 56px
+        }
+
+        .hero {
+            max-width: var(--mc);
+            padding-bottom: 48px;
+            border-bottom: 1px solid var(--bdr);
+            margin-bottom: 52px
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--M);
+            font-size: 10.5px;
+            color: var(--blue);
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            margin-bottom: 18px
+        }
+
+        .eyebrow::before {
+            content: '';
+            display: block;
+            width: 22px;
+            height: 1px;
+            background: var(--blue)
+        }
+
+        .hero h1 {
+            font-family: var(--F);
+            font-size: 38px;
+            font-weight: 700;
+            line-height: 1.15;
+            color: var(--navy);
+            margin-bottom: 14px
+        }
+
+        .hero h1 em {
+            font-style: italic;
+            color: var(--blue)
+        }
+
+        .hero-lead {
+            font-size: 15.5px;
+            color: var(--ink2);
+            line-height: 1.78;
+            max-width: 680px
+        }
+
+        h2.sh {
+            font-family: var(--F);
+            font-size: 25px;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 12px;
+            line-height: 1.2
+        }
+
+        h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--ink);
+            margin: 24px 0 9px
+        }
+
+        h4 {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--ink3);
+            margin: 16px 0 5px;
+            text-transform: uppercase;
+            letter-spacing: .07em
+        }
+
+        p {
+            color: var(--ink2);
+            margin-bottom: 12px;
+            line-height: 1.76
+        }
+
+        strong {
+            color: var(--ink);
+            font-weight: 600
+        }
+
+        code {
+            background: var(--parch);
+            border: 1px solid var(--bdr);
+            border-radius: 4px;
+            padding: 1px 6px;
+            font-size: 12px;
+            color: var(--navy2);
+            font-family: var(--M)
+        }
+
+        ul.bl {
+            padding-left: 20px;
+            color: var(--ink2);
+            font-size: 13.5px;
+            line-height: 2.0;
+            margin-bottom: 12px
+        }
+
+        .sec-hd {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px
+        }
+
+        .sec-num {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: var(--navy);
+            color: #fff;
+            font-family: var(--M);
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0
+        }
+
+        .tw {
+            overflow-x: auto;
+            margin: 12px 0;
+            border-radius: 9px;
+            border: 1px solid var(--bdr)
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            background: #fff
+        }
+
+        th {
+            background: var(--warm);
+            color: var(--ink2);
+            font-weight: 600;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            padding: 9px 14px;
+            text-align: left;
+            border-bottom: 2px solid var(--bdr)
+        }
+
+        td {
+            padding: 9px 14px;
+            border-bottom: 1px solid var(--bdr-s);
+            color: var(--ink2);
+            vertical-align: top;
+            line-height: 1.5
+        }
+
+        tr:last-child td {
+            border-bottom: none
+        }
+
+        .co {
+            border-radius: 9px;
+            padding: 12px 16px;
+            margin: 12px 0;
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            font-size: 13.5px;
+            line-height: 1.6
+        }
+
+        .co-icon {
+            font-size: 16px;
+            flex-shrink: 0;
+            margin-top: 1px
+        }
+
+        .co-info {
+            background: var(--blue-p);
+            border: 1px solid #bfdbfe;
+            color: var(--navy2)
+        }
+
+        .co-warn {
+            background: var(--amb-p);
+            border: 1px solid #fde68a;
+            color: var(--amb)
+        }
+
+        .co-ok {
+            background: var(--green-p);
+            border: 1px solid #bbf7d0;
+            color: var(--green)
+        }
+
+        .co-tip {
+            background: var(--gold-p);
+            border: 1px solid #fde68a;
+            color: var(--gold)
+        }
+
+        .co strong {
+            color: inherit
+        }
+
+        .card {
+            background: #fff;
+            border: 1px solid var(--bdr);
+            border-radius: 10px;
+            padding: 18px 22px;
+            margin-bottom: 12px
+        }
+
+        .g2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 12px 0
+        }
+
+        /* Phase layout */
+        .phase {
+            border-left: 3px solid var(--bdr);
+            padding-left: 22px;
+            margin-bottom: 36px;
+            position: relative
+        }
+
+        .phase::before {
+            content: '';
+            position: absolute;
+            left: -7px;
+            top: 0;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--navy);
+            border: 2px solid var(--cream)
+        }
+
+        .phase-time {
+            font-family: var(--M);
+            font-size: 11px;
+            color: var(--blue);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            margin-bottom: 5px
+        }
+
+        .phase-title {
+            font-family: var(--F);
+            font-size: 19px;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 10px;
+            line-height: 1.2
+        }
+
+        /* Checklist */
+        .cl {
+            list-style: none;
+            padding: 0;
+            margin: 10px 0
+        }
+
+        .cl li {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 6px 0;
+            font-size: 13.5px;
+            color: var(--ink2);
+            border-bottom: 1px solid var(--bdr-s)
+        }
+
+        .cl li:last-child {
+            border-bottom: none
+        }
+
+        .cl li::before {
+            content: '☐';
+            font-size: 15px;
+            flex-shrink: 0;
+            margin-top: 1px;
+            color: var(--ink4)
+        }
+
+        /* Playbook */
+        .playbook {
+            border-radius: 13px;
+            border: 2px solid;
+            overflow: hidden;
+            margin-bottom: 28px
+        }
+
+        .pb-hd {
+            padding: 16px 22px;
+            display: flex;
+            align-items: flex-start;
+            gap: 14px
+        }
+
+        .pb-icon {
+            font-size: 28px;
+            flex-shrink: 0
+        }
+
+        .pb-name {
+            font-family: var(--F);
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 3px
+        }
+
+        .pb-trig {
+            font-size: 13px;
+            opacity: .85
+        }
+
+        .pb-body {
+            padding: 18px 22px;
+            background: #fff
+        }
+
+        /* Sizing table accent rows */
+        tr.acc-green td {
+            background: #f0fdf4;
+            font-weight: 600;
+            color: var(--green)
+        }
+
+        tr.acc-red td {
+            background: #fff5f5;
+            color: var(--red)
+        }
+
+        tr.acc-amber td {
+            background: #fffbeb;
+            color: var(--amb)
+        }
+
+        @media(max-width:900px) {
+            .sidebar {
+                display: none
+            }
+
+            .main {
+                padding: 28px 22px 60px
+            }
+
+            .g2 {
+                grid-template-columns: 1fr
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layout">
+        <nav class="sidebar">
+            <div class="sb-logo">
+                <div class="prod">User Guide · 2026</div>
+                <div class="name">Option Buying<br>Dashboard</div>
+                <span class="ver">v2.0 — macOS Edition</span>
+            </div>
+            <div class="part-tag">Part 7 of 8<span>Trading Workflow &amp; Playbooks</span></div>
+            <div class="nav-lbl">Workflow</div>
+            <a class="nl active" href="#workflow">5-Phase Daily Workflow</a>
+            <a class="nl" href="#sizing">Lot Sizing Framework</a>
+            <a class="nl" href="#rules">Non-Negotiable Rules</a>
+            <div class="nav-lbl" style="margin-top:8px">Playbooks</div>
+            <a class="nl" href="#pb1">PB1 · Institutional Breakdown</a>
+            <a class="nl" href="#pb2">PB2 · Gamma Unwind + Bullish</a>
+            <a class="nl" href="#pb3">PB3 · Pure Low IV</a>
+            <a class="nl" href="#pb4">PB4 · Event-Driven</a>
+            <div class="nav-parts">
+                <div class="np-lbl">All 8 Parts</div>
+                <a class="np-link" href="Part1_Introduction_Architecture.html">1 · Introduction &amp; Architecture</a>
+                <a class="np-link" href="Part2_Getting_Started.html">2 · Getting Started</a>
+                <a class="np-link" href="Part3_Dashboard_Panels_Row1.html">3 · Panels A, B, C</a>
+                <a class="np-link" href="Part4_Dashboard_Panels_Row2_Row3.html">4 · Panels D–H</a>
+                <a class="np-link" href="Part5_Concept_Library_Core.html">5 · Concepts: Core</a>
+                <a class="np-link" href="Part6_Concept_Library_Advanced.html">6 · Concepts: Advanced</a>
+                <a class="np-link cur" href="Part7_Trading_Workflow_Playbooks.html">7 · Workflow &amp; Playbooks</a>
+                <a class="np-link" href="Part8_Reference_Troubleshooting_Glossary.html">8 · Reference &amp; Glossary</a>
+            </div>
+        </nav>
+
+        <main class="main">
+            <div class="hero">
+                <div class="eyebrow">Part 7 of 8 · Trading Workflow &amp; Playbooks</div>
+                <h1>Workflow &amp;<br><em>Strategy Playbooks</em></h1>
+                <p class="hero-lead">This is the operational core of the guide — how to translate every concept and
+                    panel reading into an actual, sized trade, managed from entry to exit. Follow the 5-phase workflow
+                    every day. When a clear setup emerges, run the matching playbook.</p>
+            </div>
+
+            <!-- WORKFLOW -->
+            <div class="sec" id="workflow">
+                <div class="sec-hd">
+                    <div class="sec-num">7.1</div>
+                    <h2 class="sh">The 5-Phase Daily Workflow</h2>
+                </div>
+                <p>Each phase has a defined time window, a goal, and a specific checklist. The phases are sequential —
+                    never jump to Phase 3 without completing Phase 2. The discipline of the checklist is what separates
+                    systematic trading from reactive trading.</p>
+
+                <div class="phase">
+                    <div class="phase-time">08:45 – 09:14 IST · Pre-Market</div>
+                    <div class="phase-title">Phase 1 — System Verification &amp; Context Setting</div>
+                    <p>Before the pipeline pulls even one row from BigQuery, verify the stack is healthy and orient
+                        yourself to the macro context.</p>
+                    <ul class="cl">
+                        <li>Confirm all three terminals are running: Pipeline (first pull starts at 09:16:30), API
+                            (<code>uvicorn</code> healthy), Dashboard (<code>npm run dev</code> on port 5173).</li>
+                        <li>Check <code>data/watermark.json</code> — timestamp should be from last trading day at
+                            ~15:30.</li>
+                        <li>Note any overnight SGX/Gift Nifty movement (large gap open will affect ATM window validity).
+                        </li>
+                        <li>Note any known catalysts for today: RBI announcement, quarterly results, global macro
+                            events.</li>
+                        <li>Set your maximum loss budget for the day in your trading journal before markets open.</li>
+                    </ul>
+                </div>
+
+                <div class="phase">
+                    <div class="phase-time">09:15 – 09:30 IST · Market Open</div>
+                    <div class="phase-title">Phase 2 — Opening Snapshot Analysis</div>
+                    <p>The first 5-minute pipeline pull establishes the ATM window and computes the day's GEX baseline.
+                        Do not enter any trade during this phase.</p>
+                    <ul class="cl">
+                        <li>Confirm ATM Window panel shows the correct ATM for each underlying (check against opening
+                            spot).</li>
+                        <li>Note the baseline Net GEX level for each underlying — this becomes the "daily peak"
+                            reference for Gate condition #1.</li>
+                        <li>Note IVP levels — if IVP &gt;70% on open, that is an options-expensive day. Reduce planned
+                            lot size by 25%.</li>
+                        <li>Check PCR levels — if PCR_vol and PCR_oi are already diverged by &gt;0.25 on open, retail is
+                            already positioned. Record the divergence direction.</li>
+                        <li>Open Strike Screener — note which strikes are showing the highest S_scores for both CE and
+                            PE. These are your candidates for Phase 3.</li>
+                    </ul>
+                </div>
+
+                <div class="phase">
+                    <div class="phase-time">09:30 – 10:45 IST · Primary Entry Window</div>
+                    <div class="phase-title">Phase 3 — Entry Decision</div>
+                    <p>Entries taken in this window benefit from maximum DTE remaining in the day and tend to capture
+                        the primary institutional move before full market participation. This is the highest-value
+                        window for the strategy.</p>
+                    <ul class="cl">
+                        <li>Wait for Gate score ≥ 4 before considering any entry.</li>
+                        <li>Confirm V_CoC has crossed −10 (bearish) or +10 (bullish) — this gives you direction.</li>
+                        <li>Run the entry decision table: Gate score 7+ = 100% lots; 5–6 = 75%; 4 = 50%.</li>
+                        <li>Open Strike Screener filtered to your direction (CE or PE). Select the top-rated strike
+                            (highest S_score) with IVP &lt;50% and spread &lt;5%.</li>
+                        <li>Check Alert Feed for any GATE_CHANGE or VCOC alerts in the last 15 minutes.</li>
+                        <li>Place order at LTP or within spread. Record entry price, time, and lot count in Position
+                            Monitor.</li>
+                        <li>Confirm the Position Monitor SL chart has populated correctly — you should see the initial
+                            SL_t = SL_base.</li>
+                    </ul>
+                </div>
+
+                <div class="phase">
+                    <div class="phase-time">10:45 – 14:30 IST · Active Hold</div>
+                    <div class="phase-title">Phase 4 — Position Management</div>
+                    <p>Once in a trade, your only jobs are to monitor the exit signals and to avoid second-guessing a
+                        position that is within its normal range. The Position Monitor handles the analytics — trust it.
+                    </p>
+                    <ul class="cl">
+                        <li>Check Position Monitor every 5-minute candle: confirm LTP is above SL_t.</li>
+                        <li>If LTP falls to or below SL_t at any point — exit immediately. No exceptions. Do not widen
+                            the stop.</li>
+                        <li>If Gate score falls from GO to WAIT/NO-GO — reduce position by at least 50%.</li>
+                        <li>If V_CoC reverses (was −15, now +5) — exit the matching directional position.</li>
+                        <li>If a GATE_CHANGE alert fires in the Alert Feed — reassess urgently.</li>
+                        <li>Do not enter a second position in the same underlying while the first is open (no
+                            averaging).</li>
+                        <li>14:30 rule: if the position is below breakeven at 14:30, exit regardless of signals.</li>
+                    </ul>
+                </div>
+
+                <div class="phase">
+                    <div class="phase-time">14:30 – 15:30 IST · Wind-Down</div>
+                    <div class="phase-title">Phase 5 — Exit &amp; End-of-Day Protocol</div>
+                    <ul class="cl">
+                        <li>No new entries after 14:30. Market close risk is too high for fresh positions.</li>
+                        <li>All open positions must be closed before 15:25 — NSE closing session starts at 15:25 with
+                            very wide spreads.</li>
+                        <li>Note the day's final GEX level, Gate score, and PCR for the trading journal.</li>
+                        <li>After 15:30, verify the pipeline completed the 15:30 pull — watermark should show today's
+                            date at ~15:30.</li>
+                        <li>Review P&amp;L attribution in Position Monitor export — note which Greek drove the majority
+                            of today's P&amp;L (delta, theta, vega). This builds intuition over time.</li>
+                        <li>Shut down cleanly: Ctrl+C pipeline, Ctrl+C API, Ctrl+C dashboard. Confirm all three
+                            terminals clear.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- LOT SIZING -->
+            <div class="sec" id="sizing">
+                <div class="sec-hd">
+                    <div class="sec-num">7.2</div>
+                    <h2 class="sh">Lot Sizing Framework</h2>
+                </div>
+                <p>Lot sizing is the bridge between signal quality and capital deployment. The framework ensures that
+                    maximum capital is deployed only when all conditions are the most favourable — and minimum capital
+                    (or none) is deployed when conditions are marginal.</p>
+
+                <div class="tw">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Gate Score</th>
+                                <th>V_CoC</th>
+                                <th>IVP</th>
+                                <th>Size (% of Planned Lots)</th>
+                                <th>Rationale</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="acc-green">
+                                <td>7–9</td>
+                                <td>&lt;−10 or &gt;+10</td>
+                                <td>&lt;50%</td>
+                                <td>100%</td>
+                                <td>All three primary conditions met: regime, direction, cost.</td>
+                            </tr>
+                            <tr class="acc-green">
+                                <td>7–9</td>
+                                <td>&lt;−10 or &gt;+10</td>
+                                <td>50–70%</td>
+                                <td>75%</td>
+                                <td>Strong Gate + direction, but IV slightly expensive. Reduce vega risk.</td>
+                            </tr>
+                            <tr>
+                                <td>5–6</td>
+                                <td>&lt;−10 or &gt;+10</td>
+                                <td>&lt;50%</td>
+                                <td>75%</td>
+                                <td>Good conditions but Gate not peak. One reduction tier.</td>
+                            </tr>
+                            <tr>
+                                <td>5–6</td>
+                                <td>&lt;−10 or &gt;+10</td>
+                                <td>50–70%</td>
+                                <td>50%</td>
+                                <td>Moderate Gate + expensive IV. Half-size only.</td>
+                            </tr>
+                            <tr class="acc-amber">
+                                <td>4</td>
+                                <td>Any confirming</td>
+                                <td>&lt;50%</td>
+                                <td>50%</td>
+                                <td>Borderline GO. Minimum entry only.</td>
+                            </tr>
+                            <tr class="acc-red">
+                                <td>4</td>
+                                <td>Neutral (−10 to +10)</td>
+                                <td>Any</td>
+                                <td>0%</td>
+                                <td>No directional conviction. No entry.</td>
+                            </tr>
+                            <tr class="acc-red">
+                                <td>0–3</td>
+                                <td>Any</td>
+                                <td>Any</td>
+                                <td>0%</td>
+                                <td>WAIT or NO-GO. Absolute prohibition.</td>
+                            </tr>
+                            <tr class="acc-red">
+                                <td>Any</td>
+                                <td>Any</td>
+                                <td>&gt;70%</td>
+                                <td>0%</td>
+                                <td>IV too expensive. Options buying structurally unfavourable regardless of Gate.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="co co-tip"><span class="co-icon">💡</span><span><strong>Rule of thumb:</strong> "Planned
+                        lots" is the number you decide before markets open, based on your day's capital allocation. The
+                        table then applies the appropriate fraction. Never plan more than your total risk budget divided
+                        by the maximum expected loss per lot (which is Entry_Price × Lot_Size × SL_fraction).</span>
+                </div>
+            </div>
+
+            <!-- RULES -->
+            <div class="sec" id="rules">
+                <div class="sec-hd">
+                    <div class="sec-num">7.3</div>
+                    <h2 class="sh">Non-Negotiable Rules</h2>
+                </div>
+                <p>These rules apply without exception regardless of conviction, news, or past performance. Each was
+                    designed to prevent the most common ways systematic option buyers lose capital.</p>
+                <ol style="padding-left:22px;color:var(--ink2);font-size:13.5px;line-height:2.3;margin-bottom:16px">
+                    <li><strong>No entry when Gate &lt; 4.</strong> Ever. Not for "just a small scalp", not because you
+                        "feel" the market. If the Gate is not GO, there is no trade.</li>
+                    <li><strong>No averaging into a losing position.</strong> If LTP falls toward SL_t, the position is
+                        wrong. Do not buy more. The move you expected has not materialised — the bias must be
+                        reassessed.</li>
+                    <li><strong>No stop loss widening after entry.</strong> You set SL_base at entry based on your risk
+                        tolerance. You may not widen it under any circumstances. Widening a stop under pressure is how
+                        small losses become large losses.</li>
+                    <li><strong>No new positions after 14:30.</strong> The risk-reward ratio for new positions in the
+                        final hour is unfavourable due to theta acceleration and closing auction liquidity. </li>
+                    <li><strong>No positions held overnight.</strong> Close all positions by 15:25. The model provides
+                        no overnight context (no futures rollover data, no global open modelling). Overnight gap risk is
+                        unquantifiable in this framework.</li>
+                    <li><strong>No trading on NSE holidays or after daily daily maximum loss.</strong> Respect the
+                        trading calendar. Once your daily maximum loss budget is hit, stop for the day — no revenge
+                        trading.</li>
+                    <li><strong>No buying options with IVP &gt; 70%.</strong> This is a structural constraint, not a
+                        suggestion. You are fighting IV headwinds that will statistically erode your edge.</li>
+                </ol>
+            </div>
+
+            <!-- PLAYBOOKS -->
+            <div class="sec" id="pb1">
+                <div class="sec-hd">
+                    <div class="sec-num">PB1</div>
+                    <h2 class="sh">Playbook 1 — Institutional Breakdown</h2>
+                </div>
+                <div class="playbook" style="border-color:#f87171">
+                    <div class="pb-hd" style="background:var(--red-p)">
+                        <div class="pb-icon">📉</div>
+                        <div>
+                            <div class="pb-name" style="color:var(--red)">Institutional Breakdown — Bearish PE Setup
+                            </div>
+                            <div class="pb-trig" style="color:var(--red)">Trigger: V_CoC &lt; −10 + GEX decline &gt;30%
+                                + Gate ≥ 5</div>
+                        </div>
+                    </div>
+                    <div class="pb-body">
+                        <p>The highest-conviction setup in the system. FIIs are actively building futures shorts (V_CoC
+                            &lt; −10), dealer hedging is weakening (GEX dropped 30%+ from peak), and the Environment
+                            Gate confirms all other conditions are aligned. The index is structurally positioned to
+                            decline and the option buying window is open.</p>
+                        <h4>Entry Conditions — All Must Be True</h4>
+                        <ul class="bl">
+                            <li>V_CoC has crossed −10 (VCOC_BEARISH alert fired) and has sustained below −10 for at
+                                least 10 minutes</li>
+                            <li>Net GEX has fallen &gt;30% from today's opening peak (Gate C#1 fired)</li>
+                            <li>Gate score ≥ 5 (ideally 7+)</li>
+                            <li>IVP &lt;50% (options are cheap)</li>
+                            <li>PCR divergence direction: Vol PCR ≥ OI PCR (retail buying puts = trap setup) OR OI PCR
+                                already heavy with puts (institutional structural short)</li>
+                        </ul>
+                        <h4>Trade Structure</h4>
+                        <ul class="bl">
+                            <li>Buy ATM or 1 strike OTM PE on the underlying where signals are strongest (typically
+                                NIFTY or BANKNIFTY)</li>
+                            <li>Expiry: TIER1_NEAR with DTE 3–7 (enough time but maximum delta efficiency)</li>
+                            <li>Target: 2× entry premium (i.e., if you paid ₹80, target exit at ₹160)</li>
+                            <li>SL: Dynamic SL_t from Position Monitor; do not override</li>
+                            <li>Time limit: exit by 14:30 regardless of P&amp;L</li>
+                        </ul>
+                        <h4>Exit Signals</h4>
+                        <ul class="bl">
+                            <li>LTP falls to SL_t → <strong>exit immediately</strong></li>
+                            <li>V_CoC reverses above −5 → <strong>exit 50% of position</strong></li>
+                            <li>Gate score drops below 4 → <strong>exit</strong></li>
+                            <li>Target hit → <strong>exit full position</strong></li>
+                            <li>14:30 → <strong>exit regardless</strong></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sec" id="pb2">
+                <div class="sec-hd">
+                    <div class="sec-num">PB2</div>
+                    <h2 class="sh">Playbook 2 — Gamma Unwind + Bullish Confirmation</h2>
+                </div>
+                <div class="playbook" style="border-color:#86efac">
+                    <div class="pb-hd" style="background:var(--green-p)">
+                        <div class="pb-icon">📈</div>
+                        <div>
+                            <div class="pb-name" style="color:var(--green)">Gamma Unwind + Bullish Futures — CE Setup
+                            </div>
+                            <div class="pb-trig" style="color:var(--green)">Trigger: V_CoC &gt; +10 + GEX &lt; 50% of
+                                peak + Gate ≥ 5</div>
+                        </div>
+                    </div>
+                    <div class="pb-body">
+                        <p>The bullish mirror of PB1. Institutional desks are accumulating futures long positions (V_CoC
+                            turning strongly positive), dealer hedging has diminished (GEX well below peak), and the
+                            index has structural tailwinds. Retail sentiment may be lagging (call-PCR not yet elevated),
+                            giving you early-mover advantage.</p>
+                        <h4>Entry Conditions — All Must Be True</h4>
+                        <ul class="bl">
+                            <li>V_CoC &gt; +10 and rising (VCOC_BULLISH alert fired)</li>
+                            <li>Net GEX &lt; 50% of today's peak OR GEX trend consistently declining through the morning
+                                session</li>
+                            <li>Gate score ≥ 5</li>
+                            <li>IVP &lt;50%</li>
+                            <li>Futures OBI positive (buy-side dominant — confirming futures accumulation)</li>
+                        </ul>
+                        <h4>Trade Structure</h4>
+                        <ul class="bl">
+                            <li>Buy ATM or 1 strike OTM CE on the strongest underlying by V_CoC magnitude</li>
+                            <li>Expiry: TIER1_NEAR DTE 3–7</li>
+                            <li>Target: 2× entry premium</li>
+                            <li>SL: Dynamic SL_t; trail it as position profits</li>
+                        </ul>
+                        <h4>Exit Signals</h4>
+                        <ul class="bl">
+                            <li>LTP falls to SL_t → <strong>exit</strong></li>
+                            <li>V_CoC reverses below +5 → <strong>exit 50%</strong></li>
+                            <li>IV_SPIKE alert fires (post-move IV crush risk) → <strong>exit full position</strong>
+                            </li>
+                            <li>Target hit or 14:30 → <strong>exit</strong></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sec" id="pb3">
+                <div class="sec-hd">
+                    <div class="sec-num">PB3</div>
+                    <h2 class="sh">Playbook 3 — Pure Low IV Environment</h2>
+                </div>
+                <div class="playbook" style="border-color:#93c5fd">
+                    <div class="pb-hd" style="background:#eff6ff">
+                        <div class="pb-icon">💎</div>
+                        <div>
+                            <div class="pb-name" style="color:#1e3a8a">Pure Low IV — Volatility Expansion Play</div>
+                            <div class="pb-trig" style="color:#3b82f6">Trigger: IVP &lt; 25% (extreme bottom) + IV_CRUSH
+                                pattern in recent sessions</div>
+                        </div>
+                    </div>
+                    <div class="pb-body">
+                        <p>When IVP is in the bottom quartile (&lt;25%), any significant market move — regardless of
+                            direction — will be amplified by IV expansion. This is a "buy cheap volatility and let it
+                            expand" play rather than a pure directional trade. Direction selection is still guided by
+                            V_CoC, but position sizing is more aggressive because the IV tailwind provides a structural
+                            edge.</p>
+                        <h4>Entry Conditions</h4>
+                        <ul class="bl">
+                            <li>IVP &lt; 25% for the target underlying — confirmed on IV Surface panel (all strikes
+                                uniformly cool)</li>
+                            <li>Gate score ≥ 4 (minimum Gate threshold, since IV edge compensates for some Gate
+                                weakness)</li>
+                            <li>V_CoC provides direction; if neutral, consider a <em>straddle-like approach</em> by
+                                buying both ATM CE and ATM PE (very rare, only when IVP &lt; 15%)</li>
+                        </ul>
+                        <h4>Trade Structure</h4>
+                        <ul class="bl">
+                            <li>Buy ATM strike of target underlying; expiry TIER1_FAR (DTE 13–25) to maximise vega
+                                exposure</li>
+                            <li>Use slightly higher lot size than usual because the IV tailwind improves expected value
+                            </li>
+                            <li>Target: 40–60% premium gain (not just 2× — low IV entry means smaller absolute moves
+                                produce larger % gains)</li>
+                        </ul>
+                        <h4>Important: Post-Entry IV Monitoring</h4>
+                        <p>If IV expands significantly (IV_SPIKE alert) after entry, <strong>consider exiting on the IV
+                                spike rather than waiting for spot to move further</strong>. The vega cushion has been
+                            captured — selling into the expansion locks in the structural IV profit before any
+                            mean-reversion.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sec" id="pb4">
+                <div class="sec-hd">
+                    <div class="sec-num">PB4</div>
+                    <h2 class="sh">Playbook 4 — Event-Driven IV Trade</h2>
+                </div>
+                <div class="playbook" style="border-color:#fcd34d">
+                    <div class="pb-hd" style="background:var(--gold-p)">
+                        <div class="pb-icon">⚡</div>
+                        <div>
+                            <div class="pb-name" style="color:var(--amb)">Event-Driven Trade — Known Catalyst (RBI /
+                                Results)</div>
+                            <div class="pb-trig" style="color:var(--amb)">Trigger: Known scheduled event within 1–2
+                                trading days + IVP &lt;50% in FAR expiry while NEAR expiry is elevated</div>
+                        </div>
+                    </div>
+                    <div class="pb-body">
+                        <p>Event-driven plays require a different setup: the IV Surface should show an inverted term
+                            structure (near-term expiry IV inflated by event risk, far-term IV still moderate). Instead
+                            of buying the near-term option (expensive), you buy the <em>next expiry</em> to avoid the
+                            inflated event premium but still benefit from the post-event directional move that often
+                            continues for 1–2 days.</p>
+                        <h4>Setup Identification</h4>
+                        <ul class="bl">
+                            <li>IV Surface panel shows near-expiry IVP &gt;70% but far-expiry IVP &lt;50%</li>
+                            <li>Known catalyst: RBI policy date, election results, major quarterly result (Reliance,
+                                TCS, HDFC Bank)</li>
+                            <li>V_CoC provides a pre-event lean: if institutional desks are already positioned bearish
+                                (V_CoC &lt; −10), the post-event continuation is likely bearish even if there is a
+                                knee-jerk bullish spike initially</li>
+                        </ul>
+                        <h4>Trade Structure</h4>
+                        <ul class="bl">
+                            <li>Buy TIER1_FAR expiry ATM or 1-strike OTM in the V_CoC direction</li>
+                            <li>Entry on the day <em>before</em> the event, typically in Phase 3 window, only if Gate ≥
+                                4</li>
+                            <li>Plan to hold <em>through</em> the event and exit the day after, capturing the
+                                continuation move once IV settles</li>
+                            <li>Hard SL: 40% of entry premium (wider than usual because next-day continuation expected)
+                            </li>
+                        </ul>
+                        <div class="co co-warn"><span class="co-icon">⚠️</span><span><strong>IV crush risk:</strong> If
+                                the event outcome is priced in and the post-announcement move is smaller than expected,
+                                even a correct directional bet can lose money due to IV crush. Monitor vega P&amp;L in
+                                Position Monitor continuously. If vega P&amp;L exceeds delta P&amp;L gain within 30
+                                minutes of announcement, exit immediately — IV is crushing faster than spot is
+                                moving.</span></div>
+
+                        <div style="display:flex;gap:12px;margin-top:28px;flex-wrap:wrap">
+                            <a href="Part6_Concept_Library_Advanced.html"
+                                style="display:inline-flex;align-items:center;gap:8px;background:var(--parch);color:var(--navy);border:1px solid var(--bdr);padding:10px 20px;border-radius:8px;text-decoration:none;font-size:13.5px;font-weight:600">←
+                                Part 6: Advanced Concepts</a>
+                            <a href="Part8_Reference_Troubleshooting_Glossary.html"
+                                style="display:inline-flex;align-items:center;gap:8px;background:var(--navy);color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:13.5px;font-weight:600">Next:
+                                Part 8 — Reference &amp; Glossary →</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</body>
+
+</html>

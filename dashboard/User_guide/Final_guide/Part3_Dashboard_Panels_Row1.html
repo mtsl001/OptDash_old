@@ -1,0 +1,1375 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Option Buying Dashboard v2.0 — Part 3: Panels A, B, C</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        :root {
+            --cream: #faf8f4;
+            --warm: #f5f2eb;
+            --parch: #ede9df;
+            --bdr: #ddd8cc;
+            --bdr-s: #e8e4da;
+            --ink: #1a1714;
+            --ink2: #3d3830;
+            --ink3: #6b6458;
+            --ink4: #9b9388;
+            --navy: #0f2744;
+            --navy2: #1a3d6b;
+            --blue: #2563a8;
+            --blue2: #3b82d4;
+            --blue-p: #dbeafe;
+            --gold: #b8860b;
+            --gold-p: #fef3c7;
+            --amb: #92400e;
+            --amb-p: #fef3c7;
+            --green: #166534;
+            --green2: #16a34a;
+            --green-p: #dcfce7;
+            --red: #991b1b;
+            --red2: #dc2626;
+            --red-p: #fee2e2;
+            --F: 'Libre Baskerville', Georgia, serif;
+            --S: 'DM Sans', system-ui, sans-serif;
+            --M: 'DM Mono', 'Courier New', monospace;
+            --sw: 272px;
+            --mc: 860px;
+        }
+
+        html {
+            scroll-behavior: smooth
+        }
+
+        body {
+            font-family: var(--S);
+            background: var(--cream);
+            color: var(--ink);
+            line-height: 1.7;
+            font-size: 15px
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background: radial-gradient(ellipse 80% 60% at 8% 0%, rgba(37, 99, 168, .09) 0%, transparent 55%),
+                radial-gradient(ellipse 60% 70% at 92% 5%, rgba(184, 134, 11, .07) 0%, transparent 50%),
+                linear-gradient(158deg, #faf8f4 0%, #f0eade 45%, #f6f3ed 100%)
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+            z-index: 1
+        }
+
+        .sidebar {
+            width: var(--sw);
+            flex-shrink: 0;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            padding: 28px 0 40px;
+            background: rgba(250, 248, 244, .92);
+            backdrop-filter: blur(14px);
+            border-right: 1px solid var(--bdr)
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 3px
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--bdr);
+            border-radius: 2px
+        }
+
+        .sb-logo {
+            padding: 0 22px 24px;
+            border-bottom: 1px solid var(--bdr-s);
+            margin-bottom: 18px
+        }
+
+        .sb-logo .prod {
+            font-family: var(--M);
+            font-size: 10px;
+            color: var(--blue);
+            letter-spacing: .08em;
+            text-transform: uppercase
+        }
+
+        .sb-logo .name {
+            font-family: var(--F);
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--navy);
+            line-height: 1.25;
+            margin-top: 4px
+        }
+
+        .sb-logo .ver {
+            display: inline-block;
+            margin-top: 8px;
+            font-size: 10px;
+            font-family: var(--M);
+            color: var(--ink4);
+            background: var(--parch);
+            padding: 2px 8px;
+            border-radius: 20px;
+            border: 1px solid var(--bdr)
+        }
+
+        .part-tag {
+            margin: 0 22px 18px;
+            padding: 8px 14px;
+            background: var(--navy);
+            border-radius: 8px;
+            font-family: var(--M);
+            font-size: 10px;
+            color: rgba(255, 255, 255, .7);
+            letter-spacing: .06em;
+            text-transform: uppercase
+        }
+
+        .part-tag span {
+            display: block;
+            color: #fff;
+            font-size: 12px;
+            margin-top: 2px;
+            font-family: var(--F);
+            font-weight: 700;
+            letter-spacing: 0;
+            text-transform: none
+        }
+
+        .nav-grp {
+            margin-bottom: 4px
+        }
+
+        .nav-lbl {
+            padding: 8px 22px 3px;
+            font-size: 9.5px;
+            font-weight: 600;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--ink4)
+        }
+
+        .nl {
+            display: block;
+            padding: 6px 22px;
+            font-size: 13px;
+            color: var(--ink3);
+            text-decoration: none;
+            border-left: 2px solid transparent;
+            transition: all .15s
+        }
+
+        .nl:hover {
+            color: var(--blue);
+            background: rgba(37, 99, 168, .06);
+            border-left-color: var(--blue2)
+        }
+
+        .nl.active {
+            color: var(--navy);
+            font-weight: 600;
+            border-left-color: var(--blue);
+            background: rgba(37, 99, 168, .08)
+        }
+
+        .nav-parts {
+            padding: 14px 22px 0;
+            border-top: 1px solid var(--bdr-s);
+            margin-top: 8px
+        }
+
+        .nav-parts .np-lbl {
+            font-size: 9.5px;
+            font-weight: 600;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--ink4);
+            margin-bottom: 6px
+        }
+
+        .np-link {
+            display: block;
+            padding: 4px 0;
+            font-size: 12px;
+            color: var(--ink4);
+            text-decoration: none;
+            transition: color .15s
+        }
+
+        .np-link:hover {
+            color: var(--blue)
+        }
+
+        .np-link.cur {
+            color: var(--navy);
+            font-weight: 600
+        }
+
+        .main {
+            flex: 1;
+            min-width: 0;
+            padding: 56px 60px 100px
+        }
+
+        .sec {
+            max-width: var(--mc);
+            padding-top: 24px;
+            margin-bottom: 72px
+        }
+
+        .sec+.sec {
+            border-top: 1px solid var(--bdr-s);
+            padding-top: 60px
+        }
+
+        .hero {
+            max-width: var(--mc);
+            padding-bottom: 52px;
+            border-bottom: 1px solid var(--bdr);
+            margin-bottom: 60px
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--M);
+            font-size: 10.5px;
+            color: var(--blue);
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            margin-bottom: 18px
+        }
+
+        .eyebrow::before {
+            content: '';
+            display: block;
+            width: 22px;
+            height: 1px;
+            background: var(--blue)
+        }
+
+        .hero h1 {
+            font-family: var(--F);
+            font-size: 38px;
+            font-weight: 700;
+            line-height: 1.15;
+            color: var(--navy);
+            margin-bottom: 14px
+        }
+
+        .hero h1 em {
+            font-style: italic;
+            color: var(--blue)
+        }
+
+        .hero-lead {
+            font-size: 16px;
+            color: var(--ink2);
+            line-height: 1.78;
+            max-width: 680px
+        }
+
+        h2.sh {
+            font-family: var(--F);
+            font-size: 27px;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 14px;
+            line-height: 1.2
+        }
+
+        h3 {
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--ink);
+            margin: 32px 0 11px
+        }
+
+        h4 {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--ink3);
+            margin: 22px 0 7px;
+            text-transform: uppercase;
+            letter-spacing: .07em
+        }
+
+        p {
+            color: var(--ink2);
+            margin-bottom: 14px;
+            line-height: 1.78
+        }
+
+        strong {
+            color: var(--ink);
+            font-weight: 600
+        }
+
+        code {
+            background: var(--parch);
+            border: 1px solid var(--bdr);
+            border-radius: 4px;
+            padding: 1px 6px;
+            font-size: 12px;
+            color: var(--navy2);
+            font-family: var(--M)
+        }
+
+        ul.bl {
+            padding-left: 22px;
+            color: var(--ink2);
+            font-size: 13.5px;
+            line-height: 2.1;
+            margin-bottom: 14px
+        }
+
+        .sec-hd {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 28px
+        }
+
+        .sec-num {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--navy);
+            color: #fff;
+            font-family: var(--M);
+            font-size: 12.5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0
+        }
+
+        .tw {
+            overflow-x: auto;
+            margin: 14px 0;
+            border-radius: 9px;
+            border: 1px solid var(--bdr)
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            background: #fff
+        }
+
+        th {
+            background: var(--warm);
+            color: var(--ink2);
+            font-weight: 600;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            padding: 9px 14px;
+            text-align: left;
+            border-bottom: 2px solid var(--bdr)
+        }
+
+        td {
+            padding: 9px 14px;
+            border-bottom: 1px solid var(--bdr-s);
+            color: var(--ink2);
+            vertical-align: top;
+            line-height: 1.5
+        }
+
+        tr:last-child td {
+            border-bottom: none
+        }
+
+        .co {
+            border-radius: 9px;
+            padding: 14px 18px;
+            margin: 18px 0;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            font-size: 13.5px;
+            line-height: 1.6
+        }
+
+        .co-icon {
+            font-size: 17px;
+            flex-shrink: 0;
+            margin-top: 1px
+        }
+
+        .co-info {
+            background: var(--blue-p);
+            border: 1px solid #bfdbfe;
+            color: var(--navy2)
+        }
+
+        .co-warn {
+            background: var(--amb-p);
+            border: 1px solid #fde68a;
+            color: var(--amb)
+        }
+
+        .co-ok {
+            background: var(--green-p);
+            border: 1px solid #bbf7d0;
+            color: var(--green)
+        }
+
+        .co-tip {
+            background: var(--gold-p);
+            border: 1px solid #fde68a;
+            color: var(--gold)
+        }
+
+        .co strong {
+            color: inherit
+        }
+
+        .card {
+            background: #fff;
+            border: 1px solid var(--bdr);
+            border-radius: 11px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, .04)
+        }
+
+        .g2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin: 14px 0
+        }
+
+        .g3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+            margin: 14px 0
+        }
+
+        .formula {
+            background: var(--parch);
+            border: 1px solid var(--bdr);
+            border-radius: 8px;
+            padding: 14px 18px;
+            font-family: var(--M);
+            font-size: 12.5px;
+            color: var(--navy2);
+            margin: 14px 0;
+            line-height: 1.75
+        }
+
+        .formula .flbl {
+            font-size: 10px;
+            color: var(--ink4);
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            margin-bottom: 5px;
+            font-family: var(--S);
+            font-weight: 600
+        }
+
+        /* Panel header strip */
+        .panel-strip {
+            border-radius: 11px;
+            overflow: hidden;
+            margin-bottom: 36px;
+            border: 1px solid var(--bdr)
+        }
+
+        .panel-strip-hd {
+            padding: 16px 22px;
+            display: flex;
+            align-items: center;
+            gap: 14px
+        }
+
+        .panel-strip-hd .plet {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--F);
+            font-size: 20px;
+            font-weight: 700;
+            flex-shrink: 0
+        }
+
+        .panel-strip-hd .pinfo {
+            flex: 1
+        }
+
+        .panel-strip-hd .ptitle {
+            font-family: var(--F);
+            font-size: 18px;
+            font-weight: 700
+        }
+
+        .panel-strip-hd .pdesc {
+            font-size: 12.5px;
+            margin-top: 2px
+        }
+
+        .panel-strip-body {
+            padding: 22px 22px;
+            background: #fff
+        }
+
+        /* Score ring */
+        .score-grid {
+            display: flex;
+            gap: 22px;
+            align-items: flex-start;
+            margin: 20px 0;
+            flex-wrap: wrap
+        }
+
+        .score-ring {
+            flex-shrink: 0
+        }
+
+        .score-ring svg {
+            display: block
+        }
+
+        .cond-list {
+            flex: 1;
+            min-width: 280px
+        }
+
+        .cond-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 7px 0;
+            border-bottom: 1px solid var(--bdr-s)
+        }
+
+        .cond-row:last-child {
+            border-bottom: none
+        }
+
+        .cond-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            flex-shrink: 0
+        }
+
+        .cond-icon.yes {
+            background: var(--green-p);
+            color: var(--green)
+        }
+
+        .cond-icon.no {
+            background: var(--red-p);
+            color: var(--red)
+        }
+
+        .cond-text {
+            font-size: 13px;
+            color: var(--ink2);
+            flex: 1;
+            line-height: 1.4
+        }
+
+        .cond-pts {
+            font-family: var(--M);
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--navy);
+            white-space: nowrap
+        }
+
+        /* Verdict boxes */
+        .verdict-row {
+            display: flex;
+            gap: 10px;
+            margin: 16px 0;
+            flex-wrap: wrap
+        }
+
+        .verdict {
+            flex: 1;
+            min-width: 140px;
+            border-radius: 9px;
+            padding: 12px 16px;
+            border: 1.5px solid;
+            text-align: center
+        }
+
+        .verd-label {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            margin-bottom: 5px
+        }
+
+        .verd-score {
+            font-family: var(--F);
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 3px
+        }
+
+        .verd-desc {
+            font-size: 11.5px;
+            line-height: 1.4
+        }
+
+        .v-go {
+            background: var(--green-p);
+            border-color: #86efac;
+            color: var(--green)
+        }
+
+        .v-wait {
+            background: var(--amb-p);
+            border-color: #fde68a;
+            color: var(--amb)
+        }
+
+        .v-nogo {
+            background: var(--red-p);
+            border-color: #f87171;
+            color: var(--red)
+        }
+
+        /* GEX regime chips */
+        .regime-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 14px 0
+        }
+
+        .regime {
+            border-radius: 9px;
+            padding: 13px 16px;
+            border: 1px solid
+        }
+
+        .regime-lbl {
+            font-size: 10.5px;
+            font-weight: 600;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            margin-bottom: 5px
+        }
+
+        .regime-name {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 5px
+        }
+
+        .regime-desc {
+            font-size: 12.5px;
+            line-height: 1.5;
+            color: var(--ink3)
+        }
+
+        /* CoC chart illustration */
+        .coc-chart {
+            background: var(--navy);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 16px 0;
+            font-family: var(--M);
+            font-size: 12px;
+            color: #cdd6e0;
+            overflow-x: auto
+        }
+
+        .coc-bar-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 5px 0
+        }
+
+        .coc-time {
+            width: 50px;
+            flex-shrink: 0;
+            color: #6b7280
+        }
+
+        .coc-bar {
+            height: 18px;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            padding-left: 6px;
+            font-size: 10.5px;
+            font-weight: 600
+        }
+
+        @media(max-width:900px) {
+            .sidebar {
+                display: none
+            }
+
+            .main {
+                padding: 28px 22px 60px
+            }
+
+            .g2,
+            .g3,
+            .score-grid,
+            .regime-grid {
+                grid-template-columns: 1fr
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layout">
+
+        <nav class="sidebar">
+            <div class="sb-logo">
+                <div class="prod">User Guide · 2026</div>
+                <div class="name">Option Buying<br>Dashboard</div>
+                <span class="ver">v2.0 — macOS Edition</span>
+            </div>
+            <div class="part-tag">Part 3 of 8<span>Panels A, B &amp; C</span></div>
+            <div class="nav-grp">
+                <div class="nav-lbl">This Part</div>
+                <a class="nl active" href="#layout">Panel Layout Overview</a>
+                <a class="nl" href="#panel-a">Panel A · Environment Gate</a>
+                <a class="nl" href="#panel-b">Panel B · Net GEX</a>
+                <a class="nl" href="#panel-c">Panel C · CoC Velocity</a>
+            </div>
+            <div class="nav-parts">
+                <div class="np-lbl">All 8 Parts</div>
+                <a class="np-link" href="Part1_Introduction_Architecture.html">1 · Introduction &amp; Architecture</a>
+                <a class="np-link" href="Part2_Getting_Started.html">2 · Getting Started</a>
+                <a class="np-link cur" href="Part3_Dashboard_Panels_Row1.html">3 · Panels A, B, C</a>
+                <a class="np-link" href="Part4_Dashboard_Panels_Row2_Row3.html">4 · Panels D–H</a>
+                <a class="np-link" href="Part5_Concept_Library_Core.html">5 · Concepts: Core</a>
+                <a class="np-link" href="Part6_Concept_Library_Advanced.html">6 · Concepts: Advanced</a>
+                <a class="np-link" href="Part7_Trading_Workflow_Playbooks.html">7 · Workflow &amp; Playbooks</a>
+                <a class="np-link" href="Part8_Reference_Troubleshooting_Glossary.html">8 · Reference &amp; Glossary</a>
+            </div>
+        </nav>
+
+        <main class="main">
+
+            <div class="hero">
+                <div class="eyebrow">Part 3 of 8 · Dashboard Panels</div>
+                <h1>Dashboard Panels<br><em>Row 1: A, B &amp; C</em></h1>
+                <p class="hero-lead">The first row of the dashboard contains the three most time-sensitive panels: the
+                    Environment Gate (go/no-go decision), the Net GEX chart (regime identification), and the CoC
+                    Velocity chart (institutional flow detection). Together they answer one question: <em>Is it a good
+                        day to buy options, and in which direction?</em></p>
+            </div>
+
+            <!-- LAYOUT OVERVIEW -->
+            <div class="sec" id="layout">
+                <div class="sec-hd">
+                    <div class="sec-num">0</div>
+                    <h2 class="sh">Dashboard Panel Layout</h2>
+                </div>
+                <p>The dashboard is arranged in three rows. Read them top-to-bottom during your pre-trade analysis —
+                    each row builds on the one above it.</p>
+                <div class="tw">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Row</th>
+                                <th>Panel</th>
+                                <th>Name</th>
+                                <th>Primary Question</th>
+                                <th>Poll Interval</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Row 1 · A</td>
+                                <td style="font-weight:700;color:var(--green)">Environment Gate</td>
+                                <td>Gate</td>
+                                <td>Should I trade today at all?</td>
+                                <td>5 sec</td>
+                            </tr>
+                            <tr>
+                                <td>Row 1 · B</td>
+                                <td style="font-weight:700;color:var(--blue)">Net GEX</td>
+                                <td>GEX</td>
+                                <td>Are market makers pinning or releasing price?</td>
+                                <td>5 sec</td>
+                            </tr>
+                            <tr>
+                                <td>Row 1 · C</td>
+                                <td style="font-weight:700;color:var(--amb)">CoC Velocity</td>
+                                <td>V_CoC</td>
+                                <td>Is institutional money moving aggressively?</td>
+                                <td>5 sec</td>
+                            </tr>
+                            <tr>
+                                <td>Row 2 · D</td>
+                                <td style="font-weight:700">Strike Screener</td>
+                                <td>Screener</td>
+                                <td>Which strike is the best entry candidate right now?</td>
+                                <td>30 sec</td>
+                            </tr>
+                            <tr>
+                                <td>Row 2 · E</td>
+                                <td style="font-weight:700">PCR Divergence</td>
+                                <td>PCR</td>
+                                <td>Is retail sentiment diverging from institutional?</td>
+                                <td>5 sec</td>
+                            </tr>
+                            <tr>
+                                <td>Row 2 · F</td>
+                                <td style="font-weight:700">Alert Feed</td>
+                                <td>Alerts</td>
+                                <td>What triggered in the last 30 minutes?</td>
+                                <td>5 sec</td>
+                            </tr>
+                            <tr>
+                                <td>Row 3 · G (Volume Velocity)</td>
+                                <td style="font-weight:700">IV Surface</td>
+                                <td>IV</td>
+                                <td>Are options cheap or expensive across strikes?</td>
+                                <td>30 sec</td>
+                            </tr>
+                            <tr>
+                                <td>Row 3 · H (Term Structure)</td>
+                                <td style="font-weight:700">Position Monitor</td>
+                                <td>Positions</td>
+                                <td>Where does my live position stand on P&amp;L and SL?</td>
+                                <td>5 sec</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- PANEL A -->
+            <div class="sec" id="panel-a">
+                <div class="panel-strip" style="border-color:#86efac">
+                    <div class="panel-strip-hd" style="background:#dcfce7">
+                        <div class="plet" style="background:#16a34a;color:#fff">A</div>
+                        <div class="pinfo">
+                            <div class="ptitle" style="color:var(--green)">Environment Gate</div>
+                            <div class="pdesc" style="color:var(--green)">8-condition pre-flight checklist · Score 0–11 (6 core + 2 VEX/CEX bonus)
+                                pts · GO / WAIT / NO-GO verdict</div>
+                        </div>
+                    </div>
+                    <div class="panel-strip-body">
+                        <p><strong>The Environment Gate is the most important panel on the dashboard.</strong> It is a
+                            quantitative pre-flight checklist that evaluates whether the current market structure is
+                            suitable for buying options. Six independent conditions are tested in real-time; each
+                            condition earns weighted points. The total score determines whether you should trade.</p>
+                        <p><strong>Rule 1: Never enter a new position when the Gate score is below 4.</strong> This is
+                            the single most important discipline in the system. On NO-GO days, even the best-looking
+                            setups on other panels should be ignored entirely.</p>
+
+                        <h4>The 6 Gate Conditions</h4>
+                        <div class="tw">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Condition</th>
+                                        <th>Pts</th>
+                                        <th>What It Measures</th>
+                                        <th>Signal Logic</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td><strong>GEX declined &gt;30% from daily peak</strong></td>
+                                        <td style="font-family:var(--M);font-weight:700;color:var(--navy)">2</td>
+                                        <td>Market maker hedging force is weakening</td>
+                                        <td>High GEX forces mean-reversion. Once GEX drops 30%+ from its daily high, the
+                                            pin is released and directional moves become viable for option buyers.</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td><strong>V_CoC &lt; −10 at any point today</strong></td>
+                                        <td style="font-family:var(--M);font-weight:700;color:var(--navy)">2</td>
+                                        <td>FII/institutional aggressive futures selling</td>
+                                        <td>A V_CoC reading below −10 means futures carry velocity turned sharply
+                                            negative — an institutional bearish campaign is underway (selling futures
+                                            aggressively to build a short position).</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td><strong>Futures OBI negative</strong></td>
+                                        <td style="font-family:var(--M);font-weight:700;color:var(--navy)">1</td>
+                                        <td>Order book tilted to sell side in futures</td>
+                                        <td>More sellers than buyers showing in the futures order book. Confirms that
+                                            supply pressure is real and not just price-based — the book imbalance is
+                                            visible before price moves.</td>
+                                    </tr>
+                                    <tr>
+                                        <td>4</td>
+                                        <td><strong>PCR divergence &gt;0.25</strong></td>
+                                        <td style="font-family:var(--M);font-weight:700;color:var(--navy)">1</td>
+                                        <td>Retail buying puts while institutions stay flat</td>
+                                        <td>When volume-PCR diverges significantly from OI-PCR, retail traders are
+                                            piling into puts while institutional OI is flat. This asymmetry often
+                                            signals a retail trap (a drop that reverses) or confirms institutional
+                                            direction.</td>
+                                    </tr>
+                                    <tr>
+                                        <td>5</td>
+                                        <td><strong>IVP &lt; 50%</strong></td>
+                                        <td style="font-family:var(--M);font-weight:700;color:var(--navy)">2</td>
+                                        <td>Options are cheap relative to recent history</td>
+                                        <td>IV Percentile below 50 means current IV is below the 90-day median. Buying
+                                            options below median IV is structurally advantageous — you pay less theta
+                                            per delta, and mean-reversion of IV (expansion) works in your favour.</td>
+                                    </tr>
+                                    <tr>
+                                        <td>6</td>
+                                        <td><strong>Smoothed OBI &lt; 0</strong></td>
+                                        <td style="font-family:var(--M);font-weight:700;color:var(--navy)">1</td>
+                                        <td>Options order book tilted to seller side</td>
+                                        <td>A 5-snapshot moving average of the options OBI (buy qty vs sell qty) being
+                                            negative means structural sell pressure in the option order book —
+                                            consistent with a directional environment favourable for buyers.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <h4>Score Interpretation</h4>
+                        <div class="verdict-row">
+                            <div class="verdict v-go">
+                                <div class="verd-label">GO</div>
+                                <div class="verd-score">7–11</div>
+                                <div class="verd-desc">All major conditions met. Maximum confidence for directional
+                                    option buying. Size at 100% of planned lots.</div>
+                            </div>
+                            <div class="verdict v-go" style="background:#d1fae5;border-color:#6ee7b7">
+                                <div class="verd-label">GO</div>
+                                <div class="verd-score">5–6</div>
+                                <div class="verd-desc">Strong conditions met. High confidence entry. Size at 75% of
+                                    planned lots. Watch V_CoC for direction confirmation.</div>
+                            </div>
+                            <div class="verdict v-wait">
+                                <div class="verd-label">WAIT</div>
+                                <div class="verd-score">4</div>
+                                <div class="verd-desc">Borderline GO. Minimal entry only. 50% of lots. Requires
+                                    additional confirmation from V_CoC or Strike Screener.</div>
+                            </div>
+                            <div class="verdict v-wait" style="background:#fef9c3;border-color:#fde047">
+                                <div class="verd-label">WAIT</div>
+                                <div class="verd-score">2–3</div>
+                                <div class="verd-desc">Insufficient alignment. Do not enter. Monitor for score
+                                    improvement through the session.</div>
+                            </div>
+                            <div class="verdict v-nogo">
+                                <div class="verd-label">NO-GO</div>
+                                <div class="verd-score">0–1</div>
+                                <div class="verd-desc">Hostile environment. No option buying under any circumstances.
+                                    Sit out the entire day or review hedged strategies only.</div>
+                            </div>
+                        </div>
+
+                        <h3>How to Read the Gate Panel</h3>
+                        <p>The panel displays the total score prominently as a circular ring gauge (0–11 scale) with a
+                            colour: red for NO-GO, amber for WAIT, green for GO. Below the ring, six condition rows show
+                            individual pass/fail status. Colour coding: <strong>green checkmark = condition
+                                met</strong>, <strong>red X = condition not met</strong>. Each row shows the condition
+                            name, the points earned, and a brief status phrase.</p>
+
+                        <h3>Day-Type Patterns</h3>
+                        <div class="g2">
+                            <div class="card">
+                                <h4 style="margin-top:0;color:var(--green)">Best setup day</h4>
+                                <p style="font-size:13px;margin:0">GEX drops from morning peak by 10:00, V_CoC hits −15
+                                    by 09:30, IVP is 30%. All 6 core conditions fire (+ 2 VEX/CEX bonus = 8 total). Gate can reach 11. This is the day to trade
+                                    at maximum size in the direction V_CoC points.</p>
+                            </div>
+                            <div class="card">
+                                <h4 style="margin-top:0;color:var(--red)">Typical NO-GO day</h4>
+                                <p style="font-size:13px;margin:0">GEX is at or near daily peak all day, V_CoC hovering
+                                    between −5 and +5, IVP is 70%+. Gate stays at 2–3 all session. Any "interesting"
+                                    move in spot is a trap — the market maker pinning force dominates.</p>
+                            </div>
+                        </div>
+
+                        <div class="co co-warn"><span class="co-icon">⚠️</span><span><strong>The Gate is a real-time
+                                    system, not a morning checkpoint.</strong> It is re-evaluated every 5 minutes. A day
+                                that starts as NO-GO can turn to GO by 11:00 if GEX drops and V_CoC fires. Conversely, a
+                                GO morning can revert to WAIT after 13:00 if conditions deteriorate. Keep the dashboard
+                                visible throughout the session.</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PANEL B -->
+            <div class="sec" id="panel-b">
+                <div class="panel-strip" style="border-color:#93c5fd">
+                    <div class="panel-strip-hd" style="background:#dbeafe">
+                        <div class="plet" style="background:#2563a8;color:#fff">B</div>
+                        <div class="pinfo">
+                            <div class="ptitle" style="color:var(--navy)">Net GEX — Gamma Exposure</div>
+                            <div class="pdesc" style="color:var(--blue)">Intraday timeseries · % of daily peak · Regime
+                                classification · Dealer hedging direction</div>
+                        </div>
+                    </div>
+                    <div class="panel-strip-body">
+                        <p><strong>Net GEX (Gamma Exposure)</strong> measures the aggregate gamma position of all market
+                            makers across the ATM window. It tells you how forcefully dealers are hedging — and
+                            therefore how much they are suppressing or amplifying directional price moves.</p>
+                        <p>The GEX panel shows a line chart of net GEX across every 5-minute snapshot today. The Y-axis
+                            is in raw GEX units (₹ Cr equivalent). A horizontal line marks the daily peak (highest
+                            intraday reading). The current GEX as a percentage of that peak is displayed prominently —
+                            this is the number Gate condition #1 is watching.</p>
+
+                        <h3>What the Chart Shows</h3>
+                        <div class="tw">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Chart Element</th>
+                                        <th>Meaning</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Blue line — Net GEX timeseries</strong></td>
+                                        <td>Aggregate GEX across all market makers. Plotted at each 5-min snapshot.
+                                            Rising = dealers accumulating gamma (pinning force increases). Falling =
+                                            dealers reducing/unwinding gamma (pinning force decreases).</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Dotted reference line — Daily peak</strong></td>
+                                        <td>The highest GEX reading recorded today. All "% of peak" calculations are
+                                            relative to this line. Resets at 09:15 each trading day.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>% of peak badge</strong></td>
+                                        <td>Current GEX ÷ daily peak GEX × 100. Gate condition #1 fires when this drops
+                                            below 70% (GEX declined &gt; 30% from peak).</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Regime badge</strong></td>
+                                        <td>Text label: LONG GAMMA, SHORT GAMMA, NEUTRAL, or TRANSITIONAL. Computed from
+                                            GEX sign and magnitude relative to 30-day norms.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Net GEX sign</strong></td>
+                                        <td>Positive = dealers are long gamma (hedging against moves = pinning).
+                                            Negative = dealers are short gamma (hedging with moves = amplifying).</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <h3>GEX Regimes and What They Mean for Option Buyers</h3>
+                        <div class="regime-grid">
+                            <div class="regime" style="background:#fee2e2;border-color:#f87171">
+                                <div class="regime-lbl" style="color:var(--red)">LONG GAMMA (High Positive)</div>
+                                <div class="regime-name" style="color:var(--red)">Pinning Environment</div>
+                                <div class="regime-desc">Dealers are net long gamma. Every up-move forces dealer
+                                    selling; every down-move forces dealer buying. The market oscillates in a narrow
+                                    band. <strong>Buying options is very difficult</strong> — directional moves fail at
+                                    dealer rebalancing points. Avoid new entries.</div>
+                            </div>
+                            <div class="regime" style="background:#fef3c7;border-color:#fcd34d">
+                                <div class="regime-lbl" style="color:var(--amb)">TRANSITIONAL (Declining from Peak)
+                                </div>
+                                <div class="regime-name" style="color:var(--amb)">Pre-Breakout Window</div>
+                                <div class="regime-desc">GEX is falling from its daily high (30–70% of peak). The dealer
+                                    hedging force is diminishing. Price can begin to trend without as much resistance.
+                                    Gate condition #1 fires here. <strong>Begin active monitoring for entry.</strong>
+                                </div>
+                            </div>
+                            <div class="regime" style="background:#dcfce7;border-color:#86efac">
+                                <div class="regime-lbl" style="color:var(--green)">NEUTRAL / LOW</div>
+                                <div class="regime-name" style="color:var(--green)">Directional Window</div>
+                                <div class="regime-desc">GEX is below 50% of peak. Dealer pinning force is minimal.
+                                    Price can trend strongly. This is when option premiums expand fastest. <strong>Best
+                                        environment for long options.</strong></div>
+                            </div>
+                            <div class="regime" style="background:#ede9df;border-color:#d1c7b7">
+                                <div class="regime-lbl" style="color:var(--ink3)">SHORT GAMMA (Negative)</div>
+                                <div class="regime-name" style="color:var(--ink)">Amplified Moves</div>
+                                <div class="regime-desc">Dealers are net short gamma. They must buy into up-moves and
+                                    sell into down-moves — which amplifies volatility. Very fast trending moves
+                                    possible. High reward but also fast reversals. <strong>Only trade with very tight
+                                        stops.</strong></div>
+                            </div>
+                        </div>
+
+                        <h3>Reading the GEX Chart: Key Patterns</h3>
+                        <div class="g2">
+                            <div class="card">
+                                <h4 style="margin-top:0">Peak at Open → Falling All Day</h4>
+                                <p style="font-size:13px;margin:0">GEX peaks at 09:20, then steadily declines. By 10:30
+                                    it's at 55% of peak. By 11:30 it's at 35%. This is a textbook opportunity day — the
+                                    pin is systematically unwinding and momentum can build through the session.</p>
+                            </div>
+                            <div class="card">
+                                <h4 style="margin-top:0">GEX Spikes Mid-Session</h4>
+                                <p style="font-size:13px;margin:0">GEX rises sharply mid-day (e.g., at 11:00). This
+                                    usually indicates a large options position being established (calendar spread or
+                                    long strangle by a dealer). Expect price to get pinned to the new GEX peak zone for
+                                    the remainder of the session. <em>Exit positions or tighten stops.</em></p>
+                            </div>
+                        </div>
+
+                        <div class="co co-info"><span class="co-icon">ℹ️</span><span><strong>GEX Direction vs Direction
+                                    of Trade:</strong> Net GEX does not tell you which direction to trade — it only
+                                tells you <em>whether</em> directional trading is viable. For direction, use CoC
+                                Velocity (Panel C). GEX enables the trade; V_CoC directs it.</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PANEL C -->
+            <div class="sec" id="panel-c">
+                <div class="panel-strip" style="border-color:#fcd34d">
+                    <div class="panel-strip-hd" style="background:#fef3c7">
+                        <div class="plet" style="background:#b8860b;color:#fff">C</div>
+                        <div class="pinfo">
+                            <div class="ptitle" style="color:var(--amb)">CoC Velocity — Cost of Carry</div>
+                            <div class="pdesc" style="color:var(--gold)">Futures–spot spread · 15-min rolling velocity ·
+                                Institutional directional bias detector</div>
+                        </div>
+                    </div>
+                    <div class="panel-strip-body">
+                        <p><strong>Cost of Carry (CoC)</strong> is the premium (or discount) at which futures contracts
+                            trade relative to the spot index. In a normal market, futures trade at a premium to spot
+                            (the "fair carry"). When FIIs aggressively buy or sell futures, the carry changes faster
+                            than fair value — and the <strong>velocity of that change</strong> reveals their direction.
+                        </p>
+
+                        <div class="formula">
+                            <div class="flbl">Cost of Carry Formula</div>
+                            CoC_t = Futures_LTP_t − Underlying_Spot_t<br><br>
+                            <div class="flbl">15-Minute Velocity Formula</div>
+                            V_CoC_t = CoC_t − CoC_(t−3) <span style="color:var(--ink3)">/* 3 snapshots × 5 min = 15-min
+                                change */</span>
+                        </div>
+
+                        <h3>What the Panel Shows</h3>
+                        <div class="tw">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Visual Element</th>
+                                        <th>What It Represents</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Upper chart — CoC absolute</strong></td>
+                                        <td>The raw futures premium vs spot across the day. Two reference lines: fair
+                                            carry upper bound (+₹30–35 for NIFTY) and fair carry lower bound (−₹5).
+                                            Readings outside this band indicate structural positioning beyond arbitrage.
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Lower chart — V_CoC bars</strong></td>
+                                        <td>Green bars = positive velocity (carry increasing → futures buyers are
+                                            dominant). Red bars = negative velocity (carry decreasing → futures sellers
+                                            are dominant). Height = magnitude of the 15-min change in carry.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>V_CoC badge</strong></td>
+                                        <td>Current V_CoC reading in points. Gate condition #2 triggers when this reads
+                                            &lt; −10 at any intraday snapshot.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Trend arrow</strong></td>
+                                        <td>Up/down arrow indicating whether V_CoC has been net positive or negative
+                                            over the last 30 minutes. More reliable directional signal than a single
+                                            snapshot.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <h3>Signal Interpretation</h3>
+                        <div class="tw">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>V_CoC Reading</th>
+                                        <th>Interpretation</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="color:var(--red);font-weight:700">Below −10</td>
+                                        <td>FIIs aggressively selling futures. Institutional bearish campaign confirmed.
+                                            This velocity typically precedes a significant spot move down within 60–90
+                                            minutes.</td>
+                                        <td>Gate condition #2 fires. Look for Put entries via Strike Screener.</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="color:var(--red)">−5 to −10</td>
+                                        <td>Moderate futures selling. Direction is bearish but not at conviction level
+                                            yet. Monitor for further deterioration.</td>
+                                        <td>Wait for −10 threshold before sizing. Keep at 50% if entering.</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="color:var(--ink3)">−5 to +5</td>
+                                        <td>Carry is changing slowly — no institutional conviction in either direction.
+                                            The futures market is balanced. Directional entries are speculative.</td>
+                                        <td>No Gate condition fires from V_CoC. Use other signals.</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="color:var(--green)">+5 to +10</td>
+                                        <td>Moderate futures buying. Institutions accumulating long futures. Bullish
+                                            bias emerging but not at conviction level.</td>
+                                        <td>Monitor for CE setups. Not enough for Gate trigger alone.</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="color:var(--green);font-weight:700">Above +10</td>
+                                        <td>FIIs aggressively buying futures. Bullish institutional campaign. Spot move
+                                            up expected within 60–90 minutes.</td>
+                                        <td>Gate condition fires (bullish version). Look for Call entries.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <h3>The 60–90 Minute Lead-Time</h3>
+                        <p>The most important characteristic of V_CoC is its <strong>forward-looking nature</strong>:
+                            institutional futures positioning changes before spot price responds. This happens because
+                            large investors build futures positions gradually to minimise market impact. The futures
+                            carry change is visible in V_CoC while the spot move is still 60–90 minutes away.</p>
+                        <div class="card" style="background:#fef3c7;border-color:#fcd34d">
+                            <h4 style="margin-top:0;color:var(--amb)">Worked Example — 21 Feb 2026, NIFTY</h4>
+                            <div class="coc-chart">
+                                <div class="coc-bar-row">
+                                    <div class="coc-time">09:20</div>
+                                    <div class="coc-bar" style="background:#374151;width:60px;color:#9ca3af">V_CoC = +2
+                                    </div>
+                                </div>
+                                <div class="coc-bar-row">
+                                    <div class="coc-time">09:25</div>
+                                    <div class="coc-bar" style="background:#374151;width:80px;color:#9ca3af">V_CoC = −3
+                                    </div>
+                                </div>
+                                <div class="coc-bar-row">
+                                    <div class="coc-time">09:30</div>
+                                    <div class="coc-bar" style="background:#7f1d1d;width:100px;color:#fca5a5">V_CoC = −7
+                                    </div>
+                                </div>
+                                <div class="coc-bar-row">
+                                    <div class="coc-time">09:35</div>
+                                    <div class="coc-bar" style="background:#991b1b;width:130px;color:#fca5a5">V_CoC =
+                                        −12 ← Gate fires</div>
+                                </div>
+                                <div class="coc-bar-row">
+                                    <div class="coc-time">09:40</div>
+                                    <div class="coc-bar" style="background:#991b1b;width:150px;color:#fca5a5">V_CoC =
+                                        −14</div>
+                                </div>
+                                <div class="coc-bar-row">
+                                    <div class="coc-time">11:00</div>
+                                    <div style="color:#6ee7b7;font-size:11px;margin-left:4px">↘ Spot begins sustained
+                                        decline of 120 pts</div>
+                                </div>
+                            </div>
+                            <p style="font-size:12.5px;margin:0;color:var(--ink3)">Institutional futures selling was
+                                visible in V_CoC at 09:35 (−12). The resulting spot move started approximately 85
+                                minutes later at 11:00. Entry at 09:40 on a NIFTY PE would have captured the full move
+                                with a head start.</p>
+                        </div>
+
+                        <h3>Fair Carry Reference Band</h3>
+                        <p>The absolute CoC reading has its own significance. Each underlying has an expected fair carry
+                            band based on risk-free rate minus dividend yield, scaled by DTE of the near-month futures:
+                        </p>
+                        <div class="tw">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Underlying</th>
+                                        <th>Normal CoC Band (near-month)</th>
+                                        <th>Reading Below Band</th>
+                                        <th>Reading Above Band</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>NIFTY</td>
+                                        <td>+₹15 to +₹35</td>
+                                        <td>Futures at discount → strong institutional short</td>
+                                        <td>Futures at excess premium → strong institutional long</td>
+                                    </tr>
+                                    <tr>
+                                        <td>BANKNIFTY</td>
+                                        <td>+₹80 to +₹180</td>
+                                        <td>Below ₹80 → institutional short campaign</td>
+                                        <td>Above ₹180 → institutional accumulation</td>
+                                    </tr>
+                                    <tr>
+                                        <td>FINNIFTY</td>
+                                        <td>+₹20 to +₹50</td>
+                                        <td>Below ₹15 → bearish institutional bias</td>
+                                        <td>Above ₹55 → bullish buildup</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="co co-tip"><span class="co-icon">💡</span><span><strong>Best combined
+                                    signal:</strong> When Gate score ≥ 5, GEX is below 60% of peak, AND V_CoC &lt; −10,
+                                you have all three alignment signals simultaneously. This is the ideal setup described
+                                in the Bearish Playbook in Part 7. Strike selection via the Screener (Part 4) completes
+                                the trade decision.</span></div>
+
+                        <div style="display:flex;gap:12px;margin-top:32px;flex-wrap:wrap">
+                            <a href="Part2_Getting_Started.html"
+                                style="display:inline-flex;align-items:center;gap:8px;background:var(--parch);color:var(--navy);border:1px solid var(--bdr);padding:10px 20px;border-radius:8px;text-decoration:none;font-size:13.5px;font-weight:600">←
+                                Part 2: Getting Started</a>
+                            <a href="Part4_Dashboard_Panels_Row2_Row3.html"
+                                style="display:inline-flex;align-items:center;gap:8px;background:var(--navy);color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:13.5px;font-weight:600">Next:
+                                Part 4 — Panels D–H →</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Option Buying Dashboard v2.0 — Part 8: Reference, Troubleshooting &amp; Glossary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        :root {
+            --cream: #faf8f4;
+            --warm: #f5f2eb;
+            --parch: #ede9df;
+            --bdr: #ddd8cc;
+            --bdr-s: #e8e4da;
+            --ink: #1a1714;
+            --ink2: #3d3830;
+            --ink3: #6b6458;
+            --ink4: #9b9388;
+            --navy: #0f2744;
+            --navy2: #1a3d6b;
+            --blue: #2563a8;
+            --blue2: #3b82d4;
+            --blue-p: #dbeafe;
+            --gold: #b8860b;
+            --gold-p: #fef3c7;
+            --amb: #92400e;
+            --amb-p: #fef3c7;
+            --green: #166534;
+            --green-p: #dcfce7;
+            --red: #991b1b;
+            --red-p: #fee2e2;
+            --F: 'Libre Baskerville', Georgia, serif;
+            --S: 'DM Sans', system-ui, sans-serif;
+            --M: 'DM Mono', 'Courier New', monospace;
+            --sw: 272px;
+            --mc: 900px;
+        }
+
+        html {
+            scroll-behavior: smooth
+        }
+
+        body {
+            font-family: var(--S);
+            background: var(--cream);
+            color: var(--ink);
+            line-height: 1.7;
+            font-size: 15px
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background: radial-gradient(ellipse 80% 60% at 8% 0%, rgba(37, 99, 168, .09) 0%, transparent 55%),
+                linear-gradient(158deg, #faf8f4 0%, #f0eade 45%, #f6f3ed 100%)
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+            z-index: 1
+        }
+
+        .sidebar {
+            width: var(--sw);
+            flex-shrink: 0;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            padding: 28px 0 40px;
+            background: rgba(250, 248, 244, .92);
+            backdrop-filter: blur(14px);
+            border-right: 1px solid var(--bdr)
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 3px
+        }
+
+        .sb-logo {
+            padding: 0 22px 24px;
+            border-bottom: 1px solid var(--bdr-s);
+            margin-bottom: 18px
+        }
+
+        .sb-logo .prod {
+            font-family: var(--M);
+            font-size: 10px;
+            color: var(--blue);
+            letter-spacing: .08em;
+            text-transform: uppercase
+        }
+
+        .sb-logo .name {
+            font-family: var(--F);
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--navy);
+            line-height: 1.25;
+            margin-top: 4px
+        }
+
+        .sb-logo .ver {
+            display: inline-block;
+            margin-top: 8px;
+            font-size: 10px;
+            font-family: var(--M);
+            color: var(--ink4);
+            background: var(--parch);
+            padding: 2px 8px;
+            border-radius: 20px;
+            border: 1px solid var(--bdr)
+        }
+
+        .part-tag {
+            margin: 0 22px 18px;
+            padding: 8px 14px;
+            background: var(--navy);
+            border-radius: 8px;
+            font-family: var(--M);
+            font-size: 10px;
+            color: rgba(255, 255, 255, .7);
+            letter-spacing: .06em;
+            text-transform: uppercase
+        }
+
+        .part-tag span {
+            display: block;
+            color: #fff;
+            font-size: 12px;
+            margin-top: 2px;
+            font-family: var(--F);
+            font-weight: 700;
+            letter-spacing: 0;
+            text-transform: none
+        }
+
+        .nl {
+            display: block;
+            padding: 5px 22px;
+            font-size: 12.5px;
+            color: var(--ink3);
+            text-decoration: none;
+            border-left: 2px solid transparent;
+            transition: all .15s
+        }
+
+        .nl:hover {
+            color: var(--blue);
+            background: rgba(37, 99, 168, .06);
+            border-left-color: var(--blue2)
+        }
+
+        .nl.active {
+            color: var(--navy);
+            font-weight: 600;
+            border-left-color: var(--blue);
+            background: rgba(37, 99, 168, .08)
+        }
+
+        .nav-lbl {
+            padding: 8px 22px 3px;
+            font-size: 9.5px;
+            font-weight: 600;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--ink4)
+        }
+
+        .nav-parts {
+            padding: 14px 22px 0;
+            border-top: 1px solid var(--bdr-s);
+            margin-top: 8px
+        }
+
+        .nav-parts .np-lbl {
+            font-size: 9.5px;
+            font-weight: 600;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--ink4);
+            margin-bottom: 6px
+        }
+
+        .np-link {
+            display: block;
+            padding: 4px 0;
+            font-size: 12px;
+            color: var(--ink4);
+            text-decoration: none;
+            transition: color .15s
+        }
+
+        .np-link:hover {
+            color: var(--blue)
+        }
+
+        .np-link.cur {
+            color: var(--navy);
+            font-weight: 600
+        }
+
+        .main {
+            flex: 1;
+            min-width: 0;
+            padding: 56px 60px 100px
+        }
+
+        .sec {
+            max-width: var(--mc);
+            padding-top: 20px;
+            margin-bottom: 60px
+        }
+
+        .sec+.sec {
+            border-top: 1px solid var(--bdr-s);
+            padding-top: 52px
+        }
+
+        .hero {
+            max-width: var(--mc);
+            padding-bottom: 44px;
+            border-bottom: 1px solid var(--bdr);
+            margin-bottom: 48px
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--M);
+            font-size: 10.5px;
+            color: var(--blue);
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            margin-bottom: 18px
+        }
+
+        .eyebrow::before {
+            content: '';
+            display: block;
+            width: 22px;
+            height: 1px;
+            background: var(--blue)
+        }
+
+        .hero h1 {
+            font-family: var(--F);
+            font-size: 38px;
+            font-weight: 700;
+            line-height: 1.15;
+            color: var(--navy);
+            margin-bottom: 14px
+        }
+
+        .hero h1 em {
+            font-style: italic;
+            color: var(--blue)
+        }
+
+        .hero-lead {
+            font-size: 15.5px;
+            color: var(--ink2);
+            line-height: 1.78;
+            max-width: 680px
+        }
+
+        h2.sh {
+            font-family: var(--F);
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 12px;
+            line-height: 1.2
+        }
+
+        h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--ink);
+            margin: 22px 0 8px
+        }
+
+        p {
+            color: var(--ink2);
+            margin-bottom: 10px;
+            line-height: 1.74
+        }
+
+        strong {
+            color: var(--ink);
+            font-weight: 600
+        }
+
+        code {
+            background: var(--parch);
+            border: 1px solid var(--bdr);
+            border-radius: 4px;
+            padding: 1px 6px;
+            font-size: 11.5px;
+            color: var(--navy2);
+            font-family: var(--M)
+        }
+
+        pre {
+            background: var(--navy);
+            color: #d4d4d4;
+            border-radius: 9px;
+            padding: 16px 20px;
+            font-family: var(--M);
+            font-size: 12px;
+            overflow-x: auto;
+            margin: 12px 0;
+            line-height: 1.6
+        }
+
+        pre .cm {
+            color: #6a9955
+        }
+
+        .pr {
+            color: #9cdcfe
+        }
+
+        .st {
+            color: #ce9178
+        }
+
+        .kw {
+            color: #c586c0
+        }
+
+        ul.bl {
+            padding-left: 20px;
+            color: var(--ink2);
+            font-size: 13.5px;
+            line-height: 1.95;
+            margin-bottom: 12px
+        }
+
+        .sec-hd {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 18px
+        }
+
+        .sec-num {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--navy);
+            color: #fff;
+            font-family: var(--M);
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0
+        }
+
+        .tw {
+            overflow-x: auto;
+            margin: 12px 0;
+            border-radius: 9px;
+            border: 1px solid var(--bdr)
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            background: #fff
+        }
+
+        th {
+            background: var(--warm);
+            color: var(--ink2);
+            font-weight: 600;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            padding: 9px 14px;
+            text-align: left;
+            border-bottom: 2px solid var(--bdr)
+        }
+
+        td {
+            padding: 9px 14px;
+            border-bottom: 1px solid var(--bdr-s);
+            color: var(--ink2);
+            vertical-align: top;
+            line-height: 1.5
+        }
+
+        tr:last-child td {
+            border-bottom: none
+        }
+
+        .co {
+            border-radius: 9px;
+            padding: 12px 16px;
+            margin: 12px 0;
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            font-size: 13.5px;
+            line-height: 1.6
+        }
+
+        .co-icon {
+            font-size: 16px;
+            flex-shrink: 0;
+            margin-top: 1px
+        }
+
+        .co-info {
+            background: var(--blue-p);
+            border: 1px solid #bfdbfe;
+            color: var(--navy2)
+        }
+
+        .co-warn {
+            background: var(--amb-p);
+            border: 1px solid #fde68a;
+            color: var(--amb)
+        }
+
+        .co-ok {
+            background: var(--green-p);
+            border: 1px solid #bbf7d0;
+            color: var(--green)
+        }
+
+        .co strong {
+            color: inherit
+        }
+
+        /* Trouble entry */
+        .trouble {
+            border-radius: 9px;
+            border: 1px solid var(--bdr);
+            background: #fff;
+            margin-bottom: 12px;
+            overflow: hidden
+        }
+
+        .trouble-hd {
+            padding: 11px 16px;
+            background: var(--warm);
+            font-weight: 600;
+            font-size: 13.5px;
+            color: var(--ink);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center
+        }
+
+        .trouble-body {
+            padding: 14px 16px;
+            font-size: 13.5px;
+            color: var(--ink2);
+            border-top: 1px solid var(--bdr-s);
+            line-height: 1.7
+        }
+
+        /* API reference */
+        .ep {
+            font-family: var(--M);
+            font-size: 11.5px;
+            font-weight: 600;
+            border-radius: 4px;
+            padding: 2px 8px;
+            margin-right: 8px
+        }
+
+        .ep-get {
+            background: #dcfce7;
+            color: #15803d
+        }
+
+        /* Glossary */
+        .glist {
+            columns: 2;
+            column-gap: 32px;
+            margin: 14px 0
+        }
+
+        .gterm {
+            break-inside: avoid;
+            margin-bottom: 12px
+        }
+
+        .gt {
+            font-weight: 700;
+            color: var(--navy);
+            font-size: 13.5px;
+            margin-bottom: 2px
+        }
+
+        .gd {
+            font-size: 13px;
+            color: var(--ink3);
+            line-height: 1.55
+        }
+
+        /* Config reference */
+        .cfg-grp {
+            margin-bottom: 20px
+        }
+
+        .cfg-grp h3 {
+            margin-top: 0;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: var(--navy)
+        }
+
+        @media(max-width:900px) {
+            .sidebar {
+                display: none
+            }
+
+            .main {
+                padding: 28px 22px 60px
+            }
+
+            .glist {
+                columns: 1
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layout">
+        <nav class="sidebar">
+            <div class="sb-logo">
+                <div class="prod">User Guide · 2026</div>
+                <div class="name">Option Buying<br>Dashboard</div>
+                <span class="ver">v2.0 — macOS Edition</span>
+            </div>
+            <div class="part-tag">Part 8 of 8<span>Reference, Troubleshooting &amp; Glossary</span></div>
+            <div class="nav-lbl">Reference</div>
+            <a class="nl active" href="#api">API Endpoint Quick Reference</a>
+            <a class="nl" href="#config">config.py Reference</a>
+            <a class="nl" href="#files">File System Map</a>
+            <a class="nl" href="#schedule">Pipeline Schedule Table</a>
+            <a class="nl" href="#lots">NSE Lot Sizes</a>
+            <div class="nav-lbl" style="margin-top:6px">Support</div>
+            <a class="nl" href="#trouble">Troubleshooting</a>
+            <a class="nl" href="#glossary">Glossary</a>
+            <div class="nav-parts">
+                <div class="np-lbl">All 8 Parts</div>
+                <a class="np-link" href="Part1_Introduction_Architecture.html">1 · Introduction &amp; Architecture</a>
+                <a class="np-link" href="Part2_Getting_Started.html">2 · Getting Started</a>
+                <a class="np-link" href="Part3_Dashboard_Panels_Row1.html">3 · Panels A, B, C</a>
+                <a class="np-link" href="Part4_Dashboard_Panels_Row2_Row3.html">4 · Panels D–H</a>
+                <a class="np-link" href="Part5_Concept_Library_Core.html">5 · Concepts: Core</a>
+                <a class="np-link" href="Part6_Concept_Library_Advanced.html">6 · Concepts: Advanced</a>
+                <a class="np-link" href="Part7_Trading_Workflow_Playbooks.html">7 · Workflow &amp; Playbooks</a>
+                <a class="np-link cur" href="Part8_Reference_Troubleshooting_Glossary.html">8 · Reference &amp;
+                    Glossary</a>
+            </div>
+        </nav>
+
+        <main class="main">
+            <div class="hero">
+                <div class="eyebrow">Part 8 of 8 · Reference, Troubleshooting &amp; Glossary</div>
+                <h1>Reference,<br><em>Troubleshooting &amp; Glossary</em></h1>
+                <p class="hero-lead">Quick-access reference material: every API endpoint, all configurable parameters,
+                    the file system map, pipeline schedule, NSE lot sizes, a troubleshooting guide for common failures,
+                    and a full glossary of terms used throughout this guide.</p>
+            </div>
+
+            <!-- API ENDPOINT REFERENCE -->
+            <div class="sec" id="api">
+                <div class="sec-hd">
+                    <div class="sec-num">8.1</div>
+                    <h2 class="sh">FastAPI Endpoint Reference</h2>
+                </div>
+                <p>All endpoints are served at <code>http://127.0.0.1:8000</code>. The Swagger interactive docs are
+                    available at <code>http://127.0.0.1:8000/docs</code>. Query parameters are shown as
+                    <code>?param=value</code>.</p>
+
+                <div class="tw">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Method</th>
+                                <th>Endpoint</th>
+                                <th>Params</th>
+                                <th>Returns</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="ep ep-get">GET</span></td>
+                                <td><code>/api/gate</code></td>
+                                <td><code>date, underlying</code></td>
+                                <td>Gate score (0–11), 8-condition details (6 core + 2 VEX/CEX bonus), verdict (GO/WAIT/NO-GO)</td>
+                            </tr>
+                            <tr>
+                                <td><span class="ep ep-get">GET</span></td>
+                                <td><code>/api/gex/timeseries</code></td>
+                                <td><code>date, underlying</code></td>
+                                <td>Net GEX per snapshot, daily peak, GEX%</td>
+                            </tr>
+                            <tr>
+                                <td><span class="ep ep-get">GET</span></td>
+                                <td><code>/api/coc/timeseries</code></td>
+                                <td><code>date, underlying</code></td>
+                                <td>CoC per snapshot, V_CoC 15-min velocity array</td>
+                            </tr>
+                            <tr>
+                                <td><span class="ep ep-get">GET</span></td>
+                                <td><code>/api/screener</code></td>
+                                <td><code>date, underlying, option_type</code></td>
+                                <td>All ATM-window strikes ranked by S_score with all columns</td>
+                            </tr>
+                            <tr>
+                                <td><span class="ep ep-get">GET</span></td>
+                                <td><code>/api/pcr/divergence</code></td>
+                                <td><code>date, underlying</code></td>
+                                <td>PCR_vol, PCR_oi, PCR_div per snapshot</td>
+                            </tr>
+                            <tr>
+                                <td><span class="ep ep-get">GET</span></td>
+                                <td><code>/api/alerts</code></td>
+                                <td><code>date, underlying</code></td>
+                                <td>Chronological list of fired alerts with type, time, metadata</td>
+                            </tr>
+                            <tr>
+                                <td><span class="ep ep-get">GET</span></td>
+                                <td><code>/api/iv/surface</code></td>
+                                <td><code>date, underlying, snapshot_time</code></td>
+                                <td>IV matrix: strikes × expiries, IVP per cell</td>
+                            </tr>
+                            <tr>
+                                <td><span class="ep ep-get">GET</span></td>
+                                <td><code>/api/iv/term-structure</code></td>
+                                <td><code>date, underlying, strike</code></td>
+                                <td>ATM IV per expiry tier for a specific strike</td>
+                            </tr>
+                            <tr>
+                                <td><span class="ep ep-get">GET</span></td>
+                                <td><code>/api/position/pnl</code></td>
+                                <td><code>entry_price, lots, strike, option_type, underlying, expiry, entry_time</code>
+                                </td>
+                                <td>Live P&amp;L, Greek decomposition, SL_t chart data</td>
+                            </tr>
+                            <tr>
+                                <td><span class="ep ep-get">GET</span></td>
+                                <td><code>/api/market/spot</code></td>
+                                <td><code>underlying</code></td>
+                                <td>Latest spot price (from most recent snapshot)</td>
+                            </tr>
+                            <tr>
+                                <td><span class="ep ep-get">GET</span></td>
+                                <td><code>/api/atm-window</code></td>
+                                <td><code>date, underlying</code></td>
+                                <td>ATM strike, ±8 strike array, strike interval used</td>
+                            </tr>
+                            <tr>
+                                <td><span class="ep ep-get">GET</span></td>
+                                <td><code>/api/watermark</code></td>
+                                <td>—</td>
+                                <td>Last successful pipeline pull timestamp</td>
+                            </tr>
+                            <tr>
+                                <td><span class="ep ep-get">GET</span></td>
+                                <td><code>/api/calendar/is-trading-day</code></td>
+                                <td><code>date</code></td>
+                                <td><code>{"is_trading": true/false, "reason": "..."}</code></td>
+                            </tr>
+                            <tr>
+                                <td><span class="ep ep-get">GET</span></td>
+                                <td><code>/api/health</code></td>
+                                <td>—</td>
+                                <td>API status, DuckDB file count, latest watermark</td>
+                            </tr>
+                            <tr>
+                                <td><span class="ep ep-get">GET</span></td>
+                                <td><code>/api/underlyings</code></td>
+                                <td>—</td>
+                                <td>List of all underlyings currently tracked in Parquet files</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- CONFIG REFERENCE -->
+            <div class="sec" id="config">
+                <div class="sec-hd">
+                    <div class="sec-num">8.2</div>
+                    <h2 class="sh">config.py — All Configurable Parameters</h2>
+                </div>
+                <p>All thresholds, paths, and behavioural settings live in <code>src/pipeline/config.py</code>. Never
+                    hardcode these values in other files — always import from config.</p>
+
+                <div class="cfg-grp">
+                    <h3>Paths</h3>
+                    <pre><span class="pr">BASE_DIR</span>          = <span class="st">Path("/Users/apple/Documents/OptDash")</span>
+<span class="pr">CREDENTIALS_PATH</span>  = <span class="st">BASE_DIR / "universal-ion-437606-b7-5629bd4bc421.json"</span>
+<span class="pr">DATA_DIR</span>          = <span class="st">BASE_DIR / "data"</span>
+<span class="pr">RAW_OPTIONS_DIR</span>   = <span class="st">DATA_DIR / "raw" / "options"</span>
+<span class="pr">RAW_FUTURES_DIR</span>   = <span class="st">DATA_DIR / "raw" / "futures"</span>
+<span class="pr">WATERMARK_PATH</span>    = <span class="st">DATA_DIR / "watermark.json"</span>
+<span class="pr">ATM_WINDOW_DIR</span>    = <span class="st">DATA_DIR / "processed" / "atm_windows"</span></pre>
+                </div>
+
+                <div class="cfg-grp">
+                    <h3>BigQuery</h3>
+                    <pre><span class="pr">BQ_PROJECT</span>   = <span class="st">"universal-ion-437606-b7"</span>
+<span class="pr">BQ_TABLE</span>     = <span class="st">"universal-ion-437606-b7.bgquery.upxtx"</span></pre>
+                </div>
+
+                <div class="cfg-grp">
+                    <h3>Backfill Window</h3>
+                    <pre><span class="pr">BACKFILL_START_DATE</span> = <span class="st">"2026-02-17"</span>
+<span class="pr">BACKFILL_END_DATE</span>   = <span class="st">"2026-02-20"</span>  <span class="cm"># Fixed — never compute from today()</span></pre>
+                </div>
+
+                <div class="cfg-grp">
+                    <h3>Schedule &amp; Market Hours</h3>
+                    <pre><span class="pr">MARKET_OPEN</span>     = <span class="st">time(9, 15, 0)</span>
+<span class="pr">MARKET_CLOSE</span>    = <span class="st">time(15, 35, 0)</span>
+<span class="pr">FIRST_PULL_TIME</span> = <span class="st">time(9, 16, 30)</span>
+<span class="pr">PULL_INTERVAL</span>   = <span class="st">300</span>  <span class="cm"># seconds = 5 minutes</span></pre>
+                </div>
+
+                <div class="cfg-grp">
+                    <h3>ATM Window &amp; Strike Intervals</h3>
+                    <pre><span class="pr">ATM_WINDOW_STRIKES</span>   = <span class="st">8</span>  <span class="cm"># ±8 strikes from ATM</span>
+<span class="pr">STRIKE_INTERVALS</span>     = {
+  <span class="st">"NIFTY"</span>: <span class="st">50</span>, <span class="st">"BANKNIFTY"</span>: <span class="st">100</span>, <span class="st">"FINNIFTY"</span>: <span class="st">50</span>,
+  <span class="st">"MIDCPNIFTY"</span>: <span class="st">25</span>, <span class="st">"NIFTYNXT50"</span>: <span class="st">50</span>
+}</pre>
+                </div>
+
+                <div class="cfg-grp">
+                    <h3>Signal Thresholds</h3>
+                    <pre><span class="pr">VCOC_THRESHOLD</span>         = <span class="st">10.0</span>   <span class="cm"># V_CoC fires Gate at ±10</span>
+<span class="pr">GEX_DECLINE_THRESHOLD</span>  = <span class="st">0.30</span>   <span class="cm"># 30% drop from peak fires Gate C#1</span>
+<span class="pr">PCR_DIV_THRESHOLD</span>      = <span class="st">0.25</span>   <span class="cm"># PCR divergence fires Gate C#4</span>
+<span class="pr">IVP_THRESHOLD</span>          = <span class="st">50</span>     <span class="cm"># IVP below 50% fires Gate C#5</span>
+<span class="pr">OI_SURGE_THRESHOLD</span>     = <span class="st">0.50</span>   <span class="cm"># 50% OI spike fires alert</span>
+<span class="pr">IV_SPIKE_THRESHOLD</span>     = <span class="st">0.15</span>   <span class="cm"># 15% IV change in 15 min fires alert</span></pre>
+                </div>
+
+                <div class="cfg-grp">
+                    <h3>Position Monitor</h3>
+                    <pre><span class="pr">SL_FRACTION</span>          = <span class="st">0.30</span>   <span class="cm"># 30% loss from entry = SL_base</span>
+<span class="pr">SL_FLOOR_FACTOR</span>       = <span class="st">0.50</span>   <span class="cm"># SL can't go below 50% of SL_base</span>
+<span class="pr">TRADING_MINUTES_DAY</span>   = <span class="st">960</span>    <span class="cm"># 09:15–15:30 = 375 min session + buffer</span></pre>
+                </div>
+
+                <div class="cfg-grp">
+                    <h3>Parquet / DuckDB</h3>
+                    <pre><span class="pr">PARQUET_ROW_GROUP_SIZE</span> = <span class="st">100_000</span>  <span class="cm"># CRITICAL: Never 10_000</span>
+<span class="pr">PARQUET_COMPRESSION</span>    = <span class="st">"snappy"</span></pre>
+                </div>
+            </div>
+
+            <!-- FILE SYSTEM MAP -->
+            <div class="sec" id="files">
+                <div class="sec-hd">
+                    <div class="sec-num">8.3</div>
+                    <h2 class="sh">File System Map</h2>
+                </div>
+                <pre><span class="cm">#  /Users/apple/Documents/OptDash/</span>
+├── <span class="kw">data/</span>
+│   ├── <span class="kw">raw/</span>
+│   │   ├── <span class="kw">options/</span>
+│   │   │   └── trade_date=YYYY-MM-DD/
+│   │   │       └── UNDERLYING.parquet      <span class="cm"># end-of-day option data</span>
+│   │   └── <span class="kw">futures/</span>
+│   │       └── trade_date=YYYY-MM-DD/
+│   │           └── ALL_FUTURES.parquet     <span class="cm"># all futures in one file</span>
+│   ├── <span class="kw">processed/</span>
+│   │   └── atm_windows/
+│   │       └── YYYY-MM-DD.json            <span class="cm"># ATM window for that day</span>
+│   └── watermark.json                      <span class="cm"># last successful pull time</span>
+├── <span class="kw">src/pipeline/</span>
+│   ├── config.py     analytics.py   atm.py
+│   ├── backfill.py   bq_client.py   calendar.py
+│   ├── duckdb_setup.py  logger.py   pipeline.py
+│   ├── processor.py  scheduler.py   validator.py
+│   ├── watermark.py  writer.py
+│   └── GEMINI.md
+├── <span class="kw">dashboard/</span>
+│   ├── src/
+│   │   ├── api/client.ts
+│   │   ├── hooks/useMarketData.ts
+│   │   ├── components/panels/
+│   │   └── pages/Dashboard.tsx
+│   ├── package.json  vite.config.ts  tailwind.config.js
+│   └── GEMINI.md
+├── <span class="kw">app/</span>
+│   ├── main.py        <span class="cm"># FastAPI app + CORS</span>
+│   └── routers/       <span class="cm"># endpoint modules</span>
+├── run_pipeline.py    <span class="cm"># starts scheduler + backfill</span>
+├── run_api.py         <span class="cm"># uvicorn launcher</span>
+├── requirements.txt
+├── .env               <span class="cm"># VITE_API_BASE_URL etc.</span>
+└── GEMINI.md</pre>
+            </div>
+
+            <!-- SCHEDULE TABLE -->
+            <div class="sec" id="schedule">
+                <div class="sec-hd">
+                    <div class="sec-num">8.4</div>
+                    <h2 class="sh">Pipeline Schedule Reference</h2>
+                </div>
+                <div class="tw">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Event</th>
+                                <th>Time (IST)</th>
+                                <th>Details</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>First live pull</td>
+                                <td>09:16:30</td>
+                                <td>Watermark-based incremental query. Establishes ATM window if not already saved for
+                                    today.</td>
+                            </tr>
+                            <tr>
+                                <td>Subsequent live pulls</td>
+                                <td>09:21:30, 09:26:30 … 15:31:30</td>
+                                <td>Every 5 minutes exactly, APScheduler cron trigger.</td>
+                            </tr>
+                            <tr>
+                                <td>Final pull of regular session</td>
+                                <td>~15:31:30</td>
+                                <td>Captures 15:30 snapshot. Watermark updated to this timestamp.</td>
+                            </tr>
+                            <tr>
+                                <td>Pipeline sleep</td>
+                                <td>15:35 onwards</td>
+                                <td>Scheduler checks <code>is_market_hours()</code> each run; returns early if outside
+                                    window.</td>
+                            </tr>
+                            <tr>
+                                <td>Holiday / weekend</td>
+                                <td>All day</td>
+                                <td><code>is_trading_day()</code> returns False; scheduler skips all pulls silently.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Backfill</td>
+                                <td>At startup (once)</td>
+                                <td>Runs 2026-02-17 to 2026-02-20. Skips any dates where Parquet already exists. Once
+                                    done, never runs again.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- LOT SIZES -->
+            <div class="sec" id="lots">
+                <div class="sec-hd">
+                    <div class="sec-num">8.5</div>
+                    <h2 class="sh">NSE F&amp;O Lot Sizes (2026)</h2>
+                </div>
+                <div class="tw">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Underlying</th>
+                                <th>Lot Size</th>
+                                <th>Strike Interval</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>NIFTY 50</td>
+                                <td>75</td>
+                                <td>50 pts</td>
+                                <td>Most liquid index option. Weekly expiry on Thursday.</td>
+                            </tr>
+                            <tr>
+                                <td>BANKNIFTY</td>
+                                <td>30</td>
+                                <td>100 pts</td>
+                                <td>High-beta banking index. Wednesday weekly expiry.</td>
+                            </tr>
+                            <tr>
+                                <td>FINNIFTY</td>
+                                <td>65</td>
+                                <td>50 pts</td>
+                                <td>Financial services index. Tuesday weekly expiry.</td>
+                            </tr>
+                            <tr>
+                                <td>MIDCPNIFTY</td>
+                                <td>120</td>
+                                <td>25 pts</td>
+                                <td>Midcap 150 index. Monday weekly expiry.</td>
+                            </tr>
+                            <tr>
+                                <td>NIFTYNXT50</td>
+                                <td>25</td>
+                                <td>50 pts</td>
+                                <td>Next 50 large caps after NIFTY 50. Monthly expiry only.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="co co-warn"><span class="co-icon">⚠️</span><span>NSE periodically revises lot sizes. Verify
+                        current lot sizes at <strong>nseindia.com → Derivatives → Contract Notes</strong> before live
+                        trading. The Position Monitor calculates P&amp;L using the lot size entered — an incorrect lot
+                        size will produce incorrect P&amp;L figures.</span></div>
+            </div>
+
+            <!-- TROUBLESHOOTING -->
+            <div class="sec" id="trouble">
+                <div class="sec-hd">
+                    <div class="sec-num">8.6</div>
+                    <h2 class="sh">Troubleshooting Guide</h2>
+                </div>
+
+                <div class="trouble">
+                    <div class="trouble-hd">❌ Pipeline fails immediately on startup: "BigQuery credentials not found"
+                    </div>
+                    <div class="trouble-body">
+                        <strong>Cause:</strong> <code>CREDENTIALS_PATH</code> in <code>config.py</code> does not point
+                        to an existing JSON file, or the service account key has expired/been revoked.<br><br>
+                        <strong>Fix:</strong><br>
+                        1. Confirm the key file exists at
+                        <code>/Users/apple/Documents/OptDash/universal-ion-437606-b7-5629bd4bc421.json</code><br>
+                        2. Run:
+                        <code>python3 -c "from google.cloud import bigquery; bigquery.Client.from_service_account_json('universal-ion-437606-b7-5629bd4bc421.json').query('SELECT 1').result()"</code><br>
+                        3. If it fails, download a fresh service account key from GCP Console → IAM → Service Accounts.
+                    </div>
+                </div>
+
+                <div class="trouble">
+                    <div class="trouble-hd">❌ BigQuery query succeeds but returns 0 rows</div>
+                    <div class="trouble-body">
+                        <strong>Cause:</strong> The watermark timestamp is in the future (timezone drift), or today is a
+                        trading holiday, or the pipeline ran outside market hours.<br><br>
+                        <strong>Debug steps:</strong><br>
+                        1. <code>cat data/watermark.json</code> — confirm the timestamp looks like
+                        <code>"2026-02-20 15:30:00"</code> with no timezone suffix.<br>
+                        2. Check <code>GET /api/calendar/is-trading-day?date=YYYY-MM-DD</code> — confirm today is a
+                        trading day.<br>
+                        3. Manually run:
+                        <code>python3 -c "from src.pipeline.bq_client import fetch_incremental; import pandas as pd; df=fetch_incremental('NIFTY','2026-02-20 09:00:00'); print(len(df))"</code>
+                    </div>
+                </div>
+
+                <div class="trouble">
+                    <div class="trouble-hd">❌ Dashboard shows "API Error" or all panels are blank</div>
+                    <div class="trouble-body">
+                        <strong>Cause:</strong> FastAPI is not running, returned a non-200 status, or CORS is blocking
+                        the request.<br><br>
+                        <strong>Fix:</strong><br>
+                        1. Confirm Terminal 2 shows <code>Uvicorn running on http://127.0.0.1:8000</code><br>
+                        2. In browser, open <code>http://127.0.0.1:8000/api/health</code> — should return JSON.<br>
+                        3. If the API health endpoint returns an error, check the uvicorn terminal for Python
+                        tracebacks.<br>
+                        4. Confirm <code>dashboard/.env</code> contains
+                        <code>VITE_API_BASE_URL=http://127.0.0.1:8000</code> (not localhost).
+                    </div>
+                </div>
+
+                <div class="trouble">
+                    <div class="trouble-hd">❌ DuckDB error: "No parquet files found matching glob pattern"</div>
+                    <div class="trouble-body">
+                        <strong>Cause:</strong> The date being queried has no Parquet files written (backfill hasn't
+                        completed for that date, or the pipeline hasn't run yet today).<br><br>
+                        <strong>Fix:</strong><br>
+                        1. Check <code>ls data/raw/options/</code> — you should see <code>trade_date=YYYY-MM-DD/</code>
+                        folders.<br>
+                        2. If no folders exist, wait for backfill to complete. Monitor the pipeline terminal log — it
+                        should print "Completed day YYYY-MM-DD" for each of the 4 backfill dates.<br>
+                        3. If backfill appears stuck, check <code>data/watermark.json</code>. If it shows a date before
+                        2026-02-17, the backfill hasn't started correctly. Restart run_pipeline.py.
+                    </div>
+                </div>
+
+                <div class="trouble">
+                    <div class="trouble-hd">❌ IVP values are all "N/A" or amber-coloured</div>
+                    <div class="trouble-body">
+                        <strong>Cause:</strong> Normal behaviour for the first 10 trading days. IVP requires at least 10
+                        historical IV datapoints to produce a meaningful percentile. With only 4 days of backfill on day
+                        one, IVP cannot be calculated with statistical validity.<br><br>
+                        <strong>Solution:</strong> Continue running the pipeline through live trading sessions. IVP
+                        becomes reliable after approximately 2–3 weeks of accumulation (10 trading days minimum). The
+                        system uses amber colouring as a visual warning. Treat any IVP value displayed with fewer than
+                        10 history datapoints as approximate.
+                    </div>
+                </div>
+
+                <div class="trouble">
+                    <div class="trouble-hd">❌ Pipeline missed a session — data gap in charts</div>
+                    <div class="trouble-bd">
+                        <strong>Cause:</strong> System was stopped mid-session or an entire trading day was skipped.
+                        The pipeline records its last successful pull time in <code>data/watermark.json</code>.<br><br>
+                        <strong>Action:</strong> Simply restart <code>python run_pipeline.py</code>. The startup gap-fill
+                        engine automatically detects all scenarios:<br>
+                        • <em>Mid-session restart</em> (e.g. stopped 11:10, restarted 14:20) → fills 11:10–14:20 then starts live scheduler<br>
+                        • <em>After-hours restart</em> (stopped 11:10, restarted 17:00) → fills 11:10–15:30, exits; run again tomorrow<br>
+                        • <em>Entire day skipped</em> → pulls the full missed session automatically<br><br>
+                        No manual intervention needed — the gap fill is idempotent (safe to run multiple times).
+                    </div>
+                    <div class="trouble-hd">❌ Gate score shows GO but S_score strikes are all 1-star</div>
+                    <div class="trouble-body">
+                        <strong>Cause:</strong> IVP is above 70% (options are expensive) and/or bid-ask spreads are very
+                        wide (low liquidity period — early morning or after a large move).<br><br>
+                        <strong>Action:</strong> Despite a GO Gate, do NOT enter if no 3+ star strikes exist. Wait 1–2
+                        snapshots for spreads to normalise. If IVP remains above 70%, this is a NO-TRADE day for
+                        directional option buying regardless of Gate score.
+                    </div>
+                </div>
+
+                <div class="trouble">
+                    <div class="trouble-hd">❌ run_pipeline.py crashes with "ModuleNotFoundError: No module named 'src'"
+                    </div>
+                    <div class="trouble-body">
+                        <strong>Cause:</strong> Running <code>python run_pipeline.py</code> from the wrong working
+                        directory, or the virtual environment is not activated.<br><br>
+                        <strong>Fix:</strong><br>
+                        1. Always run from the project root: <code>cd /Users/apple/Documents/OptDash</code><br>
+                        2. Activate venv first: <code>source .venv/bin/activate</code><br>
+                        3. Confirm you see <code>(.venv)</code> in your prompt before running any Python command.
+                    </div>
+                </div>
+
+                <div class="trouble">
+                    <div class="trouble-hd">❌ Vite dev server fails: "Cannot find module '@tanstack/react-query'"</div>
+                    <div class="trouble-body">
+                        <strong>Cause:</strong> Node modules not installed or partially installed.<br><br>
+                        <strong>Fix:</strong> <code>cd /Users/apple/Documents/OptDash/dashboard && npm install</code>.
+                        If still failing: <code>rm -rf node_modules && npm install</code>.
+                    </div>
+                </div>
+            </div>
+
+            <!-- GLOSSARY -->
+            <div class="sec" id="glossary">
+                <div class="sec-hd">
+                    <div class="sec-num">8.7</div>
+                    <h2 class="sh">Glossary of Terms</h2>
+                </div>
+                <div class="glist">
+                    <div class="gterm">
+                        <div class="gt">ATM (At-the-Money)</div>
+                        <div class="gd">An option whose strike price equals the current spot price. Has the highest
+                            gamma and maximum extrinsic value.</div>
+                    </div>
+                    <div class="gterm">
+                        <div class="gt">ATM Window</div>
+                        <div class="gd">The ±8 strike range computed from the day-open spot price, fixed for the entire
+                            session. Only strikes within this window appear in the Screener.</div>
+                    </div>
+                    <div class="gterm">
+                        <div class="gt">BigQuery</div>
+                        <div class="gd">Google's serverless cloud data warehouse providing the raw NSE F&O tick data.
+                            Queried via the Python client using the service account key.</div>
+                    </div>
+                    <div class="gterm">
+                        <div class="gt">CoC (Cost of Carry)</div>
+                        <div class="gd">The futures premium above spot: CoC = Futures LTP – Spot. Theoretically driven
+                            by the risk-free rate minus dividends, adjusted for DTE.</div>
+                    </div>
+                    <div class="gterm">
+                        <div class="gt">CE (Call European)</div>
+                        <div class="gd">The NSE notation for a call option on an Indian index. Gives the right but not
+                            obligation to buy at the strike price.</div>
+                    </div>
+                    <div class="gterm">
+                        <div class="gt">Delta (Δ)</div>
+                        <div class="gd">Option price change per ₹1 move in the underlying. Ranges 0–1 for calls, −1 to 0
+                            for puts. Approximately 0.5 at ATM.</div>
+                    </div>
+                    <div class="gterm">
+                        <div class="gt">DTE (Days To Expiry)</div>
+                        <div class="gd">Calendar days remaining until option expiry date. Lower DTE = higher theta cost,
+                            higher gamma sensitivity.</div>
+                    </div>
+                    <div class="gterm">
+                        <div class="gt">DuckDB</div>
+                        <div class="gd">In-process analytical SQL engine used to query Parquet files. No server needed —
+                            runs embedded in the Python process.</div>
+                    </div>
+                    <div class="gterm">
+                        <div class="gt">EffRatio</div>
+                        <div class="gd">Efficiency Ratio: |Delta| / |Theta|. Higher is better for option buyers — more
+                            directional sensitivity per unit of daily time decay.</div>
+                    </div>
+                    <div class="gterm">
+                        <div class="gt">Expiry Tier</div>
+                        <div class="gd">Classification of options by DTE: TIER1_NEAR (1–12 DTE), TIER1_FAR (13–34 DTE),
+                            TIER2_IV_ONLY (35+ DTE).</div>
+                    </div>
+                    <div class="gterm">
+                        <div class="gt">FastAPI</div>
+                        <div class="gd">Python async web framework serving the analytics API at localhost:8000. Serves
+                            DuckDB query results as JSON to the React dashboard.</div>
+                    </div>
+                    <div class="gterm">
+                        <div class="gt">FII (Foreign Institutional Investor)</div>
+                        <div class="gd">Large foreign fund houses trading Indian markets. Their futures activity is the
+                            primary source of directional institutional flow detected by V_CoC.</div>
+                    </div>
+                    <div class="gterm">
+                        <div class="gt">Gamma (Γ)</div>
+                        <div class="gd">Rate of change of delta per ₹1 spot move. Long option buyers have positive gamma
+                            — their delta grows favourably as spot moves toward them.</div>
+                    </div>
+                    <div class="gterm">
+                        <div class="gt">Gate (Environment Gate)</div>
+                        <div class="gd">8-condition scoring system (0–11 pts; 6 core + 2 VEX/CEX bonus). GO = ≥5, WAIT = 3–4, NO-GO &lt;3. Must be
+                            GO before any option entry.</div>
+                    </div>
+                    <div class="gterm">
+                        <div class="gt">GEX (Gamma Exposure)</div>
+                        <div class="gd">Net gamma position of all market makers expressed in ₹ notional terms. High GEX
+                            suppresses directional moves; low/declining GEX enables trending.</div>
+                    </div>
+                    <div class="gterm">
+                        <div class="gt">IST (India Standard Time)</div>
+                        <div class="gd">UTC+5:30. All timestamps in the system are naive IST — no timezone conversion is
+                            ever applied.</div>
+                    </div>
+                    <div class="gterm">
+                        <div class="gt">ITM (In-the-Money)</div>
+                        <div class="gd">For a call: strike below spot. For a put: strike above spot. ITM options have
+                            intrinsic value in addition to time value.</div>
+                    </div>
+                    <div class="gterm">
+                        <div class="gt">IV (Implied Volatility)</div>
+                        <div class="gd">The market's consensus annualised volatility forecast, reverse-engineered from
+                            option prices via Black-Scholes.</div>
+                    </div>
+                    <div class="gterm">
+                        <div class="gt">IV Crush</div>
+                        <div class="gd">A rapid drop in IV after a scheduled event, destroying long option value even
+                            when the directional move was correct.</div>
+                    </div>
+                    <div class="gterm">
+                        <div class="gt">IVP (IV Percentile)</div>
+                        <div class="gd">Fraction of the last 90 trading days where IV was below today's IV. Below 50% =
+                            cheap options. Preferred metric over IVR.</div>
+                    </div>
+                    <div class="gterm">
+                        <div class="gt">IVR (IV Rank)</div>
+                        <div class="gd">Position of today's IV within the 90-day high-low range. Can be distorted by
+                            outlier spikes. Use IVP instead.</div>
+                    </div>
+                    <div class="gterm">
+                        <div class="gt">OBI (Order Book Imbalance)</div>
+                        <div class="gd">Metric from −1 to +1 measuring the ratio of visible buy to sell quantities in
+                            the top-5 limit order book levels.</div>
+                    </div>
+                    <div class="gterm">
+                        <div class="gt">OI (Open Interest)</div>
+                        <div class="gd">Total number of outstanding contracts (not yet settled). Rising OI = new
+                            positions being built. Falling OI = positions being unwound.</div>
+                    </div>
+                    <div class="gterm">
+                        <div class="gt">OTM (Out-of-the-Money)</div>
+                        <div class="gd">For a call: strike above spot. For a put: strike below spot. OTM options consist
+                            entirely of time value.</div>
+                    </div>
+                    <div class="gterm">
+                        <div class="gt">Parquet</div>
+                        <div class="gd">Columnar binary file format used for storing NSE data. Snappy-compressed,
+                            row_group_size=100,000. Enables fast DuckDB queries via file pruning.</div>
+                    </div>
+                    <div class="gterm">
+                        <div class="gt">PCR (Put-Call Ratio)</div>
+                        <div class="gd">Ratio of put volume/OI to call volume/OI. Higher = more put activity. The
+                            dashboard tracks both Volume-PCR and OI-PCR separately.</div>
+                    </div>
+                    <div class="gterm">
+                        <div class="gt">PCR Divergence</div>
+                        <div class="gd">|PCR_vol − PCR_oi|. Values above 0.25 suggest retail sentiment has diverged from
+                            institutional structure (Gate condition #4).</div>
+                    </div>
+                    <div class="gterm">
+                        <div class="gt">PE (Put European)</div>
+                        <div class="gd">NSE notation for a put option. Gives the right to sell at the strike price.
+                            Profitable when underlying falls below strike − premium paid.</div>
+                    </div>
+                    <div class="gterm">
+                        <div class="gt">S_score</div>
+                        <div class="gd">Strike Selection Score (0–100). Composite of EffRatio, slippage penalty, IVP
+                            adjustment, and OBI alignment. Higher = better strike to buy.</div>
+                    </div>
+                    <div class="gterm">
+                        <div class="gt">SL (Stop Loss)</div>
+                        <div class="gd">The price level at which a losing position is closed to limit further losses.
+                            The dashboard uses a theta-adjusted dynamic SL that decreases slowly as time passes.</div>
+                    </div>
+                    <div class="gterm">
+                        <div class="gt">Theta (Θ)</div>
+                        <div class="gd">Daily rate of option price decay from time passing. Always negative for long
+                            option buyers. Expressed as ₹ lost per calendar day.</div>
+                    </div>
+                    <div class="gterm">
+                        <div class="gt">V_CoC (Velocity of CoC)</div>
+                        <div class="gd">15-minute rate of change of futures carry. The direction detection signal for
+                            institutional flow. Below −10 = bearish; above +10 = bullish.</div>
+                    </div>
+                    <div class="gterm">
+                        <div class="gt">Vega (ν)</div>
+                        <div class="gd">Option price change per 1% change in implied volatility. Long option buyers
+                            benefit from rising IV (positive vega P&amp;L).</div>
+                    </div>
+                    <div class="gterm">
+                        <div class="gt">Vite</div>
+                        <div class="gd">Modern frontend build tool and development server. Serves the React TypeScript
+                            dashboard at localhost:5173 with hot module replacement.</div>
+                    </div>
+                    <div class="gterm">
+                        <div class="gt">Volatility Skew</div>
+                        <div class="gd">The observation that OTM puts consistently have higher IV than equivalent OTM
+                            calls. Caused by institutional tail-risk hedging demand.</div>
+                    </div>
+                    <div class="gterm">
+                        <div class="gt">VEX (Vanna Exposure)</div>
+                        <div class="gd">Dealer hedging flow driven by IV changes. When IV drops, dealers holding short puts/calls must rebalance delta by buying/selling futures. Positive VEX = mechanical buying pressure on NIFTY. Computed as OI × vanna × spot × sigma × d_dir / 1e6 (M-units).</div>
+                        <div class="gt">CEX (Charm Exposure)</div>
+                        <div class="gd">Dealer hedging flow driven by time-decay. As OTM options approach expiry, their delta decays toward zero — dealers buy back futures accordingly. Largest on expiry day at 14:45–15:25 IST ("Dealer O'Clock"). Computed from charm_daily × OI × d_dir / 1e6 (M-units).</div>
+                        <div class="gt">Dealer O'Clock</div>
+                        <div class="gd">14:45–15:25 IST on expiry day (minutes 885–925). Window when charm flows from expiring options dominate index movement. CEX panel shows orange ⏰ badge. Gate condition #8 suppresses option-buyer entries during this window.</div>
+                        <div class="gt">Watermark</div>
+                        <div class="gd">The timestamp of the most recent successful BigQuery pull, stored in
+                            data/watermark.json. Prevents re-fetching data that has already been ingested.</div>
+                    </div>
+                </div>
+
+                <div style="margin-top:44px;padding-top:32px;border-top:2px solid var(--bdr);text-align:center">
+                    <p style="font-family:var(--F);font-size:22px;color:var(--navy);margin-bottom:6px">End of User Guide
+                    </p>
+                    <p style="font-size:13.5px;color:var(--ink3)">Option Buying Dashboard v2.0 · 8-Part Guide · 2026
+                        Edition<br>Questions: review GEMINI.md files in the project root and sub-directories.</p>
+                    <div style="margin-top:20px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+                        <a href="Part1_Introduction_Architecture.html"
+                            style="display:inline-flex;align-items:center;gap:6px;background:var(--navy);color:#fff;padding:9px 18px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:600">←
+                            Start from Part 1</a>
+                        <a href="Part7_Trading_Workflow_Playbooks.html"
+                            style="display:inline-flex;align-items:center;gap:6px;background:var(--parch);color:var(--navy);border:1px solid var(--bdr);padding:9px 18px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:600">←
+                            Back to Part 7</a>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</body>
+
+</html>

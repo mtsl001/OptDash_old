@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Option Buying Dashboard v2.0 — Part 1: Introduction & Architecture</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cream:#faf8f4;--warm:#f5f2eb;--parch:#ede9df;--bdr:#ddd8cc;--bdr-s:#e8e4da;
+  --ink:#1a1714;--ink2:#3d3830;--ink3:#6b6458;--ink4:#9b9388;
+  --navy:#0f2744;--navy2:#1a3d6b;--blue:#2563a8;--blue2:#3b82d4;--blue-p:#dbeafe;
+  --gold:#b8860b;--gold-p:#fef3c7;--amb:#92400e;--amb-p:#fef3c7;
+  --green:#166534;--green2:#16a34a;--green-p:#dcfce7;
+  --red:#991b1b;--red2:#dc2626;--red-p:#fee2e2;
+  --F:'Libre Baskerville',Georgia,serif;
+  --S:'DM Sans',system-ui,sans-serif;
+  --M:'DM Mono','Courier New',monospace;
+  --sw:272px;--mc:860px;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--S);background:var(--cream);color:var(--ink);line-height:1.7;font-size:15px}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 80% 60% at 8% 0%,rgba(37,99,168,.09) 0%,transparent 55%),
+    radial-gradient(ellipse 60% 70% at 92% 5%,rgba(184,134,11,.07) 0%,transparent 50%),
+    radial-gradient(ellipse 70% 50% at 50% 100%,rgba(22,101,52,.05) 0%,transparent 55%),
+    linear-gradient(158deg,#faf8f4 0%,#f0eade 45%,#f6f3ed 100%)}
+.layout{display:flex;min-height:100vh;position:relative;z-index:1}
+.sidebar{width:var(--sw);flex-shrink:0;position:sticky;top:0;height:100vh;overflow-y:auto;padding:28px 0 40px;background:rgba(250,248,244,.92);backdrop-filter:blur(14px);border-right:1px solid var(--bdr)}
+.sidebar::-webkit-scrollbar{width:3px}
+.sidebar::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:2px}
+.sb-logo{padding:0 22px 24px;border-bottom:1px solid var(--bdr-s);margin-bottom:18px}
+.sb-logo .prod{font-family:var(--M);font-size:10px;color:var(--blue);letter-spacing:.08em;text-transform:uppercase}
+.sb-logo .name{font-family:var(--F);font-size:16px;font-weight:700;color:var(--navy);line-height:1.25;margin-top:4px}
+.sb-logo .ver{display:inline-block;margin-top:8px;font-size:10px;font-family:var(--M);color:var(--ink4);background:var(--parch);padding:2px 8px;border-radius:20px;border:1px solid var(--bdr)}
+.part-tag{margin:0 22px 18px;padding:8px 14px;background:var(--navy);border-radius:8px;font-family:var(--M);font-size:10px;color:rgba(255,255,255,.7);letter-spacing:.06em;text-transform:uppercase}
+.part-tag span{display:block;color:#fff;font-size:12px;margin-top:2px;font-family:var(--F);font-weight:700;letter-spacing:0;text-transform:none}
+.nav-grp{margin-bottom:4px}
+.nav-lbl{padding:8px 22px 3px;font-size:9.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink4)}
+.nl{display:block;padding:6px 22px;font-size:13px;color:var(--ink3);text-decoration:none;border-left:2px solid transparent;transition:all .15s ease;line-height:1.4}
+.nl:hover{color:var(--blue);background:rgba(37,99,168,.06);border-left-color:var(--blue2)}
+.nl.active{color:var(--navy);font-weight:600;border-left-color:var(--blue);background:rgba(37,99,168,.08)}
+.nav-parts{padding:14px 22px 0;border-top:1px solid var(--bdr-s);margin-top:8px}
+.nav-parts .np-lbl{font-size:9.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink4);margin-bottom:6px}
+.np-link{display:block;padding:4px 0;font-size:12px;color:var(--ink4);text-decoration:none;transition:color .15s}
+.np-link:hover{color:var(--blue)}
+.np-link.cur{color:var(--navy);font-weight:600}
+.main{flex:1;min-width:0;padding:56px 60px 100px}
+.sec{max-width:var(--mc);padding-top:24px;margin-bottom:72px}
+.sec+.sec{border-top:1px solid var(--bdr-s);padding-top:60px}
+.hero{max-width:var(--mc);padding-bottom:52px;border-bottom:1px solid var(--bdr);margin-bottom:60px}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:var(--M);font-size:10.5px;color:var(--blue);letter-spacing:.08em;text-transform:uppercase;margin-bottom:18px}
+.eyebrow::before{content:'';display:block;width:22px;height:1px;background:var(--blue)}
+.hero h1{font-family:var(--F);font-size:44px;font-weight:700;line-height:1.1;color:var(--navy);margin-bottom:18px;letter-spacing:-.01em}
+.hero h1 em{font-style:italic;color:var(--blue)}
+.hero-lead{font-size:16.5px;color:var(--ink2);line-height:1.78;max-width:680px;margin-bottom:28px}
+.badges{display:flex;flex-wrap:wrap;gap:9px}
+.badge{display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:6px;font-size:11.5px;font-weight:500;font-family:var(--M);border:1px solid}
+.b-blue{background:var(--blue-p);color:var(--navy);border-color:#bfdbfe}
+.b-gold{background:var(--gold-p);color:var(--amb);border-color:#fde68a}
+.b-green{background:var(--green-p);color:var(--green);border-color:#bbf7d0}
+.b-red{background:var(--red-p);color:var(--red);border-color:#fca5a5}
+h2.sh{font-family:var(--F);font-size:29px;font-weight:700;color:var(--navy);margin-bottom:14px;line-height:1.2;letter-spacing:-.01em}
+h3{font-size:17px;font-weight:600;color:var(--ink);margin:32px 0 11px;line-height:1.35}
+h4{font-size:12px;font-weight:600;color:var(--ink3);margin:22px 0 7px;text-transform:uppercase;letter-spacing:.07em}
+p{color:var(--ink2);margin-bottom:14px;line-height:1.78}
+strong{color:var(--ink);font-weight:600}
+em{color:var(--blue);font-style:italic}
+ul.bl{padding-left:22px;color:var(--ink2);font-size:13.5px;line-height:2.1;margin-bottom:14px}
+.sec-hd{display:flex;align-items:center;gap:14px;margin-bottom:28px}
+.sec-num{width:40px;height:40px;border-radius:50%;background:var(--navy);color:#fff;font-family:var(--M);font-size:12.5px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.card{background:#fff;border:1px solid var(--bdr);border-radius:11px;padding:22px 26px;margin-bottom:18px;box-shadow:0 1px 4px rgba(0,0,0,.04),0 4px 14px rgba(0,0,0,.03)}
+.card-title{font-size:14.5px;font-weight:600;color:var(--ink);margin-bottom:9px;display:flex;align-items:center;gap:9px}
+.cicon{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.formula{background:var(--parch);border:1px solid var(--bdr);border-radius:8px;padding:14px 18px;font-family:var(--M);font-size:12.5px;color:var(--navy2);margin:14px 0;line-height:1.75}
+.formula .flbl{font-size:10px;color:var(--ink4);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px;font-family:var(--S);font-weight:600}
+.formula .fcom{color:var(--ink3)}
+code{background:var(--parch);border:1px solid var(--bdr);border-radius:4px;padding:1px 6px;font-size:12px;color:var(--navy2);font-family:var(--M)}
+.tw{overflow-x:auto;margin:14px 0;border-radius:9px;border:1px solid var(--bdr)}
+table{width:100%;border-collapse:collapse;font-size:13px;background:#fff}
+th{background:var(--warm);color:var(--ink2);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.06em;padding:9px 14px;text-align:left;border-bottom:2px solid var(--bdr)}
+td{padding:9px 14px;border-bottom:1px solid var(--bdr-s);color:var(--ink2);vertical-align:top;line-height:1.5}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(37,99,168,.025)}
+.co{border-radius:9px;padding:14px 18px;margin:18px 0;display:flex;gap:12px;align-items:flex-start;font-size:13.5px;line-height:1.6}
+.co-icon{font-size:17px;flex-shrink:0;margin-top:1px}
+.co-info{background:var(--blue-p);border:1px solid #bfdbfe;color:var(--navy2)}
+.co-warn{background:var(--amb-p);border:1px solid #fde68a;color:var(--amb)}
+.co-ok{background:var(--green-p);border:1px solid #bbf7d0;color:var(--green)}
+.co-tip{background:var(--gold-p);border:1px solid #fde68a;color:var(--gold)}
+.co strong{color:inherit}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:14px 0}
+.flow{display:flex;align-items:stretch;flex-wrap:wrap;gap:0;margin:24px 0}
+.fnode{background:#fff;border:1.5px solid var(--bdr);border-radius:8px;padding:12px 16px;font-size:12px;font-weight:500;color:var(--ink2);text-align:center;flex-shrink:0;min-width:90px}
+.fnode strong{display:block;font-size:12.5px;color:var(--navy);margin-bottom:2px}
+.fnode small{font-size:10.5px;color:var(--ink4)}
+.farr{color:var(--blue2);font-size:20px;padding:0 6px;display:flex;align-items:center;flex-shrink:0}
+.steps{list-style:none;counter-reset:steps}
+.step{counter-increment:steps;position:relative;padding:0 0 28px 52px;border-left:2px solid var(--bdr);margin-left:14px}
+.step:last-child{border-left-color:transparent;padding-bottom:0}
+.step::before{content:counter(steps);position:absolute;left:-15px;top:0;width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;font-family:var(--M);font-size:11px;display:flex;align-items:center;justify-content:center}
+.step-t{font-weight:600;font-size:14.5px;color:var(--ink);margin-bottom:6px}
+.step-b{color:var(--ink2);font-size:13.5px;line-height:1.72}
+.cb{background:var(--navy);color:#e2dfd6;border-radius:9px;padding:18px 20px;font-size:12.5px;line-height:1.65;overflow-x:auto;margin:14px 0;position:relative;font-family:var(--M)}
+.cb .lbl{position:absolute;top:9px;right:12px;font-size:9.5px;color:#6b6458;letter-spacing:.06em}
+.kw{color:#569cd6}.st{color:#ce9178}.cm{color:#6a9955}.fn{color:#dcdcaa}
+.distinction{background:#fff;border:1px solid var(--bdr);border-radius:13px;overflow:hidden;margin-bottom:22px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.dist-hd{padding:14px 22px;border-bottom:1px solid var(--bdr-s);display:flex;align-items:center;gap:12px;background:var(--warm)}
+.dist-num{width:32px;height:32px;border-radius:50%;background:var(--navy);color:#fff;font-family:var(--M);font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.dist-hd h3{margin:0;font-size:15px;color:var(--navy)}
+.dist-body{padding:18px 22px;font-size:13.5px;color:var(--ink2);line-height:1.72}
+.dist-body p{margin-bottom:10px}
+.dist-body p:last-child{margin-bottom:0}
+@media(max-width:900px){.sidebar{display:none}.main{padding:28px 22px 60px}.g2,.g3{grid-template-columns:1fr}.flow{flex-direction:column;align-items:flex-start}}
+@media print{.sidebar{display:none}body::before{display:none}.main{padding:20px}}
+</style>
+</head>
+<body>
+<div class="layout">
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sb-logo">
+    <div class="prod">User Guide · 2026</div>
+    <div class="name">Option Buying<br>Dashboard</div>
+    <span class="ver">v2.0 — macOS Edition</span>
+  </div>
+  <div class="part-tag">Part 1 of 8<span>Introduction &amp; Architecture</span></div>
+  <div class="nav-grp"><div class="nav-lbl">This Part</div>
+    <a class="nl active" href="#intro">What This Dashboard Is</a>
+    <a class="nl" href="#why">Why It Was Built</a>
+    <a class="nl" href="#arch">System Architecture</a>
+    <a class="nl" href="#stack">Technology Stack</a>
+    <a class="nl" href="#data-flow">Data Flow — 7 Steps</a>
+    <a class="nl" href="#files">Files Written to Disk</a>
+    <a class="nl" href="#design">Design Principles</a>
+  </div>
+  <div class="nav-parts">
+    <div class="np-lbl">All 8 Parts</div>
+    <a class="np-link cur" href="Part1_Introduction_Architecture.html">1 · Introduction &amp; Architecture</a>
+    <a class="np-link" href="Part2_Getting_Started.html">2 · Getting Started</a>
+    <a class="np-link" href="Part3_Dashboard_Panels_Row1.html">3 · Panels A, B, C</a>
+    <a class="np-link" href="Part4_Dashboard_Panels_Row2_Row3.html">4 · Panels D–H</a>
+    <a class="np-link" href="Part5_Concept_Library_Core.html">5 · Concepts: Core</a>
+    <a class="np-link" href="Part6_Concept_Library_Advanced.html">6 · Concepts: Advanced</a>
+    <a class="np-link" href="Part7_Trading_Workflow_Playbooks.html">7 · Workflow &amp; Playbooks</a>
+    <a class="np-link" href="Part8_Reference_Troubleshooting_Glossary.html">8 · Reference &amp; Glossary</a>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main class="main">
+
+<!-- HERO -->
+<div class="hero" id="intro">
+  <div class="eyebrow">NSE F&amp;O Analytics Platform · Part 1 of 8</div>
+  <h1>Option Buying<br><em>Dashboard v2.0</em></h1>
+  <p class="hero-lead">A real-time quantitative analytics platform for systematic NSE index option buying. It pulls live market data from BigQuery every five minutes, processes it through eight analytical modules, and surfaces actionable signals — from gamma exposure to slippage-adjusted strike selection — so you can trade with institutional-grade information on your Mac.</p>
+  <div class="badges">
+    <span class="badge b-blue">📊 NIFTY · BANKNIFTY · FINNIFTY · MIDCPNIFTY · NIFTYNXT50</span>
+    <span class="badge b-gold">⚡ 5-minute live data refresh</span>
+    <span class="badge b-green">🏦 BigQuery → Parquet → DuckDB → FastAPI → React</span>
+    <span class="badge b-red">🍎 macOS exclusive — zsh + Python 3.11</span>
+  </div>
+</div>
+
+<!-- SECTION 1: WHAT IS THIS -->
+<div class="sec" id="why">
+  <div class="sec-hd"><div class="sec-num">1</div><h2 class="sh">What This Dashboard Does</h2></div>
+  <p>The Option Buying Dashboard v2.0 is a personal, locally-hosted quantitative analytics system that gives a retail option buyer access to the same market structure signals that institutional desks use — without any subscription fees, without cloud processing delays, and without counterparty risk from third-party signal services.</p>
+  <p>Every five minutes during NSE market hours, the system automatically: queries your BigQuery data source for fresh option and futures snapshots, computes over a dozen derived analytical metrics per row, ranks all eligible strikes by a slippage-adjusted efficiency score, and updates eight dashboard panels in your browser without any manual intervention.</p>
+
+  <h3>The Core Problem This Solves</h3>
+  <p>Retail option buyers most commonly fail for three structural reasons:</p>
+
+  <div class="g3">
+    <div class="card">
+      <div class="card-title"><div class="cicon" style="background:#fee2e2">❌</div>Buying in wrong regimes</div>
+      <p style="font-size:13px;margin:0">Buying options when market makers hold large positive gamma positions causes the market to mean-revert against every directional move. The dashboard's GEX panel makes this regime visible in real-time so you sit out pinning days.</p>
+    </div>
+    <div class="card">
+      <div class="card-title"><div class="cicon" style="background:#fee2e2">❌</div>Ignoring institutional flow</div>
+      <p style="font-size:13px;margin:0">Retail traders act on price — but institutions build futures positions 60–90 minutes before price moves. The CoC Velocity panel reads this institutional footprint from futures carry data, giving you an early warning system.</p>
+    </div>
+    <div class="card">
+      <div class="card-title"><div class="cicon" style="background:#fee2e2">❌</div>Poor strike selection</div>
+      <p style="font-size:13px;margin:0">Choosing a strike based on "looks cheap" ignores slippage, theta burden, and order book quality. The S_score formula in the Strike Screener ranks every eligible strike on all three factors simultaneously.</p>
+    </div>
+  </div>
+
+  <h3>What It Replaces</h3>
+  <div class="tw"><table>
+    <thead><tr><th>Without Dashboard</th><th>With Dashboard</th></tr></thead>
+    <tbody>
+      <tr><td>Guess whether to trade today based on price action alone</td><td>Environment Gate score (0–9) tells you exactly when structural conditions align for option buying</td></tr>
+      <tr><td>Notice FII selling only after spot has already fallen 200 pts</td><td>V_CoC signal fires 60–90 min before the spot move, giving time to position</td></tr>
+      <tr><td>Pick a strike based on premium affordability</td><td>Strike Screener ranks all 34 candidates by delta-per-theta efficiency adjusted for slippage</td></tr>
+      <tr><td>Fixed % stop loss that exits valid trades due to theta decay</td><td>Theta-adjusted trailing SL automatically accounts for time decay in the stop level</td></tr>
+      <tr><td>No record of why a trade won or lost</td><td>P&amp;L attribution decomposes each bar into Delta, Gamma, Vega, Theta drivers</td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+<!-- SECTION 2: ARCHITECTURE -->
+<div class="sec" id="arch">
+  <div class="sec-hd"><div class="sec-num">2</div><h2 class="sh">System Architecture</h2></div>
+  <p>The system runs as <strong>three fully independent processes</strong> simultaneously on your Mac. Each process has exactly one responsibility. They communicate only through files on disk — there are no internal APIs between them, no shared state, no message queues. This makes the system transparent, robust, and easy to debug: any layer can be stopped and restarted without affecting the others.</p>
+
+  <div class="flow">
+    <div class="fnode"><strong>BigQuery</strong><small>upxtx table</small></div><div class="farr">→</div>
+    <div class="fnode" style="background:#dbeafe;border-color:#93c5fd"><strong>Pipeline</strong><small>run_pipeline.py</small></div><div class="farr">→</div>
+    <div class="fnode"><strong>Parquet Files</strong><small>data/raw/</small></div><div class="farr">→</div>
+    <div class="fnode" style="background:#dcfce7;border-color:#86efac"><strong>DuckDB</strong><small>glob views</small></div><div class="farr">→</div>
+    <div class="fnode" style="background:#fef3c7;border-color:#fcd34d"><strong>FastAPI</strong><small>:8000</small></div><div class="farr">→</div>
+    <div class="fnode" style="background:#f3e8ff;border-color:#d8b4fe"><strong>Dashboard</strong><small>:5173</small></div>
+  </div>
+
+  <div class="g3">
+    <div class="card">
+      <div class="card-title"><div class="cicon" style="background:#dbeafe">🔄</div>Terminal 1 — Pipeline</div>
+      <p style="font-size:13px;margin:0">Pulls raw data from BigQuery every 5 minutes. Validates, processes, and writes Parquet files to disk. Manages the watermark for incremental pulls. <strong>The only process that ever contacts BigQuery.</strong> All other processes are entirely local.</p>
+    </div>
+    <div class="card">
+      <div class="card-title"><div class="cicon" style="background:#dcfce7">⚡</div>Terminal 2 — API</div>
+      <p style="font-size:13px;margin:0">FastAPI reads Parquet files through DuckDB views. Executes all analytical SQL (GEX sums, CoC velocity, S_score ranking, IVP percentiles) and exposes the results as JSON at <code>localhost:8000</code>. <strong>Never writes anything.</strong></p>
+    </div>
+    <div class="card">
+      <div class="card-title"><div class="cicon" style="background:#f3e8ff">🖥</div>Terminal 3 — Dashboard</div>
+      <p style="font-size:13px;margin:0">Vite + React polls the API every 5 seconds using TanStack Query. Renders all eight panels at <code>localhost:5173</code>. <strong>Pure display layer.</strong> No computation, no data storage, no connections to anything except the local API.</p>
+    </div>
+  </div>
+
+  <div class="co co-info"><span class="co-icon">ℹ️</span><span>BigQuery is <strong>read-only</strong>. The service account credentials file (<code>universal-ion-437606-b7-5629bd4bc421.json</code>) is used only to run <code>SELECT</code> queries. Nothing is ever written back to BigQuery. Your source data cannot be modified by this system under any circumstances.</span></div>
+
+  <h3>Why Parquet + DuckDB Instead of a Live Database?</h3>
+  <p>Several more conventional architectures were considered and rejected:</p>
+  <div class="tw"><table>
+    <thead><tr><th>Approach</th><th>Problem</th><th>Our Solution</th></tr></thead>
+    <tbody>
+      <tr><td>Query BigQuery directly from API</td><td>300–1500ms latency per query. Dashboard would be sluggish. Also burns BigQuery slot quota. API becomes dependent on network.</td><td>Pipeline pre-caches data to Parquet on local disk. API queries locally — typically 5–20ms per endpoint.</td></tr>
+      <tr><td>PostgreSQL or SQLite intermediate DB</td><td>Requires ETL layer to load Parquet into DB. Schema migration complexity. Extra process to manage.</td><td>DuckDB reads Parquet directly via glob views — zero ETL. New files are instantly visible without re-loading.</td></tr>
+      <tr><td>In-memory state in the API</td><td>API restart loses all data. No persistence between sessions. Complex invalidation logic.</td><td>Everything is on disk in Parquet. API is completely stateless — restart it anytime without losing a single data point.</td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+<!-- SECTION 3: TECH STACK -->
+<div class="sec" id="stack">
+  <div class="sec-hd"><div class="sec-num">3</div><h2 class="sh">Technology Stack</h2></div>
+  <p>Each technology was chosen specifically for its role. No unnecessary dependencies were added.</p>
+
+  <div class="tw"><table>
+    <thead><tr><th>Layer</th><th>Technology</th><th>Version</th><th>Role &amp; Why Chosen</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Data Source</strong></td><td>Google BigQuery</td><td>—</td><td>NSE F&O option chain data in <code>upxtx</code> table. Already populated by your data provider. The dashboard treats it as a read-only source.</td></tr>
+      <tr><td><strong>Storage Format</strong></td><td>Apache Parquet (Snappy)</td><td>—</td><td>Columnar format. DuckDB can read only the columns it needs. <code>row_group_size=100,000</code> enables full parallelism. 3–5× faster queries than standard row-group sizes.</td></tr>
+      <tr><td><strong>Analytics Engine</strong></td><td>DuckDB</td><td>0.10+</td><td>In-process columnar SQL engine. Reads Parquet files directly via glob patterns. No separate database server. Sub-20ms analytical queries on millions of rows.</td></tr>
+      <tr><td><strong>Pipeline Language</strong></td><td>Python 3.11</td><td>3.11.x</td><td>Type-annotated, modular pipeline code. APScheduler for cron-like scheduling without system cron. Pandas for DataFrame transforms.</td></tr>
+      <tr><td><strong>Scheduling</strong></td><td>APScheduler</td><td>3.10+</td><td>Fires the incremental pull cycle every 5 minutes within the Python process. Respects NSE market hours and holiday calendar automatically.</td></tr>
+      <tr><td><strong>API Framework</strong></td><td>FastAPI + Uvicorn</td><td>0.111+</td><td>Async Python web framework. Auto-generates OpenAPI (Swagger) docs at <code>/docs</code>. Fast enough to handle 5-second frontend polling without resource pressure.</td></tr>
+      <tr><td><strong>Frontend Framework</strong></td><td>Vite + React 18 + TypeScript</td><td>Vite 5+</td><td>Fast hot-reload dev server. React 18 concurrent rendering. TypeScript strict mode for all API response types.</td></tr>
+      <tr><td><strong>Data Fetching</strong></td><td>TanStack Query v5</td><td>5.x</td><td>Manages polling intervals, caching, and stale-data logic. Live panels poll every 5 seconds; slower panels every 30 seconds — automatically.</td></tr>
+      <tr><td><strong>Charting</strong></td><td>Recharts</td><td>2.x</td><td>Composable chart library built on D3. Used for GEX timeseries, CoC velocity bars, PCR divergence dual-line charts, IV heatmap.</td></tr>
+      <tr><td><strong>HTTP Client</strong></td><td>Axios</td><td>1.x</td><td>Type-safe HTTP requests from React to the FastAPI server. Centralized base URL configuration via <code>VITE_API_BASE_URL</code> env variable.</td></tr>
+      <tr><td><strong>Styling</strong></td><td>Tailwind CSS</td><td>3.x</td><td>Utility-first CSS with custom theme tokens (trading terminal dark + parchment light for guides). Panel layout defined in <code>src/index.css</code>.</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="co co-warn"><span class="co-icon">⚠️</span><span><strong>Python version matters:</strong> The pipeline uses Python <strong>3.11</strong> specifically. The virtual environment at <code>.venv/</code> must be created with <code>python3.11 -m venv .venv</code>. Do not use Python 3.12+ or 3.10 — library pinning in <code>requirements.txt</code> was tested only on 3.11.</span></div>
+</div>
+
+<!-- SECTION 4: DATA FLOW -->
+<div class="sec" id="data-flow">
+  <div class="sec-hd"><div class="sec-num">4</div><h2 class="sh">Data Flow — The 7-Step Cycle</h2></div>
+  <p>Every five minutes during NSE market hours — first at <strong>09:16:30 IST</strong>, then every 5 minutes until the final pull at or before <strong>15:31:30 IST</strong> — the pipeline executes this exact sequence:</p>
+
+  <ol class="steps">
+    <li class="step">
+      <div class="step-t">Load Watermark</div>
+      <div class="step-b">Reads <code>data/watermark.json</code> to find the timestamp of the last successfully processed record. After the initial backfill, this starts at approximately <code>2026-02-20 15:30:xx</code>. This timestamp is the exclusive lower boundary — all BigQuery rows with a <code>record_time</code> <em>strictly after</em> this value will be pulled. On the very first run, an initial watermark of <code>2026-02-16 15:30:00</code> is used, which causes the backfill to pull from 2026-02-17 onward.</div>
+    </li>
+    <li class="step">
+      <div class="step-t">Pull Incremental Rows from BigQuery</div>
+      <div class="step-b">Executes: <code>SELECT [all columns] FROM `universal-ion-437606-b7.bgquery.upxtx` WHERE record_time &gt; TIMESTAMP("{watermark}") ORDER BY record_time ASC</code>. Uses the service account JSON for authentication. A typical 5-minute snapshot returns <strong>1,600–2,400 rows</strong> covering all NSE index option contracts (CE + PE for NIFTY, BANKNIFTY, FINNIFTY, MIDCPNIFTY, NIFTYNXT50) plus all index and stock futures. The pull has exponential-backoff retries (up to 4 attempts) via <code>tenacity</code> to handle transient BigQuery API errors.</div>
+    </li>
+    <li class="step">
+      <div class="step-t">Validate &amp; Clean</div>
+      <div class="step-b">The validator checks that all required schema columns exist in the result. It then coalesces null values in the <code>ltp</code> column: <code>effective_ltp = ltp → close_price → close</code> (first non-null wins). Negative IV values are corrected to 0. Whitespace is stripped from string columns. Row counts are logged by instrument type (<code>OPTIDX</code>, <code>FUTIDX</code>, <code>FUTSTK</code>). If fewer than 10 rows are returned during market hours, a warning is logged but processing continues.</div>
+    </li>
+    <li class="step">
+      <div class="step-t">Load or Compute the ATM Window</div>
+      <div class="step-b">Checks whether <code>data/processed/atm_windows/YYYY-MM-DD.json</code> already exists for today. If yes, loads it (the window is fixed for the whole day). If this is the <strong>first pull of a new trading day</strong>, it computes the ATM window from the 09:15 snapshot: rounds the day-opening spot price to the nearest strike interval, then sets a window of ±8 strikes around that ATM. This produces 17 strikes per underlying and is saved immediately so all subsequent pulls reuse the same window.</div>
+    </li>
+    <li class="step">
+      <div class="step-t">Compute All Derived Columns</div>
+      <div class="step-b">The processor adds these columns to each row:
+        <ul class="bl" style="margin-top:8px">
+          <li><code>snap_time</code> — floored to 5-minute boundary (e.g. 09:20:00)</li>
+          <li><code>trade_date</code> — date portion of record_time</li>
+          <li><code>expiry_tier</code> — TIER1_NEAR (DTE ≤12), TIER1_FAR (DTE ≥35), or TIER2_IV_ONLY</li>
+          <li><code>in_atm_window</code> — boolean, true if this strike is within today's ±8 window</li>
+          <li><code>moneyness_pct</code> — (strike − spot) / spot × 100</li>
+          <li><code>gex_k</code> — per-row GEX contribution: Gamma × OI × Spot² × 0.01 × direction_factor</li>
+          <li><code>coc</code> — Cost of Carry: futures_ltp − spot (for futures rows)</li>
+          <li><code>oi_delta</code> — change in OI from previous snapshot</li>
+          <li><code>obi_raw</code> — (total_buy_qty − total_sell_qty) / (total_buy_qty + total_sell_qty)</li>
+          <li><code>dte</code> — (expiry_date − trade_date).days</li>
+        </ul>
+      </div>
+    </li>
+    <li class="step">
+      <div class="step-t">Write Parquet Files to Disk</div>
+      <div class="step-b">Options data is written as <code>data/raw/options/trade_date=YYYY-MM-DD/UNDERLYING_HHMM.parquet</code> — one file per underlying per snapshot. For example, at 10:15 on 2026-02-24: <code>NIFTY_1015.parquet</code>, <code>BANKNIFTY_1015.parquet</code>, etc. Futures are combined into <code>data/raw/futures/trade_date=YYYY-MM-DD/ALL_FUTURES_HHMM.parquet</code>. All files use <strong>Snappy compression</strong> and <strong><code>row_group_size=100,000</code></strong> — a critical performance setting that enables DuckDB to parallelize reads 3–5× faster than the default 10,000.</div>
+    </li>
+    <li class="step">
+      <div class="step-t">Refresh DuckDB Views &amp; Advance Watermark</div>
+      <div class="step-b">DuckDB's glob-pattern views (<code>read_parquet('data/raw/options/**/*.parquet', union_by_name=true)</code>) automatically discover the newly written files — no explicit refresh command is needed. The watermark is then advanced to the maximum <code>record_time</code> in the just-processed batch and written atomically to <code>data/watermark.json</code> via a <code>.tmp</code> file rename (guaranteeing no partial state even if the process crashes mid-write on macOS APFS).</div>
+    </li>
+  </ol>
+
+  <div class="co co-info"><span class="co-icon">ℹ️</span><span><strong>Time handling:</strong> The <code>record_time</code> column in BigQuery reads as <code>"2026-02-20 10:05:19 UTC"</code> but the values <em>are already IST</em> — no timezone conversion is performed. The pipeline strips the UTC label without shifting: <code>pd.to_datetime(df["record_time"]).dt.tz_localize(None)</code>. All comparisons with market hours (09:15, 15:30) are made directly against these naive IST-valued timestamps.</span></div>
+</div>
+
+<!-- SECTION 5: FILES -->
+<div class="sec" id="files">
+  <div class="sec-hd"><div class="sec-num">5</div><h2 class="sh">Files Written to Disk</h2></div>
+  <p>Every file the system creates is listed here. Understanding the file layout helps with debugging and verifying the pipeline is working correctly.</p>
+
+  <div class="tw"><table>
+    <thead><tr><th>Path</th><th>Contents</th><th>Written By</th><th>Frequency</th></tr></thead>
+    <tbody>
+      <tr><td><code>data/raw/options/trade_date=YYYY-MM-DD/<br>UNDERLYING_HHMM.parquet</code></td><td>All option rows for one underlying at one 5-min snapshot. Contains all schema columns plus all derived columns.</td><td><code>writer.py</code></td><td>Every 5-min pull, per underlying</td></tr>
+      <tr><td><code>data/raw/futures/trade_date=YYYY-MM-DD/<br>ALL_FUTURES_HHMM.parquet</code></td><td>All futures contracts (FUTIDX + FUTSTK) combined. One file per snapshot.</td><td><code>writer.py</code></td><td>Every 5-min pull</td></tr>
+      <tr><td><code>data/processed/atm_windows/YYYY-MM-DD.json</code></td><td>ATM strike price, window bounds (lower/upper), and strike interval for each underlying. Fixed for the whole day.</td><td><code>atm.py</code></td><td>Once per trading day (at 09:16:30)</td></tr>
+      <tr><td><code>data/db/fo_analytics.duckdb</code></td><td>DuckDB database file. Contains only <em>view definitions</em> — not data. The views point to Parquet via glob. Tiny file (~50KB).</td><td><code>duckdb_setup.py</code></td><td>Once at pipeline startup</td></tr>
+      <tr><td><code>data/watermark.json</code></td><td>JSON with <code>last_record_time</code> string (IST, no timezone suffix). Advances after every successful pull.</td><td><code>watermark.py</code></td><td>Every 5-min pull (atomic write)</td></tr>
+      <tr><td><code>logs/pipeline_YYYY-MM-DD.log</code></td><td>Structured log of every pipeline event: pull start/end times, row counts by instrument type, errors, warnings.</td><td><code>logger.py</code></td><td>Continuous, rotated daily</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Disk Space Estimate</h3>
+  <div class="g3">
+    <div class="card">
+      <div class="card-title"><div class="cicon" style="background:#dbeafe">📦</div>Per Snapshot</div>
+      <p style="font-size:13px;margin:0">~200–400 KB per underlying parquet file (Snappy compressed). 5 underlyings × 75 snapshots/day ≈ <strong>75–150 MB/day</strong> for options data.</p>
+    </div>
+    <div class="card">
+      <div class="card-title"><div class="cicon" style="background:#dcfce7">📅</div>Per Month (~22 days)</div>
+      <p style="font-size:13px;margin:0">Options: ~1.5–3 GB. Futures: ~200 MB. ATM windows: negligible. Total: <strong>~2–4 GB/month</strong> of Parquet on disk.</p>
+    </div>
+    <div class="card">
+      <div class="card-title"><div class="cicon" style="background:#fef3c7">🗓</div>Annual Estimate</div>
+      <p style="font-size:13px;margin:0">~250 trading days × 3 GB ≈ <strong>~25–50 GB/year</strong>. Budget ~100 GB of free disk for comfortable 2-year retention.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 6: DESIGN PRINCIPLES -->
+<div class="sec" id="design">
+  <div class="sec-hd"><div class="sec-num">6</div><h2 class="sh">Design Principles</h2></div>
+  <p>These principles governed every architectural and code decision. Understanding them helps you extend or debug the system correctly.</p>
+
+  <div class="distinction">
+    <div class="dist-hd"><div class="dist-num">P1</div><h3>Idempotency — Safe to Re-run Anything</h3></div>
+    <div class="dist-body">
+      <p>Every operation can be repeated without creating duplicates or corruption. The backfill checks for existing Parquet files before pulling. The watermark prevents duplicate BigQuery rows from ever being processed. DuckDB views are created with <code>CREATE OR REPLACE</code>. If the pipeline crashes at any point, re-running it from scratch is always safe.</p>
+    </div>
+  </div>
+
+  <div class="distinction">
+    <div class="dist-hd"><div class="dist-num">P2</div><h3>No Hardcoded Values Outside config.py</h3></div>
+    <div class="dist-body">
+      <p>Every threshold, path, schedule time, underlying name, strike interval, and row_group_size is defined as a constant in <code>src/pipeline/config.py</code>. No magic numbers exist anywhere else in the codebase. To change the ATM window from ±8 strikes to ±10, you edit exactly one line in config.py and the change propagates everywhere.</p>
+    </div>
+  </div>
+
+  <div class="distinction">
+    <div class="dist-hd"><div class="dist-num">P3</div><h3>Atomic Writes — No Partial State on Disk</h3></div>
+    <div class="dist-body">
+      <p>Both Parquet files and the watermark JSON are written atomically: data is written to a <code>.tmp</code> file first, then renamed to the target path. On macOS APFS, a rename within the same volume is atomic. This means a power failure or crash cannot leave a corrupted half-written file on disk.</p>
+    </div>
+  </div>
+
+  <div class="distinction">
+    <div class="dist-hd"><div class="dist-num">P4</div><h3>IST-Native Time Handling — Zero Conversions</h3></div>
+    <div class="dist-body">
+      <p>The BigQuery <code>record_time</code> column carries a UTC label, but the <em>numeric values</em> are already IST. Rather than converting and risking a 5:30 shift error, the pipeline strips the UTC label without shifting: <code>pd.to_datetime(df["record_time"]).dt.tz_localize(None)</code>. All comparisons against market hours (<code>time(9,15,0)</code>, <code>time(15,30,0)</code>) work correctly. Never use <code>dt.tz_convert()</code> on this data.</p>
+    </div>
+  </div>
+
+  <div class="distinction">
+    <div class="dist-hd"><div class="dist-num">P5</div><h3>Separation of Concerns — Three Independent Processes</h3></div>
+    <div class="dist-body">
+      <p>The pipeline knows nothing about the API. The API knows nothing about the frontend. The frontend knows nothing about Parquet. Each layer talks only to the layer immediately below it, and only through clearly defined interfaces (files on disk, HTTP JSON). Restarting one process never disrupts the others. Upgrading the frontend requires zero changes to the pipeline.</p>
+    </div>
+  </div>
+
+  <div class="co co-tip"><span class="co-icon">💡</span><span><strong>Continue to Part 2</strong> to learn how to launch all three processes, verify the backfill completed correctly, and set up your daily trading routine.</span></div>
+
+  <div style="display:flex;gap:12px;margin-top:32px;flex-wrap:wrap">
+    <a href="Part2_Getting_Started.html" style="display:inline-flex;align-items:center;gap:8px;background:var(--navy);color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:13.5px;font-weight:600">Next: Part 2 — Getting Started →</a>
+  </div>
+</div>
+
+</main>
+</div>
+</body>
+</html>

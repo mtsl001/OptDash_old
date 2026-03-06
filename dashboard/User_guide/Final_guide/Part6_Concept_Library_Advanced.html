@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Option Buying Dashboard v2.0 — Part 6: Advanced Concepts</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        :root {
+            --cream: #faf8f4;
+            --warm: #f5f2eb;
+            --parch: #ede9df;
+            --bdr: #ddd8cc;
+            --bdr-s: #e8e4da;
+            --ink: #1a1714;
+            --ink2: #3d3830;
+            --ink3: #6b6458;
+            --ink4: #9b9388;
+            --navy: #0f2744;
+            --navy2: #1a3d6b;
+            --blue: #2563a8;
+            --blue2: #3b82d4;
+            --blue-p: #dbeafe;
+            --gold: #b8860b;
+            --gold-p: #fef3c7;
+            --amb: #92400e;
+            --amb-p: #fef3c7;
+            --green: #166534;
+            --green-p: #dcfce7;
+            --red: #991b1b;
+            --red-p: #fee2e2;
+            --F: 'Libre Baskerville', Georgia, serif;
+            --S: 'DM Sans', system-ui, sans-serif;
+            --M: 'DM Mono', 'Courier New', monospace;
+            --sw: 272px;
+            --mc: 860px;
+        }
+
+        html {
+            scroll-behavior: smooth
+        }
+
+        body {
+            font-family: var(--S);
+            background: var(--cream);
+            color: var(--ink);
+            line-height: 1.7;
+            font-size: 15px
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background: radial-gradient(ellipse 80% 60% at 8% 0%, rgba(37, 99, 168, .09) 0%, transparent 55%),
+                linear-gradient(158deg, #faf8f4 0%, #f0eade 45%, #f6f3ed 100%)
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+            z-index: 1
+        }
+
+        .sidebar {
+            width: var(--sw);
+            flex-shrink: 0;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            padding: 28px 0 40px;
+            background: rgba(250, 248, 244, .92);
+            backdrop-filter: blur(14px);
+            border-right: 1px solid var(--bdr)
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 3px
+        }
+
+        .sb-logo {
+            padding: 0 22px 24px;
+            border-bottom: 1px solid var(--bdr-s);
+            margin-bottom: 18px
+        }
+
+        .sb-logo .prod {
+            font-family: var(--M);
+            font-size: 10px;
+            color: var(--blue);
+            letter-spacing: .08em;
+            text-transform: uppercase
+        }
+
+        .sb-logo .name {
+            font-family: var(--F);
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--navy);
+            line-height: 1.25;
+            margin-top: 4px
+        }
+
+        .sb-logo .ver {
+            display: inline-block;
+            margin-top: 8px;
+            font-size: 10px;
+            font-family: var(--M);
+            color: var(--ink4);
+            background: var(--parch);
+            padding: 2px 8px;
+            border-radius: 20px;
+            border: 1px solid var(--bdr)
+        }
+
+        .part-tag {
+            margin: 0 22px 18px;
+            padding: 8px 14px;
+            background: var(--navy);
+            border-radius: 8px;
+            font-family: var(--M);
+            font-size: 10px;
+            color: rgba(255, 255, 255, .7);
+            letter-spacing: .06em;
+            text-transform: uppercase
+        }
+
+        .part-tag span {
+            display: block;
+            color: #fff;
+            font-size: 12px;
+            margin-top: 2px;
+            font-family: var(--F);
+            font-weight: 700;
+            letter-spacing: 0;
+            text-transform: none
+        }
+
+        .nl {
+            display: block;
+            padding: 6px 22px;
+            font-size: 13px;
+            color: var(--ink3);
+            text-decoration: none;
+            border-left: 2px solid transparent;
+            transition: all .15s
+        }
+
+        .nl:hover {
+            color: var(--blue);
+            background: rgba(37, 99, 168, .06);
+            border-left-color: var(--blue2)
+        }
+
+        .nl.active {
+            color: var(--navy);
+            font-weight: 600;
+            border-left-color: var(--blue);
+            background: rgba(37, 99, 168, .08)
+        }
+
+        .nav-lbl {
+            padding: 8px 22px 3px;
+            font-size: 9.5px;
+            font-weight: 600;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--ink4)
+        }
+
+        .nav-parts {
+            padding: 14px 22px 0;
+            border-top: 1px solid var(--bdr-s);
+            margin-top: 8px
+        }
+
+        .nav-parts .np-lbl {
+            font-size: 9.5px;
+            font-weight: 600;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--ink4);
+            margin-bottom: 6px
+        }
+
+        .np-link {
+            display: block;
+            padding: 4px 0;
+            font-size: 12px;
+            color: var(--ink4);
+            text-decoration: none;
+            transition: color .15s
+        }
+
+        .np-link:hover {
+            color: var(--blue)
+        }
+
+        .np-link.cur {
+            color: var(--navy);
+            font-weight: 600
+        }
+
+        .main {
+            flex: 1;
+            min-width: 0;
+            padding: 56px 60px 100px
+        }
+
+        .sec {
+            max-width: var(--mc);
+            padding-top: 24px;
+            margin-bottom: 60px
+        }
+
+        .sec+.sec {
+            border-top: 1px solid var(--bdr-s);
+            padding-top: 52px
+        }
+
+        .hero {
+            max-width: var(--mc);
+            padding-bottom: 48px;
+            border-bottom: 1px solid var(--bdr);
+            margin-bottom: 52px
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--M);
+            font-size: 10.5px;
+            color: var(--blue);
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            margin-bottom: 18px
+        }
+
+        .eyebrow::before {
+            content: '';
+            display: block;
+            width: 22px;
+            height: 1px;
+            background: var(--blue)
+        }
+
+        .hero h1 {
+            font-family: var(--F);
+            font-size: 38px;
+            font-weight: 700;
+            line-height: 1.15;
+            color: var(--navy);
+            margin-bottom: 14px
+        }
+
+        .hero h1 em {
+            font-style: italic;
+            color: var(--blue)
+        }
+
+        .hero-lead {
+            font-size: 15.5px;
+            color: var(--ink2);
+            line-height: 1.78;
+            max-width: 680px
+        }
+
+        h2.sh {
+            font-family: var(--F);
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 12px;
+            line-height: 1.2
+        }
+
+        h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--ink);
+            margin: 26px 0 9px
+        }
+
+        h4 {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--ink3);
+            margin: 18px 0 5px;
+            text-transform: uppercase;
+            letter-spacing: .07em
+        }
+
+        p {
+            color: var(--ink2);
+            margin-bottom: 12px;
+            line-height: 1.76
+        }
+
+        strong {
+            color: var(--ink);
+            font-weight: 600
+        }
+
+        code {
+            background: var(--parch);
+            border: 1px solid var(--bdr);
+            border-radius: 4px;
+            padding: 1px 6px;
+            font-size: 12px;
+            color: var(--navy2);
+            font-family: var(--M)
+        }
+
+        ul.bl {
+            padding-left: 20px;
+            color: var(--ink2);
+            font-size: 13.5px;
+            line-height: 2.1;
+            margin-bottom: 12px
+        }
+
+        .sec-hd {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 22px
+        }
+
+        .sec-num {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: var(--navy);
+            color: #fff;
+            font-family: var(--M);
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0
+        }
+
+        .tw {
+            overflow-x: auto;
+            margin: 12px 0;
+            border-radius: 9px;
+            border: 1px solid var(--bdr)
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            background: #fff
+        }
+
+        th {
+            background: var(--warm);
+            color: var(--ink2);
+            font-weight: 600;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            padding: 9px 14px;
+            text-align: left;
+            border-bottom: 2px solid var(--bdr)
+        }
+
+        td {
+            padding: 9px 14px;
+            border-bottom: 1px solid var(--bdr-s);
+            color: var(--ink2);
+            vertical-align: top;
+            line-height: 1.5
+        }
+
+        tr:last-child td {
+            border-bottom: none
+        }
+
+        .co {
+            border-radius: 9px;
+            padding: 12px 16px;
+            margin: 14px 0;
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            font-size: 13.5px;
+            line-height: 1.6
+        }
+
+        .co-icon {
+            font-size: 16px;
+            flex-shrink: 0;
+            margin-top: 1px
+        }
+
+        .co-info {
+            background: var(--blue-p);
+            border: 1px solid #bfdbfe;
+            color: var(--navy2)
+        }
+
+        .co-warn {
+            background: var(--amb-p);
+            border: 1px solid #fde68a;
+            color: var(--amb)
+        }
+
+        .co-ok {
+            background: var(--green-p);
+            border: 1px solid #bbf7d0;
+            color: var(--green)
+        }
+
+        .co strong {
+            color: inherit
+        }
+
+        .card {
+            background: #fff;
+            border: 1px solid var(--bdr);
+            border-radius: 10px;
+            padding: 18px 22px;
+            margin-bottom: 14px
+        }
+
+        .g2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 12px 0
+        }
+
+        .g4 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 10px;
+            margin: 12px 0
+        }
+
+        .formula {
+            background: var(--parch);
+            border: 1px solid var(--bdr);
+            border-radius: 8px;
+            padding: 14px 18px;
+            font-family: var(--M);
+            font-size: 12.5px;
+            color: var(--navy2);
+            margin: 12px 0;
+            line-height: 1.8
+        }
+
+        .formula .flbl {
+            font-size: 10px;
+            color: var(--ink4);
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            margin-bottom: 5px;
+            font-family: var(--S);
+            font-weight: 600
+        }
+
+        .formula .fc {
+            color: var(--ink3);
+            font-family: var(--S);
+            font-size: 12.5px;
+            margin-top: 6px
+        }
+
+        .ctag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 10.5px;
+            font-weight: 600;
+            font-family: var(--M);
+            border: 1px solid;
+            vertical-align: middle;
+            margin-left: 6px
+        }
+
+        .ct-b {
+            background: var(--blue-p);
+            border-color: #93c5fd;
+            color: var(--navy)
+        }
+
+        .ct-g {
+            background: var(--green-p);
+            border-color: #86efac;
+            color: var(--green)
+        }
+
+        .ct-r {
+            background: var(--red-p);
+            border-color: #f87171;
+            color: var(--red)
+        }
+
+        .greek-card {
+            border-radius: 10px;
+            border: 1px solid var(--bdr);
+            overflow: hidden;
+            margin-bottom: 12px
+        }
+
+        .greek-hd {
+            padding: 11px 18px;
+            border-bottom: 1px solid var(--bdr-s);
+            display: flex;
+            align-items: center;
+            gap: 10px
+        }
+
+        .greek-sym {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--F);
+            font-size: 18px;
+            font-weight: 700;
+            flex-shrink: 0;
+            color: #fff
+        }
+
+        .greek-body {
+            padding: 14px 18px;
+            background: #fff;
+            font-size: 13.5px;
+            color: var(--ink2)
+        }
+
+        .tier-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin: 12px 0
+        }
+
+        .tier {
+            border-radius: 9px;
+            padding: 14px 16px;
+            border: 1px solid
+        }
+
+        .tier-name {
+            font-family: var(--M);
+            font-size: 10.5px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            margin-bottom: 5px
+        }
+
+        .tier-desc {
+            font-size: 12.5px;
+            line-height: 1.5;
+            color: var(--ink3)
+        }
+
+        .atm-steps {
+            display: flex;
+            gap: 0;
+            margin: 14px 0;
+            flex-wrap: wrap
+        }
+
+        .atm-step {
+            flex: 1;
+            min-width: 160px;
+            background: #fff;
+            border: 1px solid var(--bdr);
+            padding: 14px 16px;
+            position: relative
+        }
+
+        .atm-step:not(:last-child) {
+            border-right: none
+        }
+
+        .atm-step:first-child {
+            border-radius: 9px 0 0 9px
+        }
+
+        .atm-step:last-child {
+            border-radius: 0 9px 9px 0;
+            border-right: 1px solid var(--bdr)
+        }
+
+        .atm-n {
+            font-family: var(--M);
+            font-size: 10px;
+            color: var(--blue);
+            font-weight: 600;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: .06em
+        }
+
+        .atm-t {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--ink);
+            margin-bottom: 4px
+        }
+
+        .atm-d {
+            font-size: 12px;
+            color: var(--ink3);
+            line-height: 1.5
+        }
+
+        @media(max-width:900px) {
+            .sidebar {
+                display: none
+            }
+
+            .main {
+                padding: 28px 22px 60px
+            }
+
+            .g2,
+            .g4,
+            .tier-grid {
+                grid-template-columns: 1fr
+            }
+
+            .atm-steps {
+                flex-direction: column
+            }
+
+            .atm-step:first-child,
+            .atm-step:last-child {
+                border-radius: 9px
+            }
+
+            .atm-step:not(:last-child) {
+                border-right: 1px solid var(--bdr);
+                border-bottom: none
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layout">
+        <nav class="sidebar">
+            <div class="sb-logo">
+                <div class="prod">User Guide · 2026</div>
+                <div class="name">Option Buying<br>Dashboard</div>
+                <span class="ver">v2.0 — macOS Edition</span>
+            </div>
+            <div class="part-tag">Part 6 of 8<span>Concept Library — Advanced</span></div>
+            <div class="nav-lbl">Advanced Concepts</div>
+            <a class="nl active" href="#greeks">C6 · Option Greeks</a>
+            <a class="nl" href="#sscore">C7 · S_score</a>
+            <a class="nl" href="#obi">C8 · Order Book Imbalance</a>
+            <a class="nl" href="#thetasl">C9 · Theta-Adjusted SL</a>
+            <a class="nl" href="#expiry">C10 · Expiry Tiers</a>
+            <a class="nl" href="#atm">C11 · ATM Window</a>
+            <a class="nl" href="#moneyness">C12 · Moneyness</a>
+            <div class="nav-parts">
+                <div class="np-lbl">All 8 Parts</div>
+                <a class="np-link" href="Part1_Introduction_Architecture.html">1 · Introduction &amp; Architecture</a>
+                <a class="np-link" href="Part2_Getting_Started.html">2 · Getting Started</a>
+                <a class="np-link" href="Part3_Dashboard_Panels_Row1.html">3 · Panels A, B, C</a>
+                <a class="np-link" href="Part4_Dashboard_Panels_Row2_Row3.html">4 · Panels D–H</a>
+                <a class="np-link" href="Part5_Concept_Library_Core.html">5 · Concepts: Core</a>
+                <a class="np-link cur" href="Part6_Concept_Library_Advanced.html">6 · Concepts: Advanced</a>
+                <a class="np-link" href="Part7_Trading_Workflow_Playbooks.html">7 · Workflow &amp; Playbooks</a>
+                <a class="np-link" href="Part8_Reference_Troubleshooting_Glossary.html">8 · Reference &amp; Glossary</a>
+            </div>
+        </nav>
+
+        <main class="main">
+            <div class="hero">
+                <div class="eyebrow">Part 6 of 8 · Concept Library — Advanced</div>
+                <h1>Advanced Concepts:<br><em>The Analytical Engine</em></h1>
+                <p class="hero-lead">These concepts power the computational sections of the dashboard — the S_score
+                    ranking, OBI conditions, theta-adjusted stop loss, expiry tier classification, and the ATM window.
+                    Understanding them helps you interpret why the system makes the rankings it does, and when to
+                    override them.</p>
+            </div>
+
+            <!-- C6: GREEKS -->
+            <div class="sec" id="greeks">
+                <div class="sec-hd">
+                    <div class="sec-num">C6</div>
+                    <h2 class="sh">Option Greeks <span class="ctag ct-b">Screener</span><span class="ctag ct-b">Position
+                            Monitor</span></h2>
+                </div>
+                <p>The Greeks are partial derivatives of the option price with respect to different market inputs. They
+                    quantify exactly how much your option's value will change for a given change in spot, time, or
+                    volatility. The dashboard uses all four first-order Greeks in its analytics.</p>
+
+                <div class="g2">
+                    <div class="greek-card">
+                        <div class="greek-hd">
+                            <div class="greek-sym" style="background:#1e3a8a">Δ</div>
+                            <div>
+                                <div style="font-weight:700;color:var(--navy)">Delta</div>
+                                <div style="font-size:12px;color:var(--ink3)">Price sensitivity</div>
+                            </div>
+                        </div>
+                        <div class="greek-body">
+                            <div class="formula" style="margin:0 0 10px">
+                                <div class="flbl">Definition</div>Δ = ∂V / ∂S (change in option price per ₹1 change in
+                                spot)
+                            </div>
+                            <p style="margin:0"><strong>ATM range:</strong> CE delta ≈ +0.45 to +0.55. PE delta ≈ −0.45
+                                to −0.55. OTM options: lower absolute delta. ITM: higher. <strong>Practical
+                                    meaning:</strong> If you buy 1 lot of NIFTY PE with delta = −0.40 and NIFTY falls
+                                100 pts, your option gains ≈ ₹40 × 50 (lot size) = ₹2,000 in delta P&amp;L, before other
+                                Greeks.</p>
+                        </div>
+                    </div>
+                    <div class="greek-card">
+                        <div class="greek-hd">
+                            <div class="greek-sym" style="background:#166534">Γ</div>
+                            <div>
+                                <div style="font-weight:700;color:var(--navy)">Gamma</div>
+                                <div style="font-size:12px;color:var(--ink3)">Delta acceleration</div>
+                            </div>
+                        </div>
+                        <div class="greek-body">
+                            <div class="formula" style="margin:0 0 10px">
+                                <div class="flbl">Definition</div>Γ = ∂Δ / ∂S = ∂²V / ∂S² (rate of change of delta per
+                                ₹1 spot move)
+                            </div>
+                            <p style="margin:0"><strong>ATM range:</strong> 0.0005 to 0.002 for NIFTY options.
+                                <strong>Practical meaning:</strong> As an option buyer, you have positive gamma — your
+                                delta grows in your favour as spot moves toward you, and shrinks as it moves against
+                                you. This is the fundamental advantage of long options over futures. In a fast move,
+                                gamma makes option gains super-linear.</p>
+                        </div>
+                    </div>
+                    <div class="greek-card">
+                        <div class="greek-hd">
+                            <div class="greek-sym" style="background:#991b1b">Θ</div>
+                            <div>
+                                <div style="font-weight:700;color:var(--navy)">Theta</div>
+                                <div style="font-size:12px;color:var(--ink3)">Time decay cost</div>
+                            </div>
+                        </div>
+                        <div class="greek-body">
+                            <div class="formula" style="margin:0 0 10px">
+                                <div class="flbl">Definition</div>Θ = ∂V / ∂t (change in option price per 1 calendar day
+                                elapsed)
+                            </div>
+                            <p style="margin:0"><strong>ATM range:</strong> −₹2 to −₹8/day for NIFTY near-expiry
+                                options. Theta is always negative for long options. <strong>Practical meaning:</strong>
+                                The daily "rent" you pay for holding the option. An option with Θ = −3 loses ₹3/day from
+                                time alone. With 50 lots and a lot size of 25, that is ₹3,750/day. Theta accelerates
+                                significantly in the final 5 DTE.</p>
+                        </div>
+                    </div>
+                    <div class="greek-card">
+                        <div class="greek-hd">
+                            <div class="greek-sym" style="background:#b8860b">V</div>
+                            <div>
+                                <div style="font-weight:700;color:var(--navy)">Vega</div>
+                                <div style="font-size:12px;color:var(--ink3)">IV sensitivity</div>
+                            </div>
+                        </div>
+                        <div class="greek-body">
+                            <div class="formula" style="margin:0 0 10px">
+                                <div class="flbl">Definition</div>ν = ∂V / ∂σ (change in option price per 1% change in
+                                IV)
+                            </div>
+                            <p style="margin:0"><strong>ATM range:</strong> ₹5 to ₹15 per 1% IV change for NIFTY ATM
+                                options. <strong>Practical meaning:</strong> When IV expands after you buy, Vega
+                                multiplies your gain. When IV crushes post-event, Vega can wipe delta gains. This is why
+                                buying options only when IVP &lt;50% structurally positions you for IV expansion rather
+                                than compression.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Taylor Decomposition of Option P&amp;L</h3>
+                <div class="formula">
+                    <div class="flbl">Full Greek P&L Decomposition (second-order approximation)</div>
+                    ΔV ≈ Δ × ΔS + ½ × Γ × ΔS² + Θ × Δt + ν × Δσ<br><br>
+                    <div class="fc">where ΔS = spot change, Δt = elapsed time (fraction of day), Δσ = IV change<br>
+                        This is exactly what the Position Monitor's P&L attribution shows — broken into its four
+                        components.</div>
+                </div>
+            </div>
+
+            <!-- C7: S_SCORE -->
+            <div class="sec" id="sscore">
+                <div class="sec-hd">
+                    <div class="sec-num">C7</div>
+                    <h2 class="sh">S_score — Strike Selection Score <span class="ctag ct-b">Screener</span></h2>
+                </div>
+                <p>S_score is the dashboard's proprietary composite metric for ranking option strikes. It synthesises
+                    four factors into one score from 0 to 100: delta efficiency per unit theta, slippage penalty from
+                    bid-ask spread, IV cost adjustment, and order book direction alignment.</p>
+
+                <div class="formula">
+                    <div class="flbl">Step 1 — Efficiency Ratio (delta per theta)</div>
+                    EffRatio = |Delta| / |Theta|<br>
+                    <div class="fc">Higher EffRatio means more directional sensitivity for less daily time cost. An
+                        option with Δ=0.40 and Θ=−2.0 has EffRatio=0.20. An option with Δ=0.30 and Θ=−3.5 has
+                        EffRatio=0.086. The first is 2.3× more efficient.</div><br>
+                    <div class="flbl">Step 2 — Slippage Penalty Factor (ρ)</div>
+                    ρ = 1 − min((Spread% / 10), 1.0)<br>
+                    <div class="fc">Spread% = (Ask − Bid) / LTP × 100. If spread is 2%: ρ = 1 − 0.2 = 0.80. If spread is
+                        7%: ρ = 1 − 0.7 = 0.30. Wide spreads heavily penalise the score.</div><br>
+                    <div class="flbl">Step 3 — IVP Adjustment</div>
+                    IVP_adj = 1.0 if IVP &lt; 50% | 0.8 if 50–70% | 0.6 if &gt;70%<br><br>
+                    <div class="flbl">Step 4 — OBI Alignment Adjustment</div>
+                    OBI_adj = 1.15 if OBI aligned | 1.0 if neutral | 0.85 if contrary<br><br>
+                    <div class="flbl">Final S_score</div>
+                    S_score = EffRatio × ρ × IVP_adj × OBI_adj × 100 (clipped to 0–100)
+                </div>
+
+                <h3>Worked Example</h3>
+                <div class="tw">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Input</th>
+                                <th>Value</th>
+                                <th>Factor Applied</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Delta</td>
+                                <td>0.38</td>
+                                <td rowspan="2" style="vertical-align:middle">EffRatio = 0.38 / 2.4 = 0.158</td>
+                            </tr>
+                            <tr>
+                                <td>Theta</td>
+                                <td>−2.4</td>
+                            </tr>
+                            <tr>
+                                <td>Bid-Ask Spread%</td>
+                                <td>2.5%</td>
+                                <td>ρ = 1 − 0.25 = 0.75</td>
+                            </tr>
+                            <tr>
+                                <td>IVP</td>
+                                <td>38%</td>
+                                <td>IVP_adj = 1.0</td>
+                            </tr>
+                            <tr>
+                                <td>OBI</td>
+                                <td>−0.12 (PE sell pressure aligned)</td>
+                                <td>OBI_adj = 1.15</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2"><strong>S_score</strong></td>
+                                <td><strong>0.158 × 0.75 × 1.0 × 1.15 × 100 = 13.6</strong> → 2 stars</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="co co-info"><span class="co-icon">ℹ️</span><span>A 2-star S_score in this example reflects
+                        the slightly wide spread (2.5%) dragging down an otherwise decent EffRatio. If the spread
+                        tightens to 1.5% mid-session, the score rises to 18.2 (3 stars). <strong>Always recheck the
+                            screener 5–10 minutes before entry</strong> as spread conditions change throughout the
+                        day.</span></div>
+            </div>
+
+            <!-- C8: OBI -->
+            <div class="sec" id="obi">
+                <div class="sec-hd">
+                    <div class="sec-num">C8</div>
+                    <h2 class="sh">Order Book Imbalance (OBI) <span class="ctag ct-b">Gate C#3 &amp; C#6</span><span
+                            class="ctag ct-b">Screener</span></h2>
+                </div>
+                <p>OBI quantifies the net directional pressure visible in the market's limit order book, measured as the
+                    ratio of buy quantities to sell quantities in the top-5 bid-ask levels.</p>
+
+                <div class="formula">
+                    <div class="flbl">Raw OBI per Snapshot</div>
+                    OBI_raw = (total_buy_qty − total_sell_qty) / (total_buy_qty + total_sell_qty)<br>
+                    <div class="fc">Result ranges from −1.0 (100% sell-side) to +1.0 (100% buy-side). Zero = perfectly
+                        balanced.</div><br>
+                    <div class="flbl">Smoothed OBI (5-snapshot moving average · Gate Gate C#6)</div>
+                    OBI_smooth = Average(OBI_raw over last 5 snapshots = 25 minutes)
+                </div>
+
+                <h3>Gate Conditions Using OBI</h3>
+                <div class="tw">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Condition</th>
+                                <th>OBI Source</th>
+                                <th>Threshold</th>
+                                <th>What It Measures</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Gate C#3</strong></td>
+                                <td>Futures OBI (raw)</td>
+                                <td>&lt; 0</td>
+                                <td>Futures order book has more sell quantity than buy quantity → supply pressure in
+                                    futures confirming bearish institutional flow</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Gate C#6</strong></td>
+                                <td>Options OBI (smoothed, 5-snap avg)</td>
+                                <td>&lt; 0</td>
+                                <td>Options order book persistently sell-side dominated → reduces option writer
+                                    resistance to directional moves, confirming buyer-favourable environment</td>
+                            </tr>
+                            <tr>
+                                <td><strong>S_score</strong></td>
+                                <td>Per-strike OBI (raw)</td>
+                                <td>Directional alignment</td>
+                                <td>OBI in the same direction as your planned trade (negative for PE, positive for CE)
+                                    boosts S_score by 15%. Contrary OBI penalises by 15%.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="co co-warn"><span class="co-icon">⚠️</span><span>OBI can be spoofed — large orders placed
+                        and immediately cancelled inflate the visible qty temporarily. The 5-snapshot smoothing in Gate
+                        C#6 mitigates this by requiring the imbalance to persist for 25+ minutes, not just a single
+                        snapshot.</span></div>
+            </div>
+
+            <!-- C9: THETA-ADJUSTED SL -->
+            <div class="sec" id="thetasl">
+                <div class="sec-hd">
+                    <div class="sec-num">C9</div>
+                    <h2 class="sh">Theta-Adjusted Trailing Stop Loss <span class="ctag ct-g">Panel H</span></h2>
+                </div>
+                <p>A conventional percentage stop loss treats all time periods equally — a 30% loss at 10:00 triggers
+                    the same way as a 30% loss at 14:30. But for a long option, these are not equivalent situations: by
+                    14:30, theta has already consumed several rupees of value, so the option's fair price at breakeven
+                    is structurally lower than at entry. The theta-adjusted SL accounts for this by moving the stop
+                    level down as time passes, exactly by the amount of theta earned since entry.</p>
+
+                <div class="formula">
+                    <div class="flbl">SL_base — Initial Stop</div>
+                    SL_base = Entry_Price × (1 − SL_fraction)<br>
+                    <div class="fc">SL_fraction is set in config.py (default 0.30 = 30% loss stop)</div><br>
+                    <div class="flbl">Cumulative Theta Accrued at time t</div>
+                    Theta_accrued_t = |Theta_at_entry| × (minutes_elapsed / 960)<br>
+                    <div class="fc">960 = total trading minutes in a 6.25-hour NSE session (09:15–15:30)</div><br>
+                    <div class="flbl">Dynamic SL at time t</div>
+                    SL_t = max(SL_base − Theta_accrued_t, SL_base × 0.50)<br>
+                    <div class="fc">The 0.50 floor prevents the SL from drifting so low that it becomes meaningless. SL
+                        cannot fall below 50% of the original SL_base.</div>
+                </div>
+
+                <h3>Why This is Correct Risk Management</h3>
+                <p>Without the theta adjustment, you would stop out roughly at the same premium level throughout the
+                    day. But the market knows the option is worth less at 14:00 than at 09:30 simply due to time. A
+                    price equal to SL_base at 14:00 actually represents a <em>larger</em> real loss (relative to fair
+                    value) than the same price at 09:30, because theta has eroded the base. The adjustment is the
+                    mathematically correct way to maintain a constant real loss tolerance rather than a constant nominal
+                    tolerance.</p>
+            </div>
+
+            <!-- C10: EXPIRY TIERS -->
+            <div class="sec" id="expiry">
+                <div class="sec-hd">
+                    <div class="sec-num">C10</div>
+                    <h2 class="sh">Expiry Tiers <span class="ctag ct-b">Screener</span><span
+                            class="ctag ct-b">processor.py</span></h2>
+                </div>
+                <p>Each option row is classified into one of three expiry tiers based on its DTE (days to expiry). Tiers
+                    determine which options appear in the Screener and how aggressively they are ranked.</p>
+
+                <div class="tier-grid">
+                    <div class="tier" style="background:#dcfce7;border-color:#86efac">
+                        <div class="tier-name" style="color:var(--green)">TIER1_NEAR</div>
+                        <div style="font-weight:700;font-size:20px;color:var(--green);margin:5px 0">DTE: 1–12</div>
+                        <div class="tier-desc">Near-term weekly/monthly expiry. Maximum gamma &amp; delta sensitivity
+                            per rupee of premium. High theta cost. Ideal for intraday to 2-day trades.<br><strong
+                                style="color:var(--green)">Fully scored in Screener.</strong></div>
+                    </div>
+                    <div class="tier" style="background:#fef3c7;border-color:#fcd34d">
+                        <div class="tier-name" style="color:var(--amb)">TIER1_FAR</div>
+                        <div style="font-weight:700;font-size:20px;color:var(--amb);margin:5px 0">DTE: 13–34</div>
+                        <div class="tier-desc">Mid-term expiry. Lower gamma but manageable theta. Suitable for 3–7 day
+                            swing trades. Less sensitive to intraday spot moves.<br><strong
+                                style="color:var(--amb)">Fully scored in Screener with DTE penalty.</strong></div>
+                    </div>
+                    <div class="tier" style="background:var(--blue-p);border-color:#93c5fd">
+                        <div class="tier-name" style="color:var(--navy)">TIER2_IV_ONLY</div>
+                        <div style="font-weight:700;font-size:20px;color:var(--navy);margin:5px 0">DTE: 35+</div>
+                        <div class="tier-desc">Far-term or calendar options. Too much DTE to be relevant for short-term
+                            directional option buying. Used only for IV Surface reference (term structure
+                            analysis).<br><strong style="color:var(--navy)">Not shown in S_score Screener.</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Dynamic Re-tiering</h3>
+                <p>Tier classification is recomputed fresh at every 5-minute snapshot. An option that was TIER1_FAR on
+                    Monday morning with DTE=15 will become TIER1_NEAR by the following Wednesday (DTE=10). The screener
+                    automatically adjusts its treatment. There is no manual intervention needed — tier re-tiering is
+                    invisible to the user but critical to the accuracy of S_score rankings near expiry week.</p>
+
+                <div class="co co-warn"><span class="co-icon">⚠️</span><span><strong>DTE = 1 (expiry day):</strong>
+                        Options with DTE=1 have extremely high theta. The Screener scores these very low despite
+                        potentially high delta, because the theta risk is disproportionate. Avoid entering new positions
+                        in expiry-day options unless you are making extremely short-duration scalp trades exiting before
+                        12:00.</span></div>
+            </div>
+
+            <!-- C11: ATM WINDOW -->
+            <div class="sec" id="atm">
+                <div class="sec-hd">
+                    <div class="sec-num">C11</div>
+                    <h2 class="sh">ATM Window <span class="ctag ct-b">Screener</span><span
+                            class="ctag ct-b">atm.py</span></h2>
+                </div>
+                <p>The ATM Window defines the universe of strikes eligible for display in the Screener. It is computed
+                    once at day-open and remains fixed for the entire trading day — preventing the Screener from
+                    dynamically chasing strikes as spot moves, which would create entry instability.</p>
+
+                <div class="atm-steps">
+                    <div class="atm-step">
+                        <div class="atm-n">Step 1</div>
+                        <div class="atm-t">Get Day-Open Spot</div>
+                        <div class="atm-d">Use the spot price from the <strong>09:15 snapshot</strong> (first 5-min
+                            pull). This is the "anchor" price for the day.</div>
+                    </div>
+                    <div class="atm-step">
+                        <div class="atm-n">Step 2</div>
+                        <div class="atm-t">Round to Strike Grid</div>
+                        <div class="atm-d">Round to the nearest strike interval for the underlying. NIFTY=50,
+                            BANKNIFTY=100, FINNIFTY=50, MIDCPNIFTY=25.</div>
+                    </div>
+                    <div class="atm-step">
+                        <div class="atm-n">Step 3</div>
+                        <div class="atm-t">Set ±8 Window</div>
+                        <div class="atm-d">ATM Window = 8 strikes below ATM to 8 strikes above ATM = <strong>17 strikes
+                                total</strong> per underlying.</div>
+                    </div>
+                </div>
+
+                <h3>Strike Count Per Underlying</h3>
+                <div class="tw">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Underlying</th>
+                                <th>Strike Interval</th>
+                                <th>Window Range (±8 strikes)</th>
+                                <th>Total Strike Range</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>NIFTY</td>
+                                <td>50 pts</td>
+                                <td>−400 to +400 from ATM</td>
+                                <td>800-point total window</td>
+                            </tr>
+                            <tr>
+                                <td>BANKNIFTY</td>
+                                <td>100 pts</td>
+                                <td>−800 to +800 from ATM</td>
+                                <td>1600-point total window</td>
+                            </tr>
+                            <tr>
+                                <td>FINNIFTY</td>
+                                <td>50 pts</td>
+                                <td>−400 to +400 from ATM</td>
+                                <td>800-point total window</td>
+                            </tr>
+                            <tr>
+                                <td>MIDCPNIFTY</td>
+                                <td>25 pts</td>
+                                <td>−200 to +200 from ATM</td>
+                                <td>400-point total window</td>
+                            </tr>
+                            <tr>
+                                <td>NIFTYNXT50</td>
+                                <td>50 pts</td>
+                                <td>−400 to +400 from ATM</td>
+                                <td>800-point total window</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- C12: MONEYNESS -->
+            <div class="sec" id="moneyness">
+                <div class="sec-hd">
+                    <div class="sec-num">C12</div>
+                    <h2 class="sh">Moneyness <span class="ctag ct-b">Screener</span><span class="ctag ct-b">IV
+                            Surface</span></h2>
+                </div>
+
+                <div class="formula">
+                    <div class="flbl">Moneyness Formula</div>
+                    moneyness_pct = (Strike_Price − Spot_Price) / Spot_Price × 100<br>
+                    <div class="fc">Positive = strike is above spot (OTM for calls, ITM for puts)<br>Negative = strike
+                        is below spot (ITM for calls, OTM for puts)</div>
+                </div>
+
+                <div class="tw">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>moneyness_pct</th>
+                                <th>Zone</th>
+                                <th>Delta Range (CE/PE)</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>&lt; −3%</td>
+                                <td>Deep ITM</td>
+                                <td>CE: 0.75–0.95 / PE: 0.05–0.25</td>
+                                <td>High delta, low time value. Expensive. Behaves almost like spot.</td>
+                            </tr>
+                            <tr>
+                                <td>−1% to −3%</td>
+                                <td>Slight ITM</td>
+                                <td>CE: 0.55–0.75</td>
+                                <td>Good delta but more expensive than ATM. Higher capital requirement.</td>
+                            </tr>
+                            <tr>
+                                <td>−0.5% to +0.5%</td>
+                                <td>ATM</td>
+                                <td>CE/PE: ~0.45–0.55</td>
+                                <td>Highest gamma, maximum time value. Sweet spot for buying.</td>
+                            </tr>
+                            <tr>
+                                <td>+0.5% to +2%</td>
+                                <td>Slight OTM</td>
+                                <td>CE: 0.25–0.45</td>
+                                <td>Cheaper premium, less delta. Good risk:reward if momentum expected.</td>
+                            </tr>
+                            <tr>
+                                <td>+2% to +4%</td>
+                                <td>OTM</td>
+                                <td>CE: 0.10–0.25</td>
+                                <td>Very cheap, but needs large move to be profitable. High loss probability.</td>
+                            </tr>
+                            <tr>
+                                <td>&gt; +4%</td>
+                                <td>Deep OTM</td>
+                                <td>CE: &lt;0.10</td>
+                                <td>Lottery tickets. Maximum IVP skew penalty. Avoid for systematic buying.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div style="display:flex;gap:12px;margin-top:32px;flex-wrap:wrap">
+                    <a href="Part5_Concept_Library_Core.html"
+                        style="display:inline-flex;align-items:center;gap:8px;background:var(--parch);color:var(--navy);border:1px solid var(--bdr);padding:10px 20px;border-radius:8px;text-decoration:none;font-size:13.5px;font-weight:600">←
+                        Part 5: Core Concepts</a>
+                    <a href="Part7_Trading_Workflow_Playbooks.html"
+                        style="display:inline-flex;align-items:center;gap:8px;background:var(--navy);color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:13.5px;font-weight:600">Next:
+                        Part 7 — Workflow &amp; Playbooks →</a>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</body>
+
+</html>

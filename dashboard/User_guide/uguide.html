@@ -1,0 +1,1897 @@
+html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Option Buying Dashboard v2.0 — User Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ─── Reset & Variables ───────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --cream:       #faf8f4;
+  --warm-white:  #f5f2eb;
+  --parchment:   #ede9df;
+  --border:      #ddd8cc;
+  --border-soft: #e8e4da;
+
+  --ink:         #1a1714;
+  --ink-2:       #3d3830;
+  --ink-3:       #6b6458;
+  --ink-4:       #9b9388;
+
+  --navy:        #0f2744;
+  --navy-mid:    #1a3d6b;
+  --blue:        #2563a8;
+  --blue-light:  #3b82d4;
+  --blue-pale:   #dbeafe;
+
+  --gold:        #b8860b;
+  --gold-light:  #d4a017;
+  --gold-pale:   #fef3c7;
+
+  --green:       #166534;
+  --green-mid:   #16a34a;
+  --green-pale:  #dcfce7;
+
+  --red:         #991b1b;
+  --red-mid:     #dc2626;
+  --red-pale:    #fee2e2;
+
+  --amber:       #92400e;
+  --amber-pale:  #fef3c7;
+
+  --font-serif:  'Libre Baskerville', Georgia, serif;
+  --font-sans:   'DM Sans', system-ui, sans-serif;
+  --font-mono:   'DM Mono', 'Courier New', monospace;
+
+  --sidebar-w:   280px;
+  --max-content: 860px;
+}
+
+html{scroll-behavior:smooth}
+
+body{
+  font-family: var(--font-sans);
+  background: var(--cream);
+  color: var(--ink);
+  line-height: 1.7;
+  font-size: 15px;
+}
+
+/* ─── Background Gradient ─────────────────────────────────────────────── */
+body::before{
+  content:'';
+  position:fixed;
+  inset:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 10% 0%, rgba(37,99,168,0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 80% at 90% 10%, rgba(184,134,11,0.06) 0%, transparent 55%),
+    radial-gradient(ellipse 70% 50% at 50% 100%, rgba(22,101,52,0.05) 0%, transparent 60%),
+    linear-gradient(160deg, #faf8f4 0%, #f2ede3 40%, #f7f4ee 100%);
+  pointer-events:none;
+  z-index:0;
+}
+
+/* ─── Layout ──────────────────────────────────────────────────────────── */
+.layout{
+  display:flex;
+  min-height:100vh;
+  position:relative;
+  z-index:1;
+}
+
+/* ─── Sidebar ─────────────────────────────────────────────────────────── */
+.sidebar{
+  width:var(--sidebar-w);
+  flex-shrink:0;
+  position:sticky;
+  top:0;
+  height:100vh;
+  overflow-y:auto;
+  padding:32px 0 40px;
+  background:rgba(250,248,244,0.85);
+  backdrop-filter:blur(12px);
+  border-right:1px solid var(--border);
+}
+
+.sidebar::-webkit-scrollbar{width:4px}
+.sidebar::-webkit-scrollbar-track{background:transparent}
+.sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+
+.sidebar-logo{
+  padding:0 24px 28px;
+  border-bottom:1px solid var(--border-soft);
+  margin-bottom:20px;
+}
+.sidebar-logo .product{
+  font-family:var(--font-serif);
+  font-size:13px;
+  color:var(--blue);
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  font-weight:700;
+}
+.sidebar-logo .title{
+  font-size:17px;
+  font-weight:600;
+  color:var(--ink);
+  line-height:1.3;
+  margin-top:4px;
+}
+.sidebar-logo .version{
+  display:inline-block;
+  margin-top:8px;
+  font-size:11px;
+  font-family:var(--font-mono);
+  color:var(--ink-4);
+  background:var(--parchment);
+  padding:2px 8px;
+  border-radius:20px;
+  border:1px solid var(--border);
+}
+
+.nav-section{
+  margin-bottom:4px;
+}
+.nav-label{
+  padding:6px 24px;
+  font-size:10px;
+  font-weight:600;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:var(--ink-4);
+}
+.nav-link{
+  display:block;
+  padding:7px 24px;
+  font-size:13.5px;
+  color:var(--ink-3);
+  text-decoration:none;
+  border-left:2px solid transparent;
+  transition:all .18s ease;
+  font-weight:400;
+  line-height:1.4;
+}
+.nav-link:hover{
+  color:var(--blue);
+  background:rgba(37,99,168,0.06);
+  border-left-color:var(--blue-light);
+}
+.nav-link.active{
+  color:var(--navy);
+  font-weight:600;
+  border-left-color:var(--blue);
+  background:rgba(37,99,168,0.08);
+}
+.nav-sub{
+  padding-left:40px;
+  font-size:13px;
+  color:var(--ink-4);
+}
+
+/* ─── Main Content ────────────────────────────────────────────────────── */
+.main{
+  flex:1;
+  min-width:0;
+  padding:60px 64px 100px;
+  max-width:calc(var(--max-content) + 128px);
+}
+
+/* ─── Section Spacing ─────────────────────────────────────────────────── */
+.section{
+  max-width:var(--max-content);
+  padding-top:32px;
+  margin-bottom:80px;
+}
+.section + .section{
+  border-top:1px solid var(--border-soft);
+  padding-top:64px;
+}
+
+/* ─── Hero ────────────────────────────────────────────────────────────── */
+.hero{
+  padding:0 0 56px;
+  border-bottom:1px solid var(--border);
+  margin-bottom:64px;
+  max-width:var(--max-content);
+}
+.hero-eyebrow{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  font-family:var(--font-mono);
+  font-size:11px;
+  color:var(--blue);
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  margin-bottom:20px;
+}
+.hero-eyebrow::before{
+  content:'';
+  display:block;
+  width:24px;
+  height:1px;
+  background:var(--blue);
+}
+.hero h1{
+  font-family:var(--font-serif);
+  font-size:46px;
+  font-weight:700;
+  line-height:1.15;
+  color:var(--navy);
+  margin-bottom:20px;
+  letter-spacing:-.01em;
+}
+.hero h1 em{
+  font-style:italic;
+  color:var(--blue);
+}
+.hero-lead{
+  font-size:17px;
+  color:var(--ink-2);
+  line-height:1.75;
+  max-width:680px;
+  margin-bottom:32px;
+}
+.hero-badges{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+}
+.badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:5px 12px;
+  border-radius:6px;
+  font-size:12px;
+  font-weight:500;
+  font-family:var(--font-mono);
+  border:1px solid;
+}
+.badge-blue{background:var(--blue-pale);color:var(--navy);border-color:#bfdbfe}
+.badge-gold{background:var(--gold-pale);color:var(--amber);border-color:#fde68a}
+.badge-green{background:var(--green-pale);color:var(--green);border-color:#bbf7d0}
+
+/* ─── Typography ──────────────────────────────────────────────────────── */
+h2{
+  font-family:var(--font-serif);
+  font-size:30px;
+  font-weight:700;
+  color:var(--navy);
+  margin-bottom:16px;
+  line-height:1.25;
+  letter-spacing:-.01em;
+}
+h3{
+  font-size:18px;
+  font-weight:600;
+  color:var(--ink);
+  margin:36px 0 12px;
+  line-height:1.35;
+}
+h4{
+  font-size:14px;
+  font-weight:600;
+  color:var(--ink-2);
+  margin:24px 0 8px;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+}
+p{
+  color:var(--ink-2);
+  margin-bottom:16px;
+  line-height:1.75;
+}
+strong{color:var(--ink);font-weight:600}
+em{color:var(--blue);font-style:italic}
+
+/* ─── Section Header ──────────────────────────────────────────────────── */
+.section-header{
+  display:flex;
+  align-items:center;
+  gap:16px;
+  margin-bottom:32px;
+}
+.section-num{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  background:var(--navy);
+  color:#fff;
+  font-family:var(--font-mono);
+  font-size:13px;
+  font-weight:500;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+}
+.section-title{
+  font-family:var(--font-serif);
+  font-size:30px;
+  font-weight:700;
+  color:var(--navy);
+  margin:0;
+  line-height:1.2;
+}
+
+/* ─── Cards ───────────────────────────────────────────────────────────── */
+.card{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:24px 28px;
+  margin-bottom:20px;
+  box-shadow:0 1px 4px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.03);
+}
+.card-title{
+  font-size:15px;
+  font-weight:600;
+  color:var(--ink);
+  margin-bottom:10px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.card-icon{
+  width:28px;
+  height:28px;
+  border-radius:7px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:14px;
+  flex-shrink:0;
+}
+
+/* ─── Concept Cards ───────────────────────────────────────────────────── */
+.concept-card{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:14px;
+  overflow:hidden;
+  margin-bottom:28px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.04);
+}
+.concept-header{
+  padding:20px 28px 16px;
+  border-bottom:1px solid var(--border-soft);
+  display:flex;
+  align-items:flex-start;
+  gap:16px;
+}
+.concept-icon{
+  width:48px;
+  height:48px;
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+  flex-shrink:0;
+  margin-top:2px;
+}
+.concept-header-text h3{
+  margin:0 0 4px;
+  font-size:19px;
+  font-weight:700;
+  color:var(--navy);
+}
+.concept-header-text .concept-tag{
+  font-family:var(--font-mono);
+  font-size:11px;
+  color:var(--ink-4);
+  letter-spacing:.05em;
+}
+.concept-body{
+  padding:24px 28px;
+}
+.concept-body p{margin-bottom:14px}
+.concept-formula{
+  background:var(--parchment);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:14px 18px;
+  font-family:var(--font-mono);
+  font-size:13px;
+  color:var(--navy-mid);
+  margin:16px 0;
+  line-height:1.6;
+}
+.concept-formula .label{
+  font-size:11px;
+  color:var(--ink-4);
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  margin-bottom:6px;
+  font-family:var(--font-sans);
+}
+
+/* ─── Signal Boxes ────────────────────────────────────────────────────── */
+.signals{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:12px;
+  margin:16px 0;
+}
+.signal{
+  border-radius:8px;
+  padding:12px 16px;
+  border-left:3px solid;
+}
+.signal-bull{background:var(--green-pale);border-color:var(--green-mid)}
+.signal-bear{background:var(--red-pale);border-color:var(--red-mid)}
+.signal-neutral{background:var(--blue-pale);border-color:var(--blue-light)}
+.signal-warn{background:var(--amber-pale);border-color:#f59e0b}
+.signal .s-label{
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  margin-bottom:4px;
+}
+.signal-bull .s-label{color:var(--green)}
+.signal-bear .s-label{color:var(--red)}
+.signal-neutral .s-label{color:var(--blue)}
+.signal-warn .s-label{color:var(--amber)}
+.signal .s-text{font-size:13px;color:var(--ink-2);line-height:1.4}
+
+/* ─── Steps ───────────────────────────────────────────────────────────── */
+.steps{list-style:none;counter-reset:steps}
+.step{
+  counter-increment:steps;
+  position:relative;
+  padding:0 0 32px 56px;
+  border-left:2px solid var(--border);
+  margin-left:16px;
+}
+.step:last-child{border-left-color:transparent;padding-bottom:0}
+.step::before{
+  content:counter(steps);
+  position:absolute;
+  left:-17px;
+  top:0;
+  width:32px;
+  height:32px;
+  border-radius:50%;
+  background:var(--navy);
+  color:#fff;
+  font-family:var(--font-mono);
+  font-size:12px;
+  font-weight:500;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.step-title{font-weight:600;font-size:15px;color:var(--ink);margin-bottom:8px}
+.step-body{color:var(--ink-2);font-size:14px;line-height:1.7}
+
+/* ─── Code Blocks ─────────────────────────────────────────────────────── */
+pre,code{font-family:var(--font-mono)}
+.code-block{
+  background:var(--navy);
+  color:#e2dfd6;
+  border-radius:10px;
+  padding:20px 22px;
+  font-size:13px;
+  line-height:1.65;
+  overflow-x:auto;
+  margin:16px 0;
+  position:relative;
+}
+.code-block .cb-label{
+  position:absolute;
+  top:10px;
+  right:14px;
+  font-size:10px;
+  color:#6b6458;
+  font-family:var(--font-mono);
+  letter-spacing:.06em;
+}
+.code-block .cm{color:#6a9955}
+.code-block .kw{color:#569cd6}
+.code-block .st{color:#ce9178}
+.code-block .fn{color:#dcdcaa}
+.code-block .nu{color:#b5cea8}
+
+code:not(.code-block code){
+  background:var(--parchment);
+  border:1px solid var(--border);
+  border-radius:4px;
+  padding:1px 6px;
+  font-size:12.5px;
+  color:var(--navy-mid);
+}
+
+/* ─── Tables ──────────────────────────────────────────────────────────── */
+.table-wrap{overflow-x:auto;margin:16px 0;border-radius:10px;border:1px solid var(--border)}
+table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:13.5px;
+  background:#fff;
+}
+th{
+  background:var(--warm-white);
+  color:var(--ink-2);
+  font-weight:600;
+  font-size:11.5px;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  padding:10px 16px;
+  text-align:left;
+  border-bottom:2px solid var(--border);
+}
+td{
+  padding:10px 16px;
+  border-bottom:1px solid var(--border-soft);
+  color:var(--ink-2);
+  vertical-align:top;
+  line-height:1.5;
+}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(37,99,168,0.03)}
+td code{font-size:12px}
+
+/* ─── Callouts ────────────────────────────────────────────────────────── */
+.callout{
+  border-radius:10px;
+  padding:16px 20px;
+  margin:20px 0;
+  display:flex;
+  gap:14px;
+  align-items:flex-start;
+  font-size:14px;
+  line-height:1.6;
+}
+.callout-icon{font-size:18px;flex-shrink:0;margin-top:1px}
+.callout-info{background:var(--blue-pale);border:1px solid #bfdbfe;color:var(--navy-mid)}
+.callout-warn{background:var(--amber-pale);border:1px solid #fde68a;color:var(--amber)}
+.callout-success{background:var(--green-pale);border:1px solid #bbf7d0;color:var(--green)}
+.callout-tip{background:var(--gold-pale);border:1px solid #fde68a;color:var(--gold)}
+.callout strong{color:inherit}
+
+/* ─── Panel Diagram ───────────────────────────────────────────────────── */
+.dashboard-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  grid-template-rows:auto auto auto;
+  gap:10px;
+  margin:24px 0 32px;
+}
+.panel-block{
+  border-radius:10px;
+  padding:14px 16px;
+  border:1.5px solid;
+  cursor:default;
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+.panel-block:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,0.1)}
+.panel-block .pb-num{
+  font-family:var(--font-mono);
+  font-size:10px;
+  font-weight:600;
+  letter-spacing:.06em;
+  margin-bottom:6px;
+}
+.panel-block .pb-name{font-size:13px;font-weight:600;margin-bottom:2px}
+.panel-block .pb-desc{font-size:11px;opacity:.75;line-height:1.4}
+.pb-blue{background:#dbeafe;border-color:#93c5fd;color:var(--navy)}
+.pb-green{background:#dcfce7;border-color:#86efac;color:var(--green)}
+.pb-amber{background:#fef3c7;border-color:#fcd34d;color:var(--amber)}
+.pb-red{background:#fee2e2;border-color:#fca5a5;color:var(--red)}
+.pb-purple{background:#f3e8ff;border-color:#d8b4fe;color:#6b21a8}
+.pb-teal{background:#ccfbf1;border-color:#5eead4;color:#0f766e}
+.pb-full{grid-column:1/-1}
+
+/* ─── Architecture Flow ───────────────────────────────────────────────── */
+.flow{
+  display:flex;
+  align-items:center;
+  gap:0;
+  flex-wrap:wrap;
+  margin:24px 0;
+}
+.flow-node{
+  background:#fff;
+  border:1.5px solid var(--border);
+  border-radius:8px;
+  padding:10px 16px;
+  font-size:12.5px;
+  font-weight:500;
+  color:var(--ink-2);
+  text-align:center;
+  flex-shrink:0;
+}
+.flow-node strong{display:block;font-size:13px;color:var(--navy);margin-bottom:2px}
+.flow-arrow{
+  color:var(--border);
+  font-size:20px;
+  padding:0 4px;
+  flex-shrink:0;
+}
+
+/* ─── Metric Pill ─────────────────────────────────────────────────────── */
+.metric-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  background:var(--parchment);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:3px 12px 3px 8px;
+  font-size:12.5px;
+  color:var(--ink-2);
+  margin:3px;
+}
+.metric-pill .dot{
+  width:7px;height:7px;
+  border-radius:50%;
+  flex-shrink:0;
+}
+
+/* ─── Two-col ─────────────────────────────────────────────────────────── */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin:16px 0}
+
+/* ─── Verdict Box ─────────────────────────────────────────────────────── */
+.verdict-box{
+  border-radius:10px;
+  padding:16px 20px;
+  border:2px solid;
+  margin:12px 0;
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+.verdict-go{background:var(--green-pale);border-color:var(--green-mid)}
+.verdict-wait{background:var(--amber-pale);border-color:#f59e0b}
+.verdict-no{background:var(--red-pale);border-color:var(--red-mid)}
+.verdict-label{
+  font-weight:700;
+  font-size:15px;
+  font-family:var(--font-mono);
+  min-width:60px;
+}
+.verdict-go .verdict-label{color:var(--green)}
+.verdict-wait .verdict-label{color:var(--amber)}
+.verdict-no .verdict-label{color:var(--red)}
+.verdict-text{font-size:13.5px;color:var(--ink-2);line-height:1.5}
+
+/* ─── Score Ring ──────────────────────────────────────────────────────── */
+.score-demo{
+  display:flex;
+  gap:24px;
+  align-items:center;
+  flex-wrap:wrap;
+  margin:16px 0;
+}
+.score-ring{
+  width:80px;height:80px;
+  border-radius:50%;
+  border:6px solid;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  font-weight:700;
+  flex-shrink:0;
+}
+.sr-go{border-color:var(--green-mid);color:var(--green)}
+.sr-wait{border-color:#f59e0b;color:var(--amber)}
+.sr-no{border-color:var(--red-mid);color:var(--red)}
+.score-ring .sr-num{font-size:22px;line-height:1}
+.score-ring .sr-max{font-size:11px;color:var(--ink-4)}
+
+/* ─── Quick-ref chips ─────────────────────────────────────────────────── */
+.chip-row{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.chip{
+  padding:4px 12px;
+  border-radius:20px;
+  font-size:12px;
+  font-weight:500;
+  font-family:var(--font-mono);
+  border:1px solid;
+}
+.chip-bull{background:var(--green-pale);border-color:#86efac;color:var(--green)}
+.chip-bear{background:var(--red-pale);border-color:#fca5a5;color:var(--red)}
+.chip-neutral{background:var(--blue-pale);border-color:#93c5fd;color:var(--navy)}
+
+/* ─── Responsive ──────────────────────────────────────────────────────── */
+@media(max-width:900px){
+  .sidebar{display:none}
+  .main{padding:32px 24px 60px}
+  .dashboard-grid{grid-template-columns:1fr 1fr}
+  .two-col,.three-col{grid-template-columns:1fr}
+}
+@media(max-width:600px){
+  .hero h1{font-size:30px}
+  .dashboard-grid{grid-template-columns:1fr}
+}
+
+/* ─── Print ───────────────────────────────────────────────────────────── */
+@media print{
+  .sidebar{display:none}
+  body::before{display:none}
+  .main{padding:20px}
+}
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+<!-- ════════════ SIDEBAR ════════════ -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="product">User Guide</div>
+    <div class="title">Option Buying<br>Dashboard</div>
+    <span class="version">v2.0 — 2026</span>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Overview</div>
+    <a class="nav-link" href="#intro">Introduction</a>
+    <a class="nav-link" href="#architecture">How It Works</a>
+    <a class="nav-link" href="#data-flow">Data Flow</a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Getting Started</div>
+    <a class="nav-link" href="#launch">Launching the Stack</a>
+    <a class="nav-link" href="#backfill">Backfill & First Run</a>
+    <a class="nav-link" href="#daily">Daily Routine</a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Dashboard Panels</div>
+    <a class="nav-link" href="#panel-env">Environment Gate</a>
+    <a class="nav-link" href="#panel-gex">Net GEX</a>
+    <a class="nav-link" href="#panel-coc">CoC Velocity</a>
+    <a class="nav-link" href="#panel-screener">Strike Screener</a>
+    <a class="nav-link" href="#panel-pcr">PCR Divergence</a>
+    <a class="nav-link" href="#panel-alerts">Alert Feed</a>
+    <a class="nav-link" href="#panel-iv">IV Surface</a>
+    <a class="nav-link" href="#panel-position">Position Monitor</a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Concept Library</div>
+    <a class="nav-link" href="#concept-gex">Gamma Exposure (GEX)</a>
+    <a class="nav-link" href="#concept-coc">Cost of Carry</a>
+    <a class="nav-link" href="#concept-iv">Implied Volatility</a>
+    <a class="nav-link" href="#concept-ivp">IVR &amp; IVP</a>
+    <a class="nav-link" href="#concept-pcr">Put-Call Ratio</a>
+    <a class="nav-link" href="#concept-greeks">Option Greeks</a>
+    <a class="nav-link" href="#concept-sscore">S_score</a>
+    <a class="nav-link" href="#concept-obi">Order Book Imbalance</a>
+    <a class="nav-link" href="#concept-theta-sl">Theta-Adjusted SL</a>
+    <a class="nav-link" href="#concept-expiry">Expiry Tiers</a>
+    <a class="nav-link" href="#concept-atm">ATM Window</a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Trading Workflow</div>
+    <a class="nav-link" href="#workflow-pre">Pre-Market (09:00–09:15)</a>
+    <a class="nav-link" href="#workflow-open">Market Open (09:15–09:45)</a>
+    <a class="nav-link" href="#workflow-trade">In the Trade</a>
+    <a class="nav-link" href="#workflow-exit">Exit Rules</a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Reference</div>
+    <a class="nav-link" href="#signals">Signal Quick-Reference</a>
+    <a class="nav-link" href="#troubleshoot">Troubleshooting</a>
+    <a class="nav-link" href="#glossary">Glossary</a>
+  </div>
+</nav>
+
+<!-- ════════════ MAIN ════════════ -->
+<main class="main">
+
+<!-- HERO -->
+<div class="hero" id="intro">
+  <div class="hero-eyebrow">NSE F&amp;O Analytics Platform</div>
+  <h1>Option Buying<br><em>Dashboard v2.0</em></h1>
+  <p class="hero-lead">
+    A real-time analytics platform for systematic NSE index option buying. It pulls live market data from BigQuery every five minutes, processes it through a quantitative analytics layer, and surfaces actionable signals across eight dashboard panels — from gamma exposure to slippage-adjusted strike selection.
+  </p>
+  <div class="hero-badges">
+    <span class="badge badge-blue">📊 NIFTY · BANKNIFTY · FINNIFTY · MIDCPNIFTY · NIFTYNXT50</span>
+    <span class="badge badge-gold">⚡ 5-min live refresh</span>
+    <span class="badge badge-green">🏦 BigQuery → DuckDB → React</span>
+  </div>
+</div>
+
+<!-- ══ SECTION 1: ARCHITECTURE ══ -->
+<div class="section" id="architecture">
+  <div class="section-header">
+    <div class="section-num">1</div>
+    <h2 class="section-title">How It Works</h2>
+  </div>
+
+  <p>The dashboard is built from three independent processes that run simultaneously on your Mac. Each process has a single job.</p>
+
+  <!-- Flow diagram -->
+  <div class="flow">
+    <div class="flow-node"><strong>BigQuery</strong>upxtx table</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node" style="background:var(--blue-pale);border-color:#93c5fd"><strong>Pipeline</strong>run_pipeline.py</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node"><strong>Parquet Files</strong>data/raw/</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node" style="background:var(--green-pale);border-color:#86efac"><strong>DuckDB</strong>views</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node" style="background:var(--gold-pale);border-color:#fcd34d"><strong>FastAPI</strong>:8000</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node" style="background:var(--amber-pale);border-color:#fcd34d"><strong>Dashboard</strong>localhost:5173</div>
+  </div>
+
+  <div class="three-col">
+    <div class="card">
+      <div class="card-title"><div class="card-icon" style="background:#dbeafe">🔄</div>Terminal 1 — Pipeline</div>
+      <p style="font-size:13.5px;margin:0">Pulls raw data from BigQuery every 5 minutes. Writes it as Parquet files to disk. The <strong>only process</strong> that touches BigQuery.</p>
+    </div>
+    <div class="card">
+      <div class="card-title"><div class="card-icon" style="background:#dcfce7">⚡</div>Terminal 2 — API</div>
+      <p style="font-size:13.5px;margin:0">FastAPI server reads the Parquet files via DuckDB. Computes GEX, CoC, PCR, S_score and serves results as JSON at <code>:8000</code>.</p>
+    </div>
+    <div class="card">
+      <div class="card-title"><div class="card-icon" style="background:#fef3c7">🖥</div>Terminal 3 — Dashboard</div>
+      <p style="font-size:13.5px;margin:0">Vite + React frontend. Polls the API every 5 seconds. Renders all eight panels. Open at <code>localhost:5173</code>.</p>
+    </div>
+  </div>
+
+  <h3 id="data-flow">Data Flow in Detail</h3>
+  <p>Every five minutes during NSE market hours (09:16:30 → 15:30 IST), the pipeline runs this cycle:</p>
+
+  <ol class="steps">
+    <li class="step">
+      <div class="step-title">Load watermark</div>
+      <div class="step-body">Read <code>data/watermark.json</code> — the timestamp of the last successfully pulled record. On the very first run after backfill this will be <code>2026-02-20 15:30:XX</code>.</div>
+    </li>
+    <li class="step">
+      <div class="step-title">Pull incremental rows from BigQuery</div>
+      <div class="step-body">Query: <code>SELECT * FROM upxtx WHERE record_time > {watermark}</code>. Typically returns ~1,600 rows per 5-min snapshot covering all index option contracts.</div>
+    </li>
+    <li class="step">
+      <div class="step-title">Validate</div>
+      <div class="step-body">Check schema, coalesce nulls in <code>ltp</code> using <code>close_price</code> then <code>close</code>. Correct any negative IV values. Log row counts by instrument type.</div>
+    </li>
+    <li class="step">
+      <div class="step-title">Load ATM window</div>
+      <div class="step-body">Read today's ATM windows from <code>data/processed/atm_windows/YYYY-MM-DD.json</code>. If it's the first pull of the day, compute them from the 09:15 snapshot's opening spot price.</div>
+    </li>
+    <li class="step">
+      <div class="step-title">Compute derived columns</div>
+      <div class="step-body">Add: <code>gex_k</code>, <code>coc</code>, <code>moneyness_pct</code>, <code>oi_delta</code>, <code>expiry_tier</code>, <code>in_atm_window</code>, <code>obi_raw</code>, and more.</div>
+    </li>
+    <li class="step">
+      <div class="step-title">Write Parquet</div>
+      <div class="step-body">Save as <code>data/raw/options/trade_date=YYYY-MM-DD/UNDERLYING_HHMM.parquet</code>. Row group size = 100,000 for maximum DuckDB parallelism.</div>
+    </li>
+    <li class="step">
+      <div class="step-title">Refresh DuckDB views + update watermark</div>
+      <div class="step-body">DuckDB glob views auto-discover the new file. Watermark advances to the latest <code>record_time</code> in the just-written batch. Atomically saved to <code>data/watermark.json</code>.</div>
+    </li>
+  </ol>
+</div>
+
+<!-- ══ SECTION 2: GETTING STARTED ══ -->
+<div class="section" id="launch">
+  <div class="section-header">
+    <div class="section-num">2</div>
+    <h2 class="section-title">Getting Started</h2>
+  </div>
+
+  <div class="callout callout-info">
+    <span class="callout-icon">ℹ️</span>
+    <span>Before launching, ensure your Mac timezone is set to <strong>Asia/Kolkata (IST)</strong>. Run: <code>sudo systemsetup -settimezone "Asia/Kolkata"</code> in Terminal.</span>
+  </div>
+
+  <h3>Launching the Stack</h3>
+  <p>You need three separate Terminal tabs open simultaneously. Open them in this order — Tab 1 must start first.</p>
+
+  <div class="card" style="border-left:3px solid var(--blue)">
+    <div class="card-title">Tab 1 — Pipeline (start before 09:16 IST every morning)</div>
+    <div class="code-block">
+      <span class="cb-label">zsh</span>
+      <span class="kw">cd</span> /Users/apple/Documents/OptDash<br>
+      <span class="kw">source</span> .venv/bin/activate<br>
+      <span class="fn">python</span> run_pipeline.py
+    </div>
+    <p style="font-size:13px;color:var(--ink-3);margin:8px 0 0">Leave this running all day. Press Ctrl+C only after 15:30 IST.</p>
+  </div>
+
+  <div class="card" style="border-left:3px solid var(--green)">
+    <div class="card-title">Tab 2 — API Server</div>
+    <div class="code-block">
+      <span class="cb-label">zsh</span>
+      <span class="kw">cd</span> /Users/apple/Documents/OptDash<br>
+      <span class="kw">source</span> .venv/bin/activate<br>
+      <span class="fn">python</span> run_api.py
+    </div>
+    <p style="font-size:13px;color:var(--ink-3);margin:8px 0 0">Verify: open <strong>http://127.0.0.1:8000/docs</strong> — you should see the Swagger UI.</p>
+  </div>
+
+  <div class="card" style="border-left:3px solid var(--gold)">
+    <div class="card-title">Tab 3 — Dashboard</div>
+    <div class="code-block">
+      <span class="cb-label">zsh</span>
+      <span class="kw">cd</span> /Users/apple/Documents/OptDash/dashboard<br>
+      <span class="fn">npm</span> run dev
+    </div>
+    <p style="font-size:13px;color:var(--ink-3);margin:8px 0 0">Open <strong>http://localhost:5173</strong> in Chrome or Safari.</p>
+  </div>
+
+  <h3 id="backfill">Understanding the Backfill</h3>
+  <p>The first time you run <code>python run_pipeline.py</code>, it performs a one-time backfill before the live scheduler starts. This pulls complete historical data for four specific trading days:</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Date</th><th>Day</th><th>Status</th><th>What happens</th></tr></thead>
+      <tbody>
+        <tr><td><code>2026-02-17</code></td><td>Tuesday</td><td><span class="chip chip-bull">Pull</span></td><td>Full day pulled from BigQuery, written to Parquet</td></tr>
+        <tr><td><code>2026-02-18</code></td><td>Wednesday</td><td><span class="chip chip-bull">Pull</span></td><td>Full day pulled and written</td></tr>
+        <tr><td><code>2026-02-19</code></td><td>Thursday</td><td><span class="chip chip-bull">Pull</span></td><td>Full day pulled and written (settlement holiday — NSE was open)</td></tr>
+        <tr><td><code>2026-02-20</code></td><td>Friday</td><td><span class="chip chip-bull">Pull</span></td><td>Full day pulled — watermark set to ~15:30</td></tr>
+        <tr><td>2026-02-21</td><td>Saturday</td><td><span class="chip chip-neutral">Skip</span></td><td>Weekend — not a trading day</td></tr>
+        <tr><td>2026-02-22</td><td>Sunday</td><td><span class="chip chip-neutral">Skip</span></td><td>Weekend — not a trading day</td></tr>
+        <tr><td>2026-02-23 onwards</td><td>Live</td><td><span class="chip chip-bull">Live 5-min</span></td><td>Scheduler kicks in — pulls only new rows each time</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout callout-success">
+    <span class="callout-icon">✅</span>
+    <span>The backfill is <strong>idempotent</strong> — if it crashes mid-way, just re-run <code>python run_pipeline.py</code>. Days already written to Parquet are skipped automatically.</span>
+  </div>
+
+  <h3 id="daily">Daily Routine Checklist</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Time (IST)</th><th>Action</th><th>Detail</th></tr></thead>
+      <tbody>
+        <tr><td>09:00–09:10</td><td>Open 3 Terminal tabs</td><td>Start pipeline, API, and dashboard in order</td></tr>
+        <tr><td>09:10–09:15</td><td>Verify all three running</td><td>Check API docs at :8000/docs, dashboard at :5173</td></tr>
+        <tr><td>09:15</td><td>Market opens</td><td>First snapshot hits BigQuery within 30–60 seconds</td></tr>
+        <tr><td>09:16:30</td><td>First live pull</td><td>Pipeline fetches first 5-min snapshot, writes Parquet</td></tr>
+        <tr><td>09:20</td><td>Review Environment Gate</td><td>First meaningful signal after ~2 snapshots</td></tr>
+        <tr><td>09:20–09:45</td><td>Strike selection window</td><td>Use Strike Screener for best S_score selection</td></tr>
+        <tr><td>Every 5 min</td><td>Dashboard refreshes automatically</td><td>No action needed — TanStack Query polls every 5s</td></tr>
+        <tr><td>15:30</td><td>Market closes</td><td>Pipeline stops pulling automatically</td></tr>
+        <tr><td>15:35+</td><td>Ctrl+C all three tabs</td><td>Safe to close after market close</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══ SECTION 3: DASHBOARD PANELS ══ -->
+<div class="section" id="panel-env">
+  <div class="section-header">
+    <div class="section-num">3</div>
+    <h2 class="section-title">Dashboard Panels</h2>
+  </div>
+
+  <p>The dashboard is arranged in three rows of panels. Here is the layout:</p>
+
+  <div class="dashboard-grid">
+    <div class="panel-block pb-green">
+      <div class="pb-num">ROW 1 · A</div>
+      <div class="pb-name">Environment Gate</div>
+      <div class="pb-desc">6-condition suitability score</div>
+    </div>
+    <div class="panel-block pb-blue">
+      <div class="pb-num">ROW 1 · B</div>
+      <div class="pb-name">Net GEX</div>
+      <div class="pb-desc">Gamma exposure chart + regime</div>
+    </div>
+    <div class="panel-block pb-amber">
+      <div class="pb-num">ROW 1 · C</div>
+      <div class="pb-name">CoC Velocity</div>
+      <div class="pb-desc">Futures cost of carry + 15-min velocity</div>
+    </div>
+    <div class="panel-block pb-purple">
+      <div class="pb-num">ROW 2 · A</div>
+      <div class="pb-name">Strike Screener</div>
+      <div class="pb-desc">Top strikes ranked by S_score</div>
+    </div>
+    <div class="panel-block pb-red">
+      <div class="pb-num">ROW 2 · B</div>
+      <div class="pb-name">PCR Divergence</div>
+      <div class="pb-desc">Retail vs institutional sentiment</div>
+    </div>
+    <div class="panel-block pb-teal">
+      <div class="pb-num">ROW 2 · C</div>
+      <div class="pb-name">Alert Feed</div>
+      <div class="pb-desc">Real-time triggered signals</div>
+    </div>
+    <div class="panel-block pb-blue pb-full">
+      <div class="pb-num">ROW 3 · FULL WIDTH</div>
+      <div class="pb-name">Position Monitor</div>
+      <div class="pb-desc">Live P&amp;L attribution + theta-adjusted trailing stop loss chart</div>
+    </div>
+  </div>
+
+  <!-- Environment Gate -->
+  <h3 id="panel-env-detail">Panel A: Environment Gate</h3>
+  <p>The Environment Gate is the <strong>most important panel</strong>. It is a pre-flight checklist that evaluates whether market conditions are suitable for buying options. You should not enter any trade unless this gate reads <strong>GO</strong> or at minimum <strong>WAIT</strong>.</p>
+
+  <p>It evaluates six independent conditions and assigns weighted points. The maximum score is 9. A score of 4 or above triggers GO.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>#</th><th>Condition</th><th>Points</th><th>Signal it detects</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>GEX declined &gt;30% from daily peak</td><td>2</td><td>Market maker hedging pressure is weakening → directional moves become possible</td></tr>
+        <tr><td>2</td><td>V_CoC &lt; −10 at any point today</td><td>2</td><td>FIIs aggressively shorting futures → institutional bearish campaign underway</td></tr>
+        <tr><td>3</td><td>Futures OBI negative (more sellers)</td><td>1</td><td>Order book skewed to sell side → supply pressure in futures</td></tr>
+        <tr><td>4</td><td>PCR divergence &gt;0.25</td><td>1</td><td>Retail buying puts while institutions hold calls → retail trap setup</td></tr>
+        <tr><td>5</td><td>IVP &lt;50% (options are cheap)</td><td>2</td><td>IV is below its 90-day median → you are buying inexpensive insurance</td></tr>
+        <tr><td>6</td><td>Smoothed OBI &lt;0 (sellers dominant)</td><td>1</td><td>Options order book tilts to sell → favours directional buyers</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="score-demo">
+    <div>
+      <div class="score-ring sr-go"><span class="sr-num">6</span><span class="sr-max">/9</span></div>
+      <div style="font-size:12px;color:var(--green);font-weight:600;text-align:center;margin-top:6px">GO</div>
+    </div>
+    <div>
+      <div class="score-ring sr-wait"><span class="sr-num">3</span><span class="sr-max">/9</span></div>
+      <div style="font-size:12px;color:var(--amber);font-weight:600;text-align:center;margin-top:6px">WAIT</div>
+    </div>
+    <div>
+      <div class="score-ring sr-no"><span class="sr-num">1</span><span class="sr-max">/9</span></div>
+      <div style="font-size:12px;color:var(--red);font-weight:600;text-align:center;margin-top:6px">NO-GO</div>
+    </div>
+    <div style="font-size:13.5px;color:var(--ink-2);max-width:340px;line-height:1.6">
+      <strong>GO (4–9 pts):</strong> Take trades. All or most conditions aligned.<br><br>
+      <strong>WAIT (2–3 pts):</strong> Conditions mixed. Watch, don't enter.<br><br>
+      <strong>NO-GO (0–1 pt):</strong> Market structure unfavourable. Sit out.
+    </div>
+  </div>
+
+  <!-- GEX Panel -->
+  <h3 id="panel-gex">Panel B: Net GEX</h3>
+  <p>Displays the Net Gamma Exposure of all market makers in NIFTY (or selected underlying) options, updated every 5 minutes. Shows three lines: total GEX, near-expiry GEX, and far-expiry GEX. The secondary axis tracks GEX as a percentage of the day's peak — this is the most actionable number.</p>
+
+  <div class="signals">
+    <div class="signal signal-bear">
+      <div class="s-label">Sell Signal</div>
+      <div class="s-text">GEX drops below 70% of daily peak → dealers losing hedging support → directional moves possible</div>
+    </div>
+    <div class="signal signal-bull">
+      <div class="s-label">Chop Warning</div>
+      <div class="s-text">GEX rising or above 80% of peak → heavy dealer pinning → avoid momentum plays</div>
+    </div>
+    <div class="signal signal-neutral">
+      <div class="s-label">Regime Flip</div>
+      <div class="s-text">GEX crosses from positive to negative → market structure shifts from mean-reverting to trending</div>
+    </div>
+  </div>
+
+  <!-- CoC Panel -->
+  <h3 id="panel-coc">Panel C: CoC Velocity</h3>
+  <p>Cost of Carry (CoC) is the premium that futures trade above (or below) spot. The dashboard tracks the <em>velocity</em> of CoC — how fast it is changing over a 15-minute rolling window. This is the institutional footprint detector.</p>
+
+  <div class="signals">
+    <div class="signal signal-bear">
+      <div class="s-label">V_CoC &lt; −10</div>
+      <div class="s-text">FIIs aggressively selling futures. Strongest early warning of a large down move — often leads price by 60–90 minutes</div>
+    </div>
+    <div class="signal signal-warn">
+      <div class="s-label">CoC in Discount</div>
+      <div class="s-text">Futures below spot. Pure discount = sellers dominating. Combined with V_CoC &lt; −10 = institutional short campaign</div>
+    </div>
+    <div class="signal signal-bull">
+      <div class="s-label">V_CoC &gt; +10</div>
+      <div class="s-text">FIIs aggressively buying futures. Bullish campaign likely. Favour CE buying</div>
+    </div>
+  </div>
+
+  <!-- Strike Screener -->
+  <h3 id="panel-screener">Panel D: Strike Screener</h3>
+  <p>The Strike Screener ranks all option contracts within the ATM window (±8 strikes) by a slippage-adjusted efficiency score called <strong>S_score</strong>. Higher S_score = better bang for your premium. The screener runs at the 09:20 snapshot by default — the first stable reading of the day.</p>
+
+  <p>Each row shows: expiry, option type (CE/PE), strike, LTP, IV, delta, theta, slippage penalty (ρ), and the final S_score. Stars (★★★★) give a quick visual rank.</p>
+
+  <div class="callout callout-tip">
+    <span class="callout-icon">💡</span>
+    <span><strong>How to use it:</strong> Sort by S_score. Look for strikes with ρ &lt; 0.10 (low slippage), IV between 10–25%, and delta between 0.25–0.45. These are your candidate trades. Cross-reference with the Environment Gate before entering.</span>
+  </div>
+
+  <!-- PCR Panel -->
+  <h3 id="panel-pcr">Panel E: PCR Divergence</h3>
+  <p>Two PCR values are tracked simultaneously: <strong>PCR Volume</strong> (retail, fast-moving) and <strong>PCR OI</strong> (institutional, slow-moving). When these diverge significantly, it reveals a mismatch between what retail traders are doing and what institutions have already positioned.</p>
+
+  <div class="signals">
+    <div class="signal signal-bull">
+      <div class="s-label">Retail Trap (Bull)</div>
+      <div class="s-text">PCR_Vol &gt;&gt; PCR_OI (divergence &gt;+0.30): Retail panic-buying puts while institutions hold calls → spot likely to bounce</div>
+    </div>
+    <div class="signal signal-bear">
+      <div class="s-label">Retail Trap (Bear)</div>
+      <div class="s-text">PCR_Vol &lt;&lt; PCR_OI (divergence &lt; −0.20): Retail buying calls while institutions hold puts → spot likely to fall</div>
+    </div>
+    <div class="signal signal-neutral">
+      <div class="s-label">Balanced</div>
+      <div class="s-text">Small divergence (&lt;0.25 either way) — retail and institutional flow aligned. No strong trap signal</div>
+    </div>
+  </div>
+
+  <!-- Alert Feed -->
+  <h3 id="panel-alerts">Panel F: Alert Feed</h3>
+  <p>A chronological log of every signal triggered today, with timestamp, type, and severity. Alerts are generated automatically when thresholds are breached — you do not need to watch the other panels constantly. The feed acts as your trading diary for the day.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Alert Type</th><th>Severity</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td><code>COC_VELOCITY</code></td><td>🔴 HIGH</td><td>V_CoC crossed ±10 — institutional campaign detected</td></tr>
+        <tr><td><code>GEX_DECLINE</code></td><td>🔴 HIGH or 🟡 MEDIUM</td><td>GEX fell below 70% or 50% of daily peak</td></tr>
+        <tr><td><code>RETAIL_PANIC_PUTS</code></td><td>🟡 MEDIUM</td><td>PCR divergence &gt;0.30 — retail trap setup forming</td></tr>
+        <tr><td><code>VOLUME_SPIKE</code></td><td>🟡 MEDIUM</td><td>Options volume &gt;2× baseline — unusual activity</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- IV Surface -->
+  <h3 id="panel-iv">Panel G: IV Surface</h3>
+  <p>A heatmap grid showing implied volatility across all strikes and expiries in the ATM window. Brighter cells = higher IV. Use this to:</p>
+  <ul style="color:var(--ink-2);font-size:14px;line-height:2;padding-left:24px;margin-bottom:12px">
+    <li>Identify IV skew — which side (CE or PE) is priced more expensively</li>
+    <li>Find the term structure slope — whether near expiry has higher or lower IV than far expiry</li>
+    <li>Spot IV anomalies — individual strikes with unusually high or low IV relative to neighbors</li>
+  </ul>
+
+  <!-- Position Monitor -->
+  <h3 id="panel-position">Panel H: Position Monitor</h3>
+  <p>Enter your trade details once (expiry, type, strike, entry LTP, theta) and the monitor tracks the position in real-time with a Taylor Series P&amp;L breakdown and a theta-adjusted trailing stop loss line plotted on a chart.</p>
+
+  <div class="two-col">
+    <div class="card">
+      <div class="card-title">P&amp;L Attribution columns</div>
+      <ul style="font-size:13px;color:var(--ink-2);line-height:1.9;padding-left:16px">
+        <li><strong>Delta P&amp;L</strong> — gain/loss from spot movement</li>
+        <li><strong>Gamma P&amp;L</strong> — gain/loss from acceleration</li>
+        <li><strong>Vega P&amp;L</strong> — gain/loss from IV change</li>
+        <li><strong>Theta P&amp;L</strong> — time decay cost</li>
+        <li><strong>Unexplained</strong> — residual (model error)</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">Position Status labels</div>
+      <ul style="font-size:13px;color:var(--ink-2);line-height:1.9;padding-left:16px">
+        <li><strong style="color:var(--red)">STOP_HIT</strong> — LTP below theta-adjusted SL</li>
+        <li><strong style="color:var(--green)">GUARANTEED_PROFIT_ZONE</strong> — SL has risen above entry</li>
+        <li><strong style="color:var(--blue)">PROFIT_100PCT</strong> — LTP doubled from entry</li>
+        <li><strong>IN_TRADE</strong> — normal in-progress state</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SECTION 4: CONCEPTS ══ -->
+<div class="section" id="concept-gex">
+  <div class="section-header">
+    <div class="section-num">4</div>
+    <h2 class="section-title">Concept Library</h2>
+  </div>
+
+  <p>Every metric on the dashboard is grounded in options market microstructure theory. This section explains each concept from first principles — what it measures, how it is calculated, and what the signal means for a buyer of options.</p>
+
+  <!-- GEX -->
+  <div class="concept-card">
+    <div class="concept-header">
+      <div class="concept-icon" style="background:#dbeafe">Γ</div>
+      <div class="concept-header-text">
+        <h3>Gamma Exposure (GEX)</h3>
+        <div class="concept-tag">MARKET STRUCTURE · DEALER HEDGING</div>
+      </div>
+    </div>
+    <div class="concept-body">
+      <p>Every time you buy an option from a market maker, they are now short that option. To remain delta-neutral (not taking a directional view), they must hedge by buying or selling the underlying. <strong>Gamma</strong> tells you how much their hedge changes as the spot price moves. <strong>GEX</strong> aggregates this across all open contracts to give you a market-wide picture of how much buying or selling dealers will do when price moves.</p>
+
+      <p>Think of positive GEX as a <strong>gravitational force that pulls price back</strong> toward the strike with the highest concentration of open interest. When GEX is large and positive, every price move away from equilibrium triggers dealers to trade against it — creating a "pinning" effect. When GEX is negative or collapses, that gravity disappears and directional moves become self-sustaining.</p>
+
+      <div class="concept-formula">
+        <div class="label">Formula — per contract contribution</div>
+        GEX_k = Gamma × OI × Spot² × 0.01 × d_dir<br><br>
+        d_dir = +1 for Call options (dealers are short calls, long gamma)<br>
+        d_dir = −1 for Put options (dealers are short puts, short gamma)
+      </div>
+
+      <p>The dashboard then sums all <code>GEX_k</code> values across every strike and expiry in Tier 1 (trading expiries) to get Net GEX in ₹ Billions for that snapshot.</p>
+
+      <div class="signals">
+        <div class="signal signal-bull">
+          <div class="s-label">Positive GEX</div>
+          <div class="s-text">Dealers long gamma. They sell rallies and buy dips. Market chops. Avoid momentum strategies.</div>
+        </div>
+        <div class="signal signal-bear">
+          <div class="s-label">Negative GEX</div>
+          <div class="s-text">Dealers short gamma. They must buy strength and sell weakness. Market self-reinforces moves. Ideal for option buyers.</div>
+        </div>
+        <div class="signal signal-warn">
+          <div class="s-label">GEX Collapse (&lt;70%)</div>
+          <div class="s-text">Even while positive, a sharp decline removes pinning support. Trending moves start here. Environment Gate scores 2 points.</div>
+        </div>
+      </div>
+
+      <div class="callout callout-tip">
+        <span class="callout-icon">💡</span>
+        <span><strong>Practical rule:</strong> The best option buying setups occur when GEX was large in the morning and then drops sharply (≥30% from peak) by mid-morning. The "pin" is lifting. Combined with V_CoC &lt; −10, this is a very high-probability setup.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CoC -->
+  <div class="concept-card" id="concept-coc">
+    <div class="concept-header">
+      <div class="concept-icon" style="background:#fef3c7">₹</div>
+      <div class="concept-header-text">
+        <h3>Cost of Carry (CoC) &amp; Velocity</h3>
+        <div class="concept-tag">FUTURES MARKET · INSTITUTIONAL FOOTPRINT</div>
+      </div>
+    </div>
+    <div class="concept-body">
+      <p>In a fair market, futures trade at a premium above spot: <strong>Futures = Spot + (Spot × risk-free rate × DTE/365)</strong>. This premium is called the <em>Cost of Carry</em>. For NIFTY near-month futures, the "fair" CoC is typically +30 to +80 points.</p>
+
+      <p>When large institutional players (FIIs, prop desks) aggressively sell or buy futures, they push the price away from this fair value. CoC moving sharply negative (futures falling into discount) means heavy institutional selling — a signal retail traders almost never see in time.</p>
+
+      <div class="concept-formula">
+        <div class="label">Cost of Carry</div>
+        CoC = Futures LTP − Underlying Spot<br><br>
+        <div class="label" style="margin-top:12px">15-minute Velocity</div>
+        V_CoC = CoC(t) − CoC(t−3)&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#9b9388"># 3 × 5-min bars = 15 minutes</span>
+      </div>
+
+      <div class="signals">
+        <div class="signal signal-bear">
+          <div class="s-label">V_CoC &lt; −10</div>
+          <div class="s-text">Institutional short campaign. FIIs selling ≥₹1,000 Cr equivalent in futures within 15 minutes. High confidence PE signal.</div>
+        </div>
+        <div class="signal signal-neutral">
+          <div class="s-label">CoC in Discount</div>
+          <div class="s-text">Futures below spot. Sellers dominating. Markets with sustained discount trend lower.</div>
+        </div>
+        <div class="signal signal-bull">
+          <div class="s-label">V_CoC &gt; +10</div>
+          <div class="s-text">Institutional long campaign. FIIs buying futures aggressively. CE signal.</div>
+        </div>
+      </div>
+
+      <p><strong>Why it leads price by 60–90 minutes:</strong> Institutions build futures positions first (lower impact cost), then options flow follows as their delta hedges are placed. By the time price moves, you already know from V_CoC.</p>
+    </div>
+  </div>
+
+  <!-- IV -->
+  <div class="concept-card" id="concept-iv">
+    <div class="concept-header">
+      <div class="concept-icon" style="background:#f3e8ff">σ</div>
+      <div class="concept-header-text">
+        <h3>Implied Volatility (IV)</h3>
+        <div class="concept-tag">OPTIONS PRICING · FEAR GAUGE</div>
+      </div>
+    </div>
+    <div class="concept-body">
+      <p>An option's price depends on how much the market <em>expects</em> the underlying to move before expiry. Implied Volatility is the market's consensus forecast of annualised standard deviation, derived by reverse-engineering the Black-Scholes model from the observed option price.</p>
+
+      <p>If NIFTY is at 25,000 and ATM IV is 14%, the market expects NIFTY to move approximately <strong>±14% × √(DTE/365)</strong> by expiry. For a 7-day option: <code>25,000 × 14% × √(7/365) ≈ ±488 points</code>.</p>
+
+      <div class="concept-formula">
+        <div class="label">Daily expected move from ATM IV</div>
+        Daily Move = Spot × IV% / √252<br><br>
+        Example: 25,000 × 0.14 / √252 ≈ ±220 points per day
+      </div>
+
+      <p><strong>As an option buyer, IV is your enemy when high and your friend when low.</strong> When you buy high-IV options, you need the underlying to move <em>more than the market expects</em> to profit. When IV is low, even moderate moves yield profit.</p>
+
+      <div class="signals">
+        <div class="signal signal-bull">
+          <div class="s-label">IV Low (IVP &lt;30%)</div>
+          <div class="s-text">Options are cheap relative to history. Buying is favourable — you pay less for the same probability of profit.</div>
+        </div>
+        <div class="signal signal-bear">
+          <div class="s-label">IV High (IVP &gt;75%)</div>
+          <div class="s-text">Options are expensive. You need an outsized move to profit. Consider debit spreads instead of naked longs.</div>
+        </div>
+      </div>
+
+      <h4>IV Skew</h4>
+      <p>In index options, put IVs are almost always higher than equivalent call IVs (the "volatility skew"). This reflects institutional demand for downside protection. The IV Surface panel shows this visually — PE strikes will be brighter (higher IV) than equidistant CE strikes.</p>
+    </div>
+  </div>
+
+  <!-- IVR / IVP -->
+  <div class="concept-card" id="concept-ivp">
+    <div class="concept-header">
+      <div class="concept-icon" style="background:#dcfce7">%</div>
+      <div class="concept-header-text">
+        <h3>IV Rank (IVR) &amp; IV Percentile (IVP)</h3>
+        <div class="concept-tag">VOLATILITY CONTEXT · BUYING TIMING</div>
+      </div>
+    </div>
+    <div class="concept-body">
+      <p>Knowing that IV is at 14% tells you nothing without context. Is 14% cheap or expensive for NIFTY? IVR and IVP answer that by placing today's IV within its historical range.</p>
+
+      <div class="concept-formula">
+        <div class="label">IV Rank (IVR) — position within range</div>
+        IVR = (IV_today − IV_52wk_low) / (IV_52wk_high − IV_52wk_low) × 100<br><br>
+        <div class="label" style="margin-top:12px">IV Percentile (IVP) — percent of days below today</div>
+        IVP = % of past 90 days where closing IV was lower than today's IV
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">IVR: position in range</div>
+          <p style="font-size:13px">IVR = 0% means IV is at its 90-day low. IVR = 100% means IV is at its 90-day high. IVR = 50% means IV is exactly halfway between its recent extremes.<br><br>
+          <strong>Weakness:</strong> One or two extreme days distort the entire range. If IV spiked to 35% during a crash and is now at 15%, IVR might read 10% even though 15% is still elevated for normal conditions.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">IVP: percentile</div>
+          <p style="font-size:13px">IVP = 25% means IV was lower than today on 75% of the past 90 days — today is relatively cheap. IVP = 80% means today is more expensive than 80% of recent days.<br><br>
+          <strong>Advantage:</strong> Not distorted by outliers. More robust measure. Dashboard uses IVP for Environment Gate condition 5.</p>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>IVP</th><th>Signal</th><th>Action for option buyers</th></tr></thead>
+          <tbody>
+            <tr><td>&lt;20%</td><td>CHEAP</td><td>Strong buy signal on volatility. Very favourable entry for option buyers.</td></tr>
+            <tr><td>20–50%</td><td>FAIR</td><td>Reasonable entry. Score 2 points in Environment Gate.</td></tr>
+            <tr><td>50–75%</td><td>EXPENSIVE</td><td>Caution. Use spreads or wait for IV to compress.</td></tr>
+            <tr><td>&gt;75%</td><td>VERY EXPENSIVE</td><td>Avoid naked long options. IV likely to revert lower.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- PCR -->
+  <div class="concept-card" id="concept-pcr">
+    <div class="concept-header">
+      <div class="concept-icon" style="background:#fee2e2">P/C</div>
+      <div class="concept-header-text">
+        <h3>Put-Call Ratio (PCR) &amp; Divergence</h3>
+        <div class="concept-tag">SENTIMENT ANALYSIS · RETAIL vs INSTITUTIONAL</div>
+      </div>
+    </div>
+    <div class="concept-body">
+      <p>The Put-Call Ratio compares the activity in put options versus call options. A ratio above 1 means more put activity than call activity — traditionally interpreted as bearish sentiment. But the dashboard goes deeper by tracking <em>two separate PCRs</em> and comparing them.</p>
+
+      <div class="concept-formula">
+        <div class="label">PCR Volume — fast, retail sentiment</div>
+        PCR_Vol = Σ PE Volume / Σ CE Volume&nbsp;&nbsp;&nbsp;(current 5-min snapshot)<br><br>
+        <div class="label" style="margin-top:12px">PCR OI — slow, institutional positioning</div>
+        PCR_OI = Σ PE Open Interest / Σ CE Open Interest&nbsp;&nbsp;&nbsp;(accumulated)<br><br>
+        <div class="label" style="margin-top:12px">PCR Divergence — the signal</div>
+        Divergence = PCR_Vol − PCR_OI
+      </div>
+
+      <p><strong>Why they diverge:</strong> Open Interest accumulates over days as institutions build positions patiently. Volume spikes intraday as retail traders react to news. A sudden retail rush to buy puts (PCR_Vol spikes) while institutions remain relatively neutral in OI (PCR_OI steady) creates a divergence — and historically, this retail panic marks a local low, not a continuing sell-off.</p>
+
+      <div class="signals">
+        <div class="signal signal-bull">
+          <div class="s-label">Divergence &gt; +0.30</div>
+          <div class="s-text">Retail panic-buying puts. Institutions unmoved. Classic retail trap. Spot tends to bounce within 1–3 candles. Environment Gate scores 1 point.</div>
+        </div>
+        <div class="signal signal-bear">
+          <div class="s-label">Divergence &lt; −0.20</div>
+          <div class="s-text">Retail panic-buying calls while institutions hold puts. Spot tends to fall. Favour PE buying.</div>
+        </div>
+        <div class="signal signal-neutral">
+          <div class="s-label">Divergence −0.20 to +0.25</div>
+          <div class="s-text">Retail and institutional flows aligned. No strong trap signal. Use other indicators.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Greeks -->
+  <div class="concept-card" id="concept-greeks">
+    <div class="concept-header">
+      <div class="concept-icon" style="background:#fef3c7">Δ</div>
+      <div class="concept-header-text">
+        <h3>Option Greeks</h3>
+        <div class="concept-tag">OPTIONS PRICING SENSITIVITY</div>
+      </div>
+    </div>
+    <div class="concept-body">
+      <p>The Greeks measure how sensitive an option's price is to different factors. All are pre-computed by the BigQuery data source and used throughout the dashboard.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Greek</th><th>Measures</th><th>What it means for an option buyer</th><th>Typical range</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>Delta (Δ)</strong></td>
+              <td>Price change per 1-point spot move</td>
+              <td>An ATM option has Δ ≈ 0.50. If NIFTY moves +100 pts, the option gains ≈₹50. Delta rises toward 1.0 as option goes deep ITM.</td>
+              <td>0 to 1 (CE), 0 to −1 (PE)</td>
+            </tr>
+            <tr>
+              <td><strong>Gamma (Γ)</strong></td>
+              <td>Rate of change of Delta per 1-point spot move</td>
+              <td>High gamma = your delta accelerates on favourable moves. ATM options have the highest gamma. Collapses rapidly as DTE approaches zero.</td>
+              <td>0 to 0.005 typically</td>
+            </tr>
+            <tr>
+              <td><strong>Theta (Θ)</strong></td>
+              <td>Daily value decay</td>
+              <td>The cost of holding the option overnight. If Theta = −6.63, your option loses ₹6.63 per day purely from time passing, all else equal. Accelerates in the last 7 days before expiry.</td>
+              <td>−0.5 to −30 for near-expiry ATM</td>
+            </tr>
+            <tr>
+              <td><strong>Vega (ν)</strong></td>
+              <td>Price change per 1% change in IV</td>
+              <td>If IV rises from 14% to 15%, a Vega of 12 means the option gains ₹12. Option buyers benefit from IV expansion, hurt by IV contraction.</td>
+              <td>5 to 50 for index ATM options</td>
+            </tr>
+            <tr>
+              <td><strong>Rho (ρ)</strong></td>
+              <td>Sensitivity to interest rates</td>
+              <td>Minor for short-dated options. Not prominently displayed. Note: "ρ" in the Strike Screener refers to the <em>slippage penalty</em>, not this Rho.</td>
+              <td>Very small — typically ignored</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h4>Taylor Series P&amp;L Decomposition</h4>
+      <p>The Position Monitor uses these Greeks to break down <em>why</em> your P&amp;L changed. For any time interval:</p>
+      <div class="concept-formula">
+        ΔV ≈ Δ·ΔS + ½Γ·(ΔS)² + ν·Δσ + Θ·Δt<br><br>
+        where:<br>
+        ΔS = change in spot price<br>
+        Δσ = change in implied volatility<br>
+        Δt = time elapsed (fraction of trading day)
+      </div>
+    </div>
+  </div>
+
+  <!-- S_score -->
+  <div class="concept-card" id="concept-sscore">
+    <div class="concept-header">
+      <div class="concept-icon" style="background:#ccfbf1">S★</div>
+      <div class="concept-header-text">
+        <h3>Slippage-Adjusted S_score</h3>
+        <div class="concept-tag">STRIKE SELECTION · EFFICIENCY RANKING</div>
+      </div>
+    </div>
+    <div class="concept-body">
+      <p>The S_score answers the question: <em>"Of all available strikes, which gives me the best combination of directional exposure, time decay resistance, and liquidity?"</em> It is the primary ranking criterion in the Strike Screener.</p>
+
+      <div class="concept-formula">
+        <div class="label">Efficiency Ratio</div>
+        EffRatio = |Delta| / |Theta|&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#9b9388"># directional gain per unit of daily decay cost</span><br><br>
+        <div class="label" style="margin-top:12px">Slippage Penalty (ρ)</div>
+        ρ = exp(−2 × TBQ × TSQ / ((TBQ + TSQ) × V_bench))<br><br>
+        <span style="color:#9b9388"># ρ → 0 when order book is balanced and deep (low slippage)</span><br>
+        <span style="color:#9b9388"># ρ → 1 when one side dominates or book is thin (high slippage)</span><br><br>
+        <div class="label" style="margin-top:12px">Final S_score</div>
+        S_score = EffRatio × (1 − ρ)
+      </div>
+
+      <p>The slippage penalty <code>ρ</code> uses <code>total_buy_qty</code> and <code>total_sell_qty</code> from the order book. When both sides are deep and balanced, ρ approaches zero and S_score equals the raw efficiency ratio. When the book is thin or one-sided, ρ approaches 1 and S_score collapses to near zero — warning you away from illiquid strikes that look attractive on paper but will cost you dearly at execution.</p>
+
+      <div class="callout callout-warn">
+        <span class="callout-icon">⚠️</span>
+        <span><strong>V_bench = 2,000,000:</strong> This is the benchmark order book size for index options. Strikes where TBQ or TSQ are far below this will be penalised. For stock futures (which have thinner books), this parameter is adjusted separately.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- OBI -->
+  <div class="concept-card" id="concept-obi">
+    <div class="concept-header">
+      <div class="concept-icon" style="background:#f3e8ff">⚖</div>
+      <div class="concept-header-text">
+        <h3>Order Book Imbalance (OBI)</h3>
+        <div class="concept-tag">MICROSTRUCTURE · IMMEDIATE PRESSURE</div>
+      </div>
+    </div>
+    <div class="concept-body">
+      <p>The Order Book Imbalance measures the real-time balance of buying versus selling pressure in the order book. Unlike volume (which is historical), OBI is a <em>leading</em> indicator — it shows what is queued to happen, not what already happened.</p>
+
+      <div class="concept-formula">
+        OBI = (Total Buy Quantity − Total Sell Quantity) / (Total Buy Quantity + Total Sell Quantity)<br><br>
+        Range: −1 to +1<br>
+        +1 = all bids, no asks (extreme buy pressure)<br>
+        −1 = all asks, no bids (extreme sell pressure)<br>
+         0 = perfectly balanced
+      </div>
+
+      <p>The dashboard applies a 5-snapshot (25-minute) rolling average to remove noise. This <strong>Smoothed OBI</strong> is what feeds the Environment Gate condition 6.</p>
+
+      <div class="signals">
+        <div class="signal signal-bear">
+          <div class="s-label">Smoothed OBI &lt; −0.15</div>
+          <div class="s-text">Sustained sell-side pressure in the order book. Sellers are more aggressive. Consistent with a downward trend.</div>
+        </div>
+        <div class="signal signal-bull">
+          <div class="s-label">Smoothed OBI &gt; +0.15</div>
+          <div class="s-text">Buy-side pressure dominant. Buyers paying up. Consistent with upward momentum.</div>
+        </div>
+      </div>
+
+      <p>OBI is also computed for futures separately. The "Futures BS Ratio" in the Environment Gate is derived from futures OBI — when futures OBI is negative, it means institutions are placing sell orders more aggressively than buy orders, a bearish signal.</p>
+    </div>
+  </div>
+
+  <!-- Theta-SL -->
+  <div class="concept-card" id="concept-theta-sl">
+    <div class="concept-header">
+      <div class="concept-icon" style="background:#fee2e2">SL</div>
+      <div class="concept-header-text">
+        <h3>Theta-Adjusted Trailing Stop Loss</h3>
+        <div class="concept-tag">RISK MANAGEMENT · POSITION SIZING</div>
+      </div>
+    </div>
+    <div class="concept-body">
+      <p>A conventional stop loss (e.g., "exit if premium falls 30% from entry") ignores the fact that option premiums naturally decay through time, <em>even if the spot price doesn't move</em>. This creates a dilemma: a tight SL will frequently stop you out of perfectly valid positions due to theta decay alone.</p>
+
+      <p>The Theta-Adjusted SL solves this by <strong>lowering the stop loss floor in proportion to time elapsed</strong>. As the day progresses and theta eats into your premium, your stop loss adjusts downward to account for that expected decay — so you are only stopped out by an <em>adverse spot move</em>, not by the passage of time.</p>
+
+      <div class="concept-formula">
+        <div class="label">Base Stop Loss (fixed at entry)</div>
+        SL_base = Entry Premium × (1 − Max Loss Fraction)<br>
+        Example: ₹19.95 × (1 − 0.30) = ₹13.97<br><br>
+        <div class="label" style="margin-top:12px">Theta-Adjusted SL at time t</div>
+        SL_adj(t) = SL_base + (Θ_daily × t_elapsed_minutes / 375)<br><br>
+        <span style="color:#9b9388"># 375 = total NSE trading minutes (09:15 to 15:30)</span><br>
+        <span style="color:#9b9388"># Θ_daily is negative, so SL_adj moves lower over time</span>
+      </div>
+
+      <p><strong>Example:</strong> You enter a PE at ₹19.95 with Θ = −6.63/day. By noon (180 minutes elapsed out of 375), the expected decay is: −6.63 × 180/375 = −3.18 points. So your SL moves from ₹13.97 down to ₹13.97 + (−3.18) = <strong>₹10.79</strong>. If the PE is at ₹22 at noon, you're well above the SL — the trade is working.</p>
+
+      <div class="signals">
+        <div class="signal signal-bull">
+          <div class="s-label">SL above Entry Price</div>
+          <div class="s-text">"Guaranteed Profit Zone" — as the position appreciates, trailing SL eventually locks in a profit no matter what happens next.</div>
+        </div>
+        <div class="signal signal-bear">
+          <div class="s-label">STOP_HIT</div>
+          <div class="s-text">Current LTP dropped below SL_adj. The adverse spot move exceeded what theta decay alone would cause. Exit immediately.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Expiry Tiers -->
+  <div class="concept-card" id="concept-expiry">
+    <div class="concept-header">
+      <div class="concept-icon" style="background:#fef3c7">📅</div>
+      <div class="concept-header-text">
+        <h3>Expiry Tiers</h3>
+        <div class="concept-tag">EXPIRY CLASSIFICATION · LIQUIDITY FRAMEWORK</div>
+      </div>
+    </div>
+    <div class="concept-body">
+      <p>Not all expiries are equal. The dashboard classifies every option contract into one of three tiers based on days-to-expiry (DTE). Only Tier 1 contracts are used for GEX computation and strike selection.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Tier</th><th>DTE Range</th><th>Purpose</th><th>Examples (from NIFTY weekly chain)</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>TIER1_NEAR</strong></td>
+              <td>DTE ≤ 12</td>
+              <td>Primary trading expiry. Highest liquidity, tightest spreads, sharpest gamma response to spot moves. Used for GEX, CoC, PCR, and strike selection.</td>
+              <td>Current week expiry, next week expiry</td>
+            </tr>
+            <tr>
+              <td><strong>TIER1_FAR</strong></td>
+              <td>DTE ≥ 35</td>
+              <td>Secondary trading expiry. Used for GEX and for term structure slope computation. Lower gamma but more stable theta profile.</td>
+              <td>Monthly expiry, next monthly</td>
+            </tr>
+            <tr>
+              <td><strong>TIER2_IV_ONLY</strong></td>
+              <td>13 ≤ DTE &lt; 35</td>
+              <td>Liquidity gap. Not suitable for trading (wide spreads, low OI). Used only for IV term structure charting to fill in the forward curve.</td>
+              <td>Biweekly or mid-month expiries</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ATM Window -->
+  <div class="concept-card" id="concept-atm">
+    <div class="concept-header">
+      <div class="concept-icon" style="background:#dcfce7">ATM</div>
+      <div class="concept-header-text">
+        <h3>ATM Window</h3>
+        <div class="concept-tag">STRIKE UNIVERSE · DAILY ANCHOR</div>
+      </div>
+    </div>
+    <div class="concept-body">
+      <p>The ATM (At-The-Money) Window defines which strikes the dashboard shows for each underlying. It is anchored to the <strong>day-open spot price</strong>, not the current price — this ensures the strike universe remains consistent throughout the trading day regardless of where the spot has moved.</p>
+
+      <div class="concept-formula">
+        <div class="label">ATM Strike computation (from 09:15 snapshot)</div>
+        ATM = ROUND(Day_Open_Spot / Strike_Interval) × Strike_Interval<br><br>
+        Window = [ATM − 8 × Interval, ATM + 8 × Interval]<br><br>
+        NIFTY (Interval=50):&nbsp;&nbsp;&nbsp;17 strikes over 800-point range<br>
+        BANKNIFTY (Interval=100): 17 strikes over 1,600-point range<br>
+        MIDCPNIFTY (Interval=25): 17 strikes over 400-point range
+      </div>
+
+      <p>This ±8 strike window contains the vast majority of liquid options (usually 95%+ of volume). Strikes outside this window are pulled from BigQuery but excluded from dashboard displays and analytics.</p>
+
+      <div class="callout callout-info">
+        <span class="callout-icon">ℹ️</span>
+        <span>If NIFTY gaps up 300 points at open, the ATM window shifts accordingly — anchoring to the actual opening price, not yesterday's close. The window file for the day is saved at <code>data/processed/atm_windows/YYYY-MM-DD.json</code>.</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SECTION 5: TRADING WORKFLOW ══ -->
+<div class="section" id="workflow-pre">
+  <div class="section-header">
+    <div class="section-num">5</div>
+    <h2 class="section-title">Trading Workflow</h2>
+  </div>
+
+  <p>The dashboard is designed around a structured trading day. Here is the recommended workflow from pre-market to close.</p>
+
+  <h3>Phase 1: Pre-Market (09:00–09:15)</h3>
+  <div class="card">
+    <ol style="font-size:14px;color:var(--ink-2);line-height:2.1;padding-left:20px">
+      <li>Open all three terminal tabs and start the stack (pipeline → API → dashboard)</li>
+      <li>Verify the dashboard loads at <code>localhost:5173</code> with no error panels</li>
+      <li>Check yesterday's data is visible by selecting the previous date in the date picker</li>
+      <li>Note yesterday's closing GEX — if it closed near a key level, today may see continuation or reversal</li>
+      <li>Check IVP from the screener — if &lt;30%, you enter today with a structural edge</li>
+    </ol>
+  </div>
+
+  <h3 id="workflow-open">Phase 2: Market Open &amp; First Signals (09:15–09:45)</h3>
+  <div class="card">
+    <ol style="font-size:14px;color:var(--ink-2);line-height:2.2;padding-left:20px">
+      <li><strong>09:15:</strong> Market opens. First snapshot hits BigQuery within 60 seconds. Pipeline pulls it at 09:16:30.</li>
+      <li><strong>09:16:30:</strong> Dashboard updates. ATM window is now computed from the opening spot price. Environment Gate shows first score — typically low (only 1–2 conditions met this early).</li>
+      <li><strong>09:20:</strong> Watch CoC and V_CoC. If V_CoC is already below −10 on the first reading, a significant bearish institutional move was placed at or before open — high alert.</li>
+      <li><strong>09:20–09:35:</strong> Strike Screener runs on the 09:20 snapshot. This is your primary strike selection window. Note the top 5 strikes by S_score for CE and PE separately.</li>
+      <li><strong>09:35–09:45:</strong> Wait for Environment Gate to reach 4+ points before entering. If it has not reached 4 by 09:45, extend the wait until 10:00–10:15.</li>
+    </ol>
+  </div>
+
+  <div class="callout callout-warn">
+    <span class="callout-icon">⚠️</span>
+    <span><strong>First 15-minute rule:</strong> Never enter a trade in the first 15 minutes of the session (09:15–09:30). The opening auction creates artificial liquidity. Wait for at least 2–3 five-minute candles to form before reading market structure.</span>
+  </div>
+
+  <h3 id="workflow-trade">Phase 3: In the Trade (09:45–14:30)</h3>
+  <div class="card">
+    <ol style="font-size:14px;color:var(--ink-2);line-height:2.2;padding-left:20px">
+      <li>Enter the bought option into the Position Monitor panel (expiry, strike, type, entry LTP, theta)</li>
+      <li>The theta-adjusted SL is now computed and plotted automatically every 5 minutes</li>
+      <li>Check the Alert Feed after every 5-min refresh — any new COC_VELOCITY or GEX_DECLINE alerts?</li>
+      <li>Monitor the PCR Divergence panel — if divergence reverses strongly against your position, consider partial exit</li>
+      <li>At 100% profit (LTP = 2× entry): the Position Monitor shows <code>PROFIT_100PCT_PARTIAL_EXIT</code>. Consider booking 50% and letting the rest run with the theta SL protecting profits.</li>
+    </ol>
+  </div>
+
+  <h3 id="workflow-exit">Phase 4: Exit Rules</h3>
+
+  <div class="verdict-box verdict-no">
+    <div class="verdict-label">EXIT 1</div>
+    <div class="verdict-text"><strong>Stop Loss Hit:</strong> Position Monitor shows <code>STOP_HIT</code> in red. LTP has dropped below the theta-adjusted SL. Exit immediately at market. Do not wait for a bounce.</div>
+  </div>
+
+  <div class="verdict-box verdict-wait">
+    <div class="verdict-label">EXIT 2</div>
+    <div class="verdict-text"><strong>Signal Reversal:</strong> Environment Gate drops from GO to WAIT or NO-GO. The setup that triggered your entry is no longer valid. Consider exiting 50–75% of position.</div>
+  </div>
+
+  <div class="verdict-box verdict-go">
+    <div class="verdict-label">EXIT 3</div>
+    <div class="verdict-text"><strong>Profit Target:</strong> LTP reaches 2× entry (100% gain). Book 50% profit. Move remaining position to trailing mode with SL raised to entry price.</div>
+  </div>
+
+  <div class="verdict-box verdict-wait">
+    <div class="verdict-label">EXIT 4</div>
+    <div class="verdict-text"><strong>Time Exit:</strong> Always exit by 14:30 IST regardless of P&amp;L. Theta decay accelerates sharply in the final hour. Risk-reward deteriorates significantly after 14:30 for near-expiry options.</div>
+  </div>
+</div>
+
+<!-- ══ SECTION 6: SIGNAL REFERENCE ══ -->
+<div class="section" id="signals">
+  <div class="section-header">
+    <div class="section-num">6</div>
+    <h2 class="section-title">Signal Quick-Reference</h2>
+  </div>
+
+  <p>All signals, thresholds, and recommended actions in one table.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Signal</th><th>Threshold</th><th>Interpretation</th><th>Action</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Environment Gate</strong></td>
+          <td>Score ≥ 4</td>
+          <td>GO — multiple conditions aligned</td>
+          <td>Enter trades</td>
+        </tr>
+        <tr>
+          <td><strong>Environment Gate</strong></td>
+          <td>Score 2–3</td>
+          <td>WAIT — mixed signals</td>
+          <td>Watch only, no new entries</td>
+        </tr>
+        <tr>
+          <td><strong>Environment Gate</strong></td>
+          <td>Score 0–1</td>
+          <td>NO-GO — structure unfavourable</td>
+          <td>Do not trade. Protect existing positions.</td>
+        </tr>
+        <tr>
+          <td><strong>Net GEX % of Peak</strong></td>
+          <td>&lt;70%</td>
+          <td>GEX weakening — pinning force fading</td>
+          <td>Directional strategies become viable</td>
+        </tr>
+        <tr>
+          <td><strong>Net GEX % of Peak</strong></td>
+          <td>&lt;50%</td>
+          <td>Strong GEX breakdown — trending move likely</td>
+          <td>High conviction directional entry</td>
+        </tr>
+        <tr>
+          <td><strong>Net GEX Regime</strong></td>
+          <td>NEGATIVE_TREND</td>
+          <td>Dealers short gamma — they amplify moves</td>
+          <td>Trend-following setups favoured</td>
+        </tr>
+        <tr>
+          <td><strong>V_CoC</strong></td>
+          <td>&lt;−10</td>
+          <td>Institutional short campaign — bearish</td>
+          <td>Favour PE buying; Environment Gate +2 pts</td>
+        </tr>
+        <tr>
+          <td><strong>V_CoC</strong></td>
+          <td>&gt;+10</td>
+          <td>Institutional long campaign — bullish</td>
+          <td>Favour CE buying</td>
+        </tr>
+        <tr>
+          <td><strong>CoC</strong></td>
+          <td>&lt;0 (Discount)</td>
+          <td>Futures below spot — sellers dominating</td>
+          <td>Bearish bias; watch for V_CoC confirmation</td>
+        </tr>
+        <tr>
+          <td><strong>IVP</strong></td>
+          <td>&lt;20%</td>
+          <td>Options very cheap historically</td>
+          <td>Strong buy setup on volatility side</td>
+        </tr>
+        <tr>
+          <td><strong>IVP</strong></td>
+          <td>&gt;75%</td>
+          <td>Options expensive — IV likely to fall</td>
+          <td>Avoid naked longs; use spreads</td>
+        </tr>
+        <tr>
+          <td><strong>PCR Divergence</strong></td>
+          <td>&gt;+0.30</td>
+          <td>Retail panic puts — trap forming</td>
+          <td>Contrarian CE entry or hold existing CE</td>
+        </tr>
+        <tr>
+          <td><strong>PCR Divergence</strong></td>
+          <td>&lt;−0.20</td>
+          <td>Retail panic calls — trap forming</td>
+          <td>Contrarian PE entry</td>
+        </tr>
+        <tr>
+          <td><strong>S_score</strong></td>
+          <td>&gt;0.06</td>
+          <td>★★★★ — top-tier efficiency</td>
+          <td>Preferred strikes for entry</td>
+        </tr>
+        <tr>
+          <td><strong>S_score</strong></td>
+          <td>&lt;0.02</td>
+          <td>★☆☆☆ — poor efficiency</td>
+          <td>Avoid unless other strong reasons</td>
+        </tr>
+        <tr>
+          <td><strong>Slippage ρ</strong></td>
+          <td>&lt;0.10</td>
+          <td>Deep, liquid book — low slippage risk</td>
+          <td>Execute confidently</td>
+        </tr>
+        <tr>
+          <td><strong>Slippage ρ</strong></td>
+          <td>&gt;0.40</td>
+          <td>Thin book — high impact cost</td>
+          <td>Avoid or split order into small lots</td>
+        </tr>
+        <tr>
+          <td><strong>Smoothed OBI</strong></td>
+          <td>&lt;−0.15</td>
+          <td>Sustained sell-side pressure</td>
+          <td>Bearish bias; Environment Gate +1 pt</td>
+        </tr>
+        <tr>
+          <td><strong>Volume Velocity</strong></td>
+          <td>&gt;2.0×</td>
+          <td>Unusual options activity — SPIKE alert</td>
+          <td>Investigate — may signal informed flow</td>
+        </tr>
+        <tr>
+          <td><strong>Theta SL</strong></td>
+          <td>SL &gt; Entry</td>
+          <td>Guaranteed Profit Zone</td>
+          <td>Stay in trade; SL is now above breakeven</td>
+        </tr>
+        <tr>
+          <td><strong>Theta SL</strong></td>
+          <td>LTP &lt; SL_adj</td>
+          <td>STOP_HIT</td>
+          <td>Exit immediately at market</td>
+        </tr>
+        <tr>
+          <td><strong>Time</strong></td>
+          <td>14:30 IST</td>
+          <td>Final 60-minute danger zone</td>
+          <td>Close all positions regardless of P&amp;L</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══ SECTION 7: TROUBLESHOOTING ══ -->
+<div class="section" id="troubleshoot">
+  <div class="section-header">
+    <div class="section-num">7</div>
+    <h2 class="section-title">Troubleshooting</h2>
+  </div>
+
+  <div class="concept-card">
+    <div class="concept-header" style="background:var(--red-pale)">
+      <div class="concept-icon" style="background:#fee2e2">🔴</div>
+      <div class="concept-header-text">
+        <h3 style="color:var(--red)">Dashboard shows no data / empty panels</h3>
+        <div class="concept-tag">MOST COMMON ISSUE</div>
+      </div>
+    </div>
+    <div class="concept-body">
+      <p><strong>Cause 1:</strong> The API server is not running.<br>
+      <strong>Fix:</strong> Open Tab 2 and run <code>python run_api.py</code>. Verify at <code>http://127.0.0.1:8000/docs</code>.</p>
+      <p><strong>Cause 2:</strong> No Parquet data on disk yet (backfill hasn't run).<br>
+      <strong>Fix:</strong> Run <code>python run_pipeline.py</code> in Tab 1. Wait for the backfill to complete (2–5 min). Then refresh the dashboard.</p>
+      <p><strong>Cause 3:</strong> Wrong date selected in the dashboard date picker.<br>
+      <strong>Fix:</strong> Change the date to a day in the backfilled range (2026-02-17 to 2026-02-20).</p>
+    </div>
+  </div>
+
+  <div class="concept-card">
+    <div class="concept-header">
+      <div class="concept-icon" style="background:#fef3c7">⏰</div>
+      <div class="concept-header-text">
+        <h3>Times appear wrong — shifted by 5 hours 30 minutes</h3>
+        <div class="concept-tag">TIMEZONE BUG</div>
+      </div>
+    </div>
+    <div class="concept-body">
+      <p>If you see data labelled 03:45 when the market opens at 09:15, a timezone conversion is happening incorrectly somewhere. The <code>record_time</code> values in BigQuery are stored with a "UTC" label but

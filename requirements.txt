@@ -1,0 +1,25 @@
+# ── BigQuery & Google Cloud ────────────────────────────────────────────────
+google-cloud-bigquery==3.19.0
+google-auth==2.29.0
+db-dtypes==1.2.0                # Required for BigQuery → pandas TIMESTAMP conversion
+pyarrow==15.0.2                 # Arrow backend used by both BQ client and Parquet
+
+# ── Local Storage & Analytics ──────────────────────────────────────────────
+duckdb==0.10.3
+pandas==2.2.2
+numpy==1.26.4
+
+# ── Scheduler ─────────────────────────────────────────────────────────────
+APScheduler==3.10.4
+pytz==2024.1
+
+# ── API Server ────────────────────────────────────────────────────────────
+fastapi==0.111.0
+uvicorn[standard]==0.29.0
+
+# ── Utilities ─────────────────────────────────────────────────────────────
+python-dotenv==1.0.1
+tenacity==8.3.0                 # Retry with exponential backoff for BQ calls
+structlog==24.2.0               # Structured logging (optional but recommended)
+python-dateutil==2.9.0
+colorama==0.4.6                 # Coloured console output
