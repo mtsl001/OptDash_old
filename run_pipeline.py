@@ -6,7 +6,7 @@ Startup decision tree (runs every time, handles ALL gap scenarios):
 
   1. Ensure directories exist
   2. Initialise DuckDB views
-  3. Run fixed historical backfill (2026-02-17→2026-02-20, idempotent)
+  3. Run fixed historical backfill (2026-02-17→2026-02-09, idempotent)
   4. Startup gap recovery — covers ALL restart scenarios:
 
      ┌─────────────────────────────────────────────────────────────────────┐
